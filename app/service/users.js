@@ -6,21 +6,23 @@ const { Op } = require('sequelize');
 class UserService extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, username, email, phone } = payload;
+    const { limit, offset, prop_order, order, username, email, phone, state, department_id } = payload;
     const where = {};
     const Order = [];
-    username ? where.username = { [ Op.like ]: `%${ username }%` } : null;
-    email ? where.email = { [ Op.like ]: `%${ email }%` } : null;
-    phone ? where.phone = { [ Op.like ]: `%${ phone }%` } : null;
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    username ? where.username = { [Op.like]: `%${ username }%` } : null;
+    email ? where.email = { [Op.like]: `%${ email }%` } : null;
+    phone ? where.phone = { [Op.like]: `%${ phone }%` } : null;
+    !ctx.helper.tools.isParam(state) ? where.state = state : null;
+    !ctx.helper.tools.isParam(department_id) ? where.department_id = department_id : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Users.findAndCountAll({
-      limit, offset, where, order: Order, attributes: { exclude: [ 'password', 'deleted_at' ] },
+      limit, offset, where, order: Order, attributes: { exclude: ['password', 'deleted_at'] },
     });
   }
 
   async findOne(id) {
     const { ctx } = this;
-    return await ctx.model.Users.findOne({ where: { id }, attributes: { exclude: [ 'password', 'deleted_at' ] } });
+    return await ctx.model.Users.findOne({ where: { id }, attributes: { exclude: ['password', 'deleted_at'] } });
   }
 
   async create(payload) {
@@ -34,7 +36,7 @@ class UserService extends Service {
         target: verification_type === 1 ? email : phone,
         code,
         available: 1,
-        expiration_time: { [ Op.gt ]: current_time },
+        expiration_time: { [Op.gt]: current_time },
       },
     });
     if (res) {
@@ -89,7 +91,7 @@ class UserService extends Service {
         __code_wrong: 40000,
       };
     }
-    if (result.state !== 0) {
+    if (result.state !== 1) {
       return {
         __code_wrong: 40005,
       };
@@ -120,7 +122,7 @@ class UserService extends Service {
           model: ctx.model.Roles,
         },
       ],
-      where: { id: ctx.currentRequestData.userInfo.id }, attributes: { exclude: [ 'password', 'deleted_at' ] },
+      where: { id: ctx.currentRequestData.userInfo.id }, attributes: { exclude: ['password', 'deleted_at'] },
     });
     res.dataValues.permissions = [];
     res.roles.forEach(e => {
@@ -137,14 +139,14 @@ class UserService extends Service {
     const { ctx } = this;
     const { username, nickname, email, phone } = payload;
     const where = {};
-    where[ Op.or ] = [];
-    username ? where[ Op.or ].push({ username }) : null;
-    nickname ? where[ Op.or ].push({ nickname }) : null;
-    email ? where[ Op.or ].push({ email }) : null;
-    phone ? where[ Op.or ].push({ phone }) : null;
+    where[Op.or] = [];
+    username ? where[Op.or].push({ username }) : null;
+    nickname ? where[Op.or].push({ nickname }) : null;
+    email ? where[Op.or].push({ email }) : null;
+    phone ? where[Op.or].push({ phone }) : null;
     return await ctx.model.Users.findOne({
       where,
-      attributes: { exclude: [ 'password', 'deleted_at' ] },
+      attributes: { exclude: ['password', 'deleted_at'] },
     });
   }
 
@@ -168,7 +170,7 @@ class UserService extends Service {
           target: email,
           code,
           available: 1,
-          expiration_time: { [ Op.gt ]: current_time },
+          expiration_time: { [Op.gt]: current_time },
         },
       });
       if (verificationCode) {
@@ -201,8 +203,17 @@ class UserService extends Service {
    */
   async logout() {
     const { ctx, app } = this;
-    const token = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[ 1 ];
+    const token = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[1];
     return await app.redis.setex(token, app.config.jwt_exp, '1');
+  }
+
+  /**
+   * 修改 用户所属部门
+   */
+  async updateUserDepartment(payload) {
+    const { ctx } = this;
+    const { id, department_id } = payload;
+    return await ctx.model.Users.update({ department_id }, { where: { id } });
   }
 
 }

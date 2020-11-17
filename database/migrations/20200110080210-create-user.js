@@ -32,7 +32,7 @@ module.exports = {
         type: Sequelize.TINYINT,
         allowNull: false,
         defaultValue: '0',
-        comment: '状态：0.正常、1.停用',
+        comment: '状态：0.停用、1.正常',
       },
       phone: {
         type: Sequelize.STRING(15),

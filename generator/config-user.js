@@ -23,6 +23,18 @@ module.exports = {
   },
   fields: [
     {
+      name: 'department_id',
+      type: 'INTEGER',
+      length: 11,
+      min: 0,
+      required: false,
+      description: '部门ID', // 供swagger使用
+      example: 0, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      defaultValue: 0, // 数据库表中字段的默认值
+      comment: '部门ID', // 数据库表中字段的描述
+    },
+    {
       name: 'username',
       type: 'string',
       length: 60,
@@ -78,11 +90,11 @@ module.exports = {
       name: 'state',
       type: 'TINYINT',
       required: false,
-      description: '状态：0.正常、1.停用', // 供swagger使用
+      description: '状态：0.停用、1.正常', // 供swagger使用
       example: 0, // 供swagger使用
-      comment: '状态：0.正常、1.停用', // 数据库表中字段的描述
+      comment: '状态：0.停用、1.正常', // 数据库表中字段的描述
       allowNull: false, // 是否允许为空
-      defaultValue: 0, // 数据库表中字段的默认值
+      defaultValue: 1, // 数据库表中字段的默认值
     },
     {
       name: 'phone',

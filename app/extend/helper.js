@@ -4,7 +4,7 @@ const crypto = require('crypto');
 module.exports.tools = {
   // 根据ID验证数据是否存在；存在则返回对象，不存在则抛出404。
   async findByPkSequelize(ctx, target, id) {
-    const item = await ctx.model[ target ].findByPk(id);
+    const item = await ctx.model[target].findByPk(id);
     return !item ? ctx.helper.NOT_FOUND({ ctx }) : item;
   },
 
@@ -29,6 +29,10 @@ module.exports.tools = {
       exp: Math.floor(Date.now() / 1000) + exp,
       // exp: Math.floor(Date.now() / 1000) + (10),
     }, ctx.app.config.jwt.secret);
+  },
+
+  isParam(param) {
+    return !param && param !== 0;
   },
 
 };

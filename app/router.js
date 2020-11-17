@@ -24,6 +24,7 @@ module.exports = app => {
   router.get('/api/v1/users/user_info', controller.v1.users.userInfo);
   router.get('/api/v1/users/exists_user_unique_fields', controller.v1.users.existsUserUniqueFields);
   router.put('/api/v1/users/password', controller.v1.users.updateUserPassword);
+  router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
 
   /**
    * 角色
@@ -104,4 +105,13 @@ module.exports = app => {
    */
   router.put('/api/v1/configurations', controller.v1.configurations.update);
   router.get('/api/v1/configurations/public_key', controller.v1.configurations.findRsaPublicKey);
+
+  /**
+   * 部门
+   */
+  router.post('/api/v1/departments', controller.v1.departments.create);
+  router.put('/api/v1/departments', controller.v1.departments.update);
+  router.get('/api/v1/departments/list', controller.v1.departments.findAll);
+  router.get('/api/v1/departments', controller.v1.departments.findOne);
+  router.delete('/api/v1/departments', controller.v1.departments.destroy);
 };

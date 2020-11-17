@@ -16,6 +16,8 @@ class RoleController extends Controller {
    * @request query string username 用户名
    * @request query string email 邮箱
    * @request query string phone 手机
+   * @request query number state 状态
+   * @request query number department_id 部门ID
    * @request query number limit limit
    * @request query number offset offset
    * @router get /api/v1/users/list
@@ -38,15 +40,23 @@ class RoleController extends Controller {
         required: false,
         min: 1,
       },
+      state: {
+        ...ctx.rule.userBodyReq.state,
+        required: false,
+      },
+      department_id: {
+        ...ctx.rule.userBodyReq.department_id,
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,
-        values: [ ...Object.keys(ctx.rule.userPutBodyReq), '' ],
+        values: [...Object.keys(ctx.rule.userPutBodyReq), ''],
       },
       order: {
         type: 'enum',
         required: false,
-        values: [ 'desc', 'asc', '' ],
+        values: ['desc', 'asc', ''],
       },
       limit: {
         type: 'number',
@@ -91,7 +101,7 @@ class RoleController extends Controller {
       ...ctx.rule.userCreateBodyReq,
       verification_type: {
         type: 'enum',
-        values: [ 1, 2 ],
+        values: [1, 2],
       },
     };
     ctx.validate(params, ctx.request.body);
@@ -129,7 +139,7 @@ class RoleController extends Controller {
     };
     ctx.validate(rules, ctx.request.body);
     const res = await service.users.update(ctx.request.body);
-    res && res[ 0 ] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**
@@ -281,6 +291,29 @@ class RoleController extends Controller {
         ctx.helper.body.INVALID_REQUEST({ ctx });
         break;
     }
+  }
+
+  /**
+   * @apikey
+   * @summary 修改 用户所属部门
+   * @description 修改 用户所属部门
+   * @router put /api/v1/users/department
+   * @request body updateUserDepartmentBodyReq
+   */
+  async updateUserDepartment() {
+    const { ctx, service } = this;
+    const params = {
+      id: {
+        ...ctx.rule.userPutBodyReq.id,
+      },
+      department_id: {
+        ...ctx.rule.userPutBodyReq.department_id,
+        required: true,
+      },
+    };
+    ctx.validate(params, ctx.request.body);
+    const res = await service.users.updateUserDepartment(ctx.request.body);
+    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
 }
 

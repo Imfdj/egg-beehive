@@ -1,0 +1,95 @@
+{
+  "name": "egg-beehive",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "egg": {
+    "declarations": true
+  },
+  "dependencies": {
+    "await-stream-ready": "^1.0.1",
+    "dayjs": "^1.8.32",
+    "egg": "^2.15.1",
+    "egg-alinode": "^2.0.1",
+    "egg-cors": "^2.2.3",
+    "egg-healthy": "^1.0.0",
+    "egg-jwt": "^3.1.7",
+    "egg-mailer": "^1.1.0",
+    "egg-redis": "^2.4.0",
+    "egg-scripts": "^2.11.0",
+    "egg-sequelize": "^5.2.1",
+    "egg-swagger-doc": "^2.3.2",
+    "egg-validate": "^2.0.2",
+    "escape-string-regexp": "^3.0.0",
+    "lodash": "^4.17.15",
+    "mysql2": "^2.1.0",
+    "node-rsa": "^1.1.1",
+    "stream-wormhole": "^1.1.0"
+  },
+  "devDependencies": {
+    "autocannon": "^6.2.0",
+    "autod": "^3.0.1",
+    "autod-egg": "^1.1.0",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "3.1.0",
+    "egg-bin": "^4.11.0",
+    "egg-ci": "^1.11.0",
+    "egg-mock": "^4.0.1",
+    "eslint": "^5.13.0",
+    "eslint-config-egg": "^7.1.0",
+    "factory-girl": "^5.0.4",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "mocha": "^7.0.0",
+    "sequelize-cli": "^5.5.1",
+    "validate-commit-msg": "^2.14.0"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "scripts": {
+    "start": "egg-scripts start --daemon --title=egg-server-egg-beehive",
+    "start2": "egg-scripts start --daemon --port 7002 --title=egg-server-egg-beehive2",
+    "stop": "egg-scripts stop --title=egg-server-egg-beehive",
+    "stop2": "egg-scripts stop --title=egg-server-egg-beehive2",
+    "dev": "egg-bin dev",
+    "debug": "egg-bin debug",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "lint-fix": "npm run lint -- --fix",
+    "cm": "git-cz",
+    "ci": "npm run lint && npm run cov",
+    "autod": "autod",
+    "generator-entity": "node ./generator/index.js && npm run lint-fix && sequelize db:migrate",
+    "generator-entity-delete": "node ./generator/delete-entity.js",
+    "db-migrate": "sequelize db:migrate",
+    "db-migrate-test": "sequelize db:migrate --env test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run test-local",
+      "commit-msg": "validate-commit-msg"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix --ext .js"
+    ]
+  },
+  "ci": {
+    "version": "10"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Imfdj",
+  "license": "MIT",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

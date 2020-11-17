@@ -5,6 +5,13 @@ const body = {
     id: { type: 'number', required: true, description: 'id' },
   },
   userBodyReq: {
+    department_id: {
+      type: 'number',
+      required: false,
+      min: 0,
+      example: 0,
+      description: '部门ID',
+    },
     username: {
       type: 'string',
       required: true,
@@ -44,8 +51,10 @@ const body = {
     state: {
       type: 'number',
       required: false,
-      example: 0,
-      description: '状态：0.正常、1.停用',
+      example: 1,
+      min: 0,
+      max: 1,
+      description: '状态：0.停用、1.正常',
     },
     phone: {
       type: 'string',
@@ -109,7 +118,11 @@ module.exports = {
       description: '验证码',
     },
   },
+  updateUserDepartmentBodyReq: {
+    ...body.userId,
+    department_id: body.userBodyReq.department_id,
+  },
   userDelBodyReq: {
-    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [ 1, 2 ] },
+    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [1, 2] },
   },
 };

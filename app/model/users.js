@@ -5,6 +5,7 @@ module.exports = app => {
   const user = app.model.define('users', {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     username: Sequelize.STRING(60),
+    department_id: Sequelize.INTEGER,
     nickname: Sequelize.STRING(60),
     password: Sequelize.STRING(64),
     email: Sequelize.STRING(60),

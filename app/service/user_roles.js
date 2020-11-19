@@ -9,13 +9,17 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, user_id, role_id } = payload;
     const where = app.lodash.pickBy({ user_id, role_id }, app.lodash.identity);
     const Order = [];
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.UserRoles.findAndCountAll({
-      limit, offset, where, order: Order, include: [
+      limit,
+      offset,
+      where,
+      order: Order,
+      include: [
         {
           model: ctx.model.Roles,
           attributes: {
-            exclude: [ 'created_at', 'updated_at' ],
+            exclude: ['created_at', 'updated_at'],
           },
           where: {
             // name: { [ Op.like ]: '%stri%' },
@@ -37,13 +41,20 @@ class _objectName_Service extends Service {
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model.UserRoles.update(payload, { where: { id: payload.id } });
+    return await ctx.model.UserRoles.update(payload, {
+      where: { id: payload.id },
+    });
   }
 
   async destroy(payload) {
     const { ctx } = this;
-    const delData = await ctx.model.UserRoles.findAll({ where: { id: payload.ids } });
-    return await ctx.model.UserRoles.destroy({ where: { id: payload.ids }, delData });
+    const delData = await ctx.model.UserRoles.findAll({
+      where: { id: payload.ids },
+    });
+    return await ctx.model.UserRoles.destroy({
+      where: { id: payload.ids },
+      delData,
+    });
   }
 
   /**
@@ -65,13 +76,14 @@ class _objectName_Service extends Service {
    */
   async getUserRoleIds(payload) {
     const { ctx, app } = this;
-    const res = await ctx.model.UserRoles.findAll({ where: { user_id: payload.user_id } });
+    const res = await ctx.model.UserRoles.findAll({
+      where: { user_id: payload.user_id },
+    });
     const roleIds = res.map(e => e.role_id);
-    app.redis.sadd(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), roleIds)
-      .then(() => {
-        // 设置3天的过期期限
-        app.redis.expire(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), 60 * 60 * 24 * 3);
-      });
+    app.redis.sadd(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), roleIds).then(() => {
+      // 设置3天的过期期限
+      app.redis.expire(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), 60 * 60 * 24 * 3);
+    });
     return roleIds;
   }
 }

@@ -8,7 +8,6 @@ const NodeRSA = require('node-rsa');
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取 用户
@@ -179,7 +178,9 @@ class RoleController extends Controller {
     ctx.validate(beforeParams, ctx.request.body);
     // 获取配置中的rsa私钥对密码解密
     try {
-      const { rsa_private_key } = await ctx.model.Configurations.findOne({ where: { id: 1 } });
+      const { rsa_private_key } = await ctx.model.Configurations.findOne({
+        where: { id: 1 },
+      });
       const key = new NodeRSA(rsa_private_key);
       ctx.request.body.password = key.decrypt(ctx.request.body.password, 'utf8');
     } catch (e) {
@@ -196,10 +197,18 @@ class RoleController extends Controller {
         ctx.helper.body.INVALID_REQUEST({ ctx, code: 40000, msg: '密码错误' });
         break;
       case 40004:
-        ctx.helper.body.INVALID_REQUEST({ ctx, code: 40004, msg: '用户不存在' });
+        ctx.helper.body.INVALID_REQUEST({
+          ctx,
+          code: 40004,
+          msg: '用户不存在',
+        });
         break;
       case 40005:
-        ctx.helper.body.INVALID_REQUEST({ ctx, code: 40005, msg: '账号已停用' });
+        ctx.helper.body.INVALID_REQUEST({
+          ctx,
+          code: 40005,
+          msg: '账号已停用',
+        });
         break;
       default:
         ctx.helper.body.UNAUTHORIZED({ ctx });

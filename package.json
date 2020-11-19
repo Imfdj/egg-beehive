@@ -41,6 +41,8 @@
     "husky": "^4.2.3",
     "lint-staged": "^10.0.8",
     "mocha": "^7.0.0",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.1.0",
     "sequelize-cli": "^5.5.1",
     "validate-commit-msg": "^2.14.0"
   },
@@ -59,6 +61,7 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "lint-fix": "npm run lint -- --fix",
+    "lint:prettier": "prettier --write --loglevel warn \"**/*.{js,json,md}\"",
     "cm": "git-cz",
     "ci": "npm run lint && npm run cov",
     "autod": "autod",
@@ -75,7 +78,9 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix --ext .js"
+      "pretty-quick --staged",
+      "eslint --fix --ext .js",
+      "git add"
     ]
   },
   "ci": {

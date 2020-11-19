@@ -14,7 +14,8 @@ module.exports = {
     autoIncrement: false, // 是否自增
     defaultValue: '', // 数据库表中字段的默认值
     comment: '外键', // 数据库表中字段的描述
-    references: { // 外键设置
+    // 外键设置
+    references: {
       model: 'xxxs', // 外键关联表
       key: 'id', // 外键字段名
     },

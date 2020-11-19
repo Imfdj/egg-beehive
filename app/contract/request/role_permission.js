@@ -29,6 +29,12 @@ module.exports = {
     ...body.role_permissionBodyReq,
   },
   role_permissionDelBodyReq: {
-    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [ 1, 2 ] },
+    ids: {
+      type: 'array',
+      required: true,
+      itemType: 'number',
+      description: 'ids',
+      example: [1, 2],
+    },
   },
 };

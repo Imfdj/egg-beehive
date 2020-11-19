@@ -9,11 +9,9 @@ module.exports.tools = {
   },
 
   // 密码“加盐”
-  async saltPassword(password, salt = crypto.createHash('md5')
-    .update(Math.random()
-      .toString())
-    .digest('hex')) {
-    const password_finally = crypto.createHash('md5')
+  async saltPassword(password, salt = crypto.createHash('md5').update(Math.random().toString()).digest('hex')) {
+    const password_finally = crypto
+      .createHash('md5')
       .update(password + ':' + salt)
       .digest('hex');
     return {
@@ -23,18 +21,20 @@ module.exports.tools = {
   },
 
   async apply(ctx, params = {}, exp = 60) {
-    return ctx.app.jwt.sign({
-      data: params,
-      // exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7)
-      exp: Math.floor(Date.now() / 1000) + exp,
-      // exp: Math.floor(Date.now() / 1000) + (10),
-    }, ctx.app.config.jwt.secret);
+    return ctx.app.jwt.sign(
+      {
+        data: params,
+        // exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7)
+        exp: Math.floor(Date.now() / 1000) + exp,
+        // exp: Math.floor(Date.now() / 1000) + (10),
+      },
+      ctx.app.config.jwt.secret
+    );
   },
 
   isParam(param) {
     return !param && param !== 0;
   },
-
 };
 
 module.exports.body = {
@@ -124,14 +124,14 @@ module.exports.body = {
 module.exports.redisKeys = {
   // 资源基于action和url存储到redis中的key
   permissionsBaseActionUrl(action = '', url = '') {
-    return `permissions:action:${ action }:url:${ url }`;
+    return `permissions:action:${action}:url:${url}`;
   },
   // 角色资源基于roleId存储到redis中的key
   rolePermissionsBaseRoleId(id = '') {
-    return `rolePermissions:roleId:${ id }`;
+    return `rolePermissions:roleId:${id}`;
   },
   // 用户拥有的所有角色id，基于userId存储到redis中的key
   userRoleIdsBaseUserId(id = '') {
-    return `userRoleIds:userId:${ id }`;
+    return `userRoleIds:userId:${id}`;
   },
 };

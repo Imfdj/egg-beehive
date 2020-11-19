@@ -9,11 +9,14 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, name, title } = payload;
     const where = {};
     const Order = [];
-    name ? where.name = { [ Op.like ]: `%${ name }%` } : null;
-    title ? where.title = { [ Op.like ]: `%${ title }%` } : null;
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    title ? (where.title = { [Op.like]: `%${title}%` }) : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Menus.findAndCountAll({
-      limit, offset, where, order: Order,
+      limit,
+      offset,
+      where,
+      order: Order,
     });
   }
 
@@ -34,7 +37,9 @@ class _objectName_Service extends Service {
 
   async destroy(payload) {
     const { ctx } = this;
-    const res = await ctx.model.Menus.findAll({ where: { parent_id: payload.ids } });
+    const res = await ctx.model.Menus.findAll({
+      where: { parent_id: payload.ids },
+    });
     // 如果当前删除id有子菜单
     if (res.length > 0) {
       const err = new Error('删除失败，当前菜单存在子菜单。');
@@ -65,7 +70,7 @@ class _objectName_Service extends Service {
             {
               model: ctx.model.Menus,
               attributes: {
-                exclude: [ 'created_at', 'updated_at' ],
+                exclude: ['created_at', 'updated_at'],
               },
               where: {
                 // name: { [ Op.like ]: '%stri%' },

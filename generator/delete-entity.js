@@ -28,7 +28,7 @@ if (template.match(reg)) {
   router.get('/api/v1/_objectName_s/list', controller.v1._objectName_s.findAll);
   router.get('/api/v1/_objectName_s', controller.v1._objectName_s.findOne);
   router.delete('/api/v1/_objectName_s', controller.v1._objectName_s.destroy);\n`;
-  fields = fields.replace(/_objectName_/ig, config.name);
+  fields = fields.replace(/_objectName_/gi, config.name);
   // 转义特殊字符符合RegExp正则
   fields = escapeStringRegexp(fields);
   const reg1 = new RegExp(fields, 'ig');

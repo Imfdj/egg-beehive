@@ -123,6 +123,12 @@ module.exports = {
     department_id: body.userBodyReq.department_id,
   },
   userDelBodyReq: {
-    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [1, 2] },
+    ids: {
+      type: 'array',
+      required: true,
+      itemType: 'number',
+      description: 'ids',
+      example: [1, 2],
+    },
   },
 };

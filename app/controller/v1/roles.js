@@ -7,7 +7,6 @@ const Controller = require('egg').Controller;
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取role
@@ -27,12 +26,12 @@ class RoleController extends Controller {
       prop_order: {
         type: 'enum',
         required: false,
-        values: [ ...Object.keys(ctx.rule.rolePutBodyReq), '' ],
+        values: [...Object.keys(ctx.rule.rolePutBodyReq), ''],
       },
       order: {
         type: 'enum',
         required: false,
-        values: [ 'desc', 'asc', '' ],
+        values: ['desc', 'asc', ''],
       },
       limit: {
         type: 'number',
@@ -90,7 +89,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.rolePutBodyReq, ctx.request.body);
     const res = await service.roles.update(ctx.request.body);
-    res && res[ 0 ] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**
@@ -107,7 +106,11 @@ class RoleController extends Controller {
     if (res.__code_wrong) {
       switch (res.__code_wrong) {
         case 40000:
-          ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: '不可删除默认角色' });
+          ctx.helper.body.INVALID_REQUEST({
+            ctx,
+            code: res.__code_wrong,
+            msg: '不可删除默认角色',
+          });
           break;
         default:
           ctx.helper.body.INVALID_REQUEST({ ctx });

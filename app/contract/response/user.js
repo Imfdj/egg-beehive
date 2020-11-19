@@ -8,5 +8,4 @@ module.exports = {
   //   totalCount: { type: 'integer' },
   //   hasNextPage: { type: 'boolean' },
   // },
-
 };

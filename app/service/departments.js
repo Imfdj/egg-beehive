@@ -9,10 +9,13 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, name } = payload;
     const where = {};
     const Order = [];
-    name ? where.name = { [ Op.like ]: `%${ name }%` } : null;
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Departments.findAndCountAll({
-      limit, offset, where, order: Order,
+      limit,
+      offset,
+      where,
+      order: Order,
     });
   }
 
@@ -28,7 +31,9 @@ class _objectName_Service extends Service {
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model.Departments.update(payload, { where: { id: payload.id } });
+    return await ctx.model.Departments.update(payload, {
+      where: { id: payload.id },
+    });
   }
 
   async destroy(payload) {

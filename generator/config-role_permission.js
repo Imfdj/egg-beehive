@@ -16,7 +16,8 @@ module.exports = {
     autoIncrement: false, // 是否自增
     defaultValue: '', // 数据库表中字段的默认值
     comment: '外键', // 数据库表中字段的描述
-    references: { // 外键设置
+    // 外键设置
+    references: {
       model: 'xxxs', // 外键关联表
       key: 'id', // 外键字段名
     },
@@ -34,7 +35,8 @@ module.exports = {
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '用户ID', // 数据库表中字段的描述
-      references: { // 外键设置
+      references: {
+        // 外键设置
         model: 'roles', // 外键关联表
         key: 'id', // 外键字段名
       },
@@ -51,7 +53,8 @@ module.exports = {
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '资源ID', // 数据库表中字段的描述
-      references: { // 外键设置
+      references: {
+        // 外键设置
         model: 'permissions', // 外键关联表
         key: 'id', // 外键字段名
       },
@@ -59,6 +62,5 @@ module.exports = {
       onDelete: 'NO ACTION', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
     },
   ],
-  fields_option: {
-  },
+  fields_option: {},
 };

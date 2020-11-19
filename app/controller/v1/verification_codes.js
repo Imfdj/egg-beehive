@@ -7,7 +7,6 @@ const Controller = require('egg').Controller;
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取 验证码
@@ -27,12 +26,12 @@ class RoleController extends Controller {
       prop_order: {
         type: 'enum',
         required: false,
-        values: [ ...Object.keys(ctx.rule.verification_codePutBodyReq), '' ],
+        values: [...Object.keys(ctx.rule.verification_codePutBodyReq), ''],
       },
       order: {
         type: 'enum',
         required: false,
-        values: [ 'desc', 'asc', '' ],
+        values: ['desc', 'asc', ''],
       },
       limit: {
         type: 'number',
@@ -88,7 +87,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.verification_codePutBodyReq, ctx.request.body);
     const res = await service.verificationCodes.update(ctx.request.body);
-    res && res[ 0 ] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**

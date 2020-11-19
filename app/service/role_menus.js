@@ -9,9 +9,12 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, role_id, menu_id } = payload;
     const where = app.lodash.pickBy({ role_id, menu_id }, app.lodash.identity);
     const Order = [];
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.RoleMenus.findAndCountAll({
-      limit, offset, where, order: Order,
+      limit,
+      offset,
+      where,
+      order: Order,
     });
   }
 
@@ -27,7 +30,9 @@ class _objectName_Service extends Service {
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model.RoleMenus.update(payload, { where: { id: payload.id } });
+    return await ctx.model.RoleMenus.update(payload, {
+      where: { id: payload.id },
+    });
   }
 
   async destroy(payload) {

@@ -5,7 +5,13 @@ const body = {
     id: { type: 'number', required: true, description: 'id' },
   },
   roleBodyReq: {
-    name: { type: 'string', required: true, min: 1, max: 50, description: '角色姓名' },
+    name: {
+      type: 'string',
+      required: true,
+      min: 1,
+      max: 50,
+      description: '角色姓名',
+    },
   },
 };
 
@@ -16,6 +22,12 @@ module.exports = {
     ...body.roleBodyReq,
   },
   roleDelBodyReq: {
-    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [ 1, 2 ] },
+    ids: {
+      type: 'array',
+      required: true,
+      itemType: 'number',
+      description: 'ids',
+      example: [1, 2],
+    },
   },
 };

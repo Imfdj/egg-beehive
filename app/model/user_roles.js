@@ -13,7 +13,7 @@ module.exports = app => {
     },
     {}
   );
-  user_role.associate = function (models) {
+  user_role.associate = function(models) {
     // associations can be defined here
     app.model.UserRoles.belongsTo(app.model.Roles, {
       foreignKey: 'role_id',
@@ -40,13 +40,14 @@ module.exports = app => {
     const userGroup = app.lodash.groupBy(user_roles, 'user_id');
     const pipeline = app.redis.pipeline();
     userIds.forEach(e => pipeline.del(ctx.helper.redisKeys.userRoleIdsBaseUserId(e)));
-    Object.values(userGroup).forEach(e => {
-      const arr = [];
-      e.forEach(item => arr.push(item.role_id));
-      pipeline.sadd(ctx.helper.redisKeys.userRoleIdsBaseUserId(e[0].user_id), arr);
-      // 设置3天的过期期限
-      pipeline.expire(ctx.helper.redisKeys.userRoleIdsBaseUserId(e[0].user_id), 60 * 60 * 24 * 3);
-    });
+    Object.values(userGroup)
+      .forEach(e => {
+        const arr = [];
+        e.forEach(item => arr.push(item.role_id));
+        pipeline.sadd(ctx.helper.redisKeys.userRoleIdsBaseUserId(e[0].user_id), arr);
+        // 设置3天的过期期限
+        pipeline.expire(ctx.helper.redisKeys.userRoleIdsBaseUserId(e[0].user_id), 60 * 60 * 24 * 3);
+      });
     pipeline.exec();
   }
 

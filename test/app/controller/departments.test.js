@@ -12,11 +12,14 @@ describe('test/app/controller/departments.test.js', () => {
   describe('POST /api/v1/departments', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest().post('/api/v1/departments').set('authorization', app.__authorization).send({
-        name: createName,
-        parent_id: 0,
-        sort: 0,
-      });
+      const res = await app.httpRequest()
+        .post('/api/v1/departments')
+        .set('authorization', app.__authorization)
+        .send({
+          name: createName,
+          parent_id: 0,
+          sort: 0,
+        });
       assert(res.status === 201);
       assert(res.body.code === 0);
     });
@@ -24,7 +27,10 @@ describe('test/app/controller/departments.test.js', () => {
   describe('GET /api/v1/departments/list', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest().get('/api/v1/departments/list').query({ limit: 2, name: createName }).set('authorization', app.__authorization);
+      const res = await app.httpRequest()
+        .get('/api/v1/departments/list')
+        .query({ limit: 2, name: createName })
+        .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
       createMenuData = res.body.data.rows[0];
@@ -35,7 +41,10 @@ describe('test/app/controller/departments.test.js', () => {
   describe('GET /api/v1/departments', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest().get('/api/v1/departments').query({ id: createMenuData.id }).set('authorization', app.__authorization);
+      const res = await app.httpRequest()
+        .get('/api/v1/departments')
+        .query({ id: createMenuData.id })
+        .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
       createMenuData = res.body.data;

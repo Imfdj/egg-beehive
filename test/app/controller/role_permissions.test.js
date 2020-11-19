@@ -14,11 +14,17 @@ describe('test/app/controller/role_permissions.test.js', () => {
     it('should work', async () => {
       // 分别获取已有用户和角色
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const permissionRes = await app.httpRequest().get('/api/v1/permissions/list').query({ limit: 2 }).set('authorization', app.__authorization);
+      const permissionRes = await app.httpRequest()
+        .get('/api/v1/permissions/list')
+        .query({ limit: 2 })
+        .set('authorization', app.__authorization);
       assert(permissionRes.status === 200);
       assert(permissionRes.body.data);
       permissionResRows = permissionRes.body.data.rows;
-      const roleRes = await app.httpRequest().get('/api/v1/roles/list').query({ limit: 2 }).set('authorization', app.__authorization);
+      const roleRes = await app.httpRequest()
+        .get('/api/v1/roles/list')
+        .query({ limit: 2 })
+        .set('authorization', app.__authorization);
       assert(roleRes.status === 200);
       assert(roleRes.body.data);
       roleResRows = roleRes.body.data.rows;
@@ -70,9 +76,12 @@ describe('test/app/controller/role_permissions.test.js', () => {
   describe('DELETE /api/v1/role_permissions', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest().delete('/api/v1/role_permissions').set('authorization', app.__authorization).send({
-        ids: createUserRoleTargetIds,
-      });
+      const res = await app.httpRequest()
+        .delete('/api/v1/role_permissions')
+        .set('authorization', app.__authorization)
+        .send({
+          ids: createUserRoleTargetIds,
+        });
       assert(res.status === 204);
     });
   });

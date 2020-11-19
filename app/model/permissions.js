@@ -19,7 +19,7 @@ module.exports = app => {
     },
     {}
   );
-  permission.associate = function (models) {
+  permission.associate = function(models) {
     // associations can be defined here
   };
   permission.addHook('beforeValidate', (permission, options) => {

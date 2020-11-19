@@ -13,7 +13,7 @@ module.exports = app => {
     },
     {}
   );
-  role_permission.associate = function (models) {
+  role_permission.associate = function(models) {
     // associations can be defined here
   };
   role_permission.afterBulkCreate((instances, options) => {

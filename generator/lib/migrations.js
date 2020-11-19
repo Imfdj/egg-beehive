@@ -29,9 +29,9 @@ config_fields.forEach((v, i) => {
       references:
         v.onUpdate !== undefined
           ? {
-              model: v.references.model !== undefined ? `'${v.references.model}'` : undefined,
-              key: v.references.key !== undefined ? `'${v.references.key}'` : undefined,
-            }
+            model: v.references.model !== undefined ? `'${v.references.model}'` : undefined,
+            key: v.references.key !== undefined ? `'${v.references.key}'` : undefined,
+          }
           : undefined,
       onUpdate: v.onUpdate !== undefined ? `'${v.onUpdate}'` : undefined,
       onDelete: v.onDelete !== undefined ? `'${v.onDelete}'` : undefined,

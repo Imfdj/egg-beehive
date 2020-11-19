@@ -51,7 +51,9 @@ class RoleController extends Controller {
       });
       return;
     }
-    const filename = `${Date.now()}_${Math.random().toString().substr(2, 9)}${path.extname(stream.filename)}`;
+    const filename = `${Date.now()}_${Math.random()
+      .toString()
+      .substr(2, 9)}${path.extname(stream.filename)}`;
     const target = path.join(this.config.baseDir, 'app/public/uploads', filename);
     // 生成一个文件写入 文件流
     const writeStream = fs.createWriteStream(target);

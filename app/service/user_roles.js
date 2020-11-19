@@ -80,10 +80,11 @@ class _objectName_Service extends Service {
       where: { user_id: payload.user_id },
     });
     const roleIds = res.map(e => e.role_id);
-    app.redis.sadd(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), roleIds).then(() => {
+    app.redis.sadd(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), roleIds)
+      .then(() => {
       // 设置3天的过期期限
-      app.redis.expire(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), 60 * 60 * 24 * 3);
-    });
+        app.redis.expire(ctx.helper.redisKeys.userRoleIdsBaseUserId(payload.user_id), 60 * 60 * 24 * 3);
+      });
     return roleIds;
   }
 }

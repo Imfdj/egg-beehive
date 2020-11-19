@@ -14,7 +14,7 @@ module.exports = app => {
     },
     {}
   );
-  verification_code.associate = function (models) {
+  verification_code.associate = function(models) {
     // associations can be defined here
   };
   return verification_code;

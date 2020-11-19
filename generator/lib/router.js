@@ -4,7 +4,7 @@ const path = require('path');
 const config = require('../config');
 let template = fs.readFileSync(path.join(__dirname, '../../', './app/router.js'), 'utf8');
 // 如果config.name中带有下划线分割，则改为驼峰
-const name_hump = config.name.replace(/(\w*)_(\w*)/g, function ($1, $2, $3) {
+const name_hump = config.name.replace(/(\w*)_(\w*)/g, function($1, $2, $3) {
   return $2 + $3[0].toUpperCase() + $3.slice(1);
 });
 const reg = new RegExp(`'/api/v1/${config.name}'`, 'ig');

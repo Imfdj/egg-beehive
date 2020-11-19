@@ -3,7 +3,7 @@
 module.exports = (option, app) => {
   const context = app.createAnonymousContext();
 
-  return async function (ctx, next) {
+  return async function(ctx, next) {
     try {
       // 如果是非api请求则跳过验证
       if (!/^\/api\//.test(ctx.request.url)) {

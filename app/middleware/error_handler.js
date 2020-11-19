@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (option, app) => {
-  return async function (ctx, next) {
+  return async function(ctx, next) {
     try {
       await next();
     } catch (err) {
@@ -24,9 +24,9 @@ module.exports = (option, app) => {
           app.config.env === 'prod'
             ? null
             : {
-                error,
-                detail: err.errors,
-              };
+              error,
+              detail: err.errors,
+            };
         ctx.helper.body.INVALID_REQUEST({ ctx, res, code: err.parent.errno });
       }
       if (status === 422) {

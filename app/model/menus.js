@@ -20,7 +20,7 @@ module.exports = app => {
     },
     {}
   );
-  menu.associate = function (models) {
+  menu.associate = function(models) {
     // associations can be defined here
   };
   return menu;

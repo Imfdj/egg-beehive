@@ -11,7 +11,7 @@ module.exports = app => {
     },
     {}
   );
-  role_menu.associate = function (models) {
+  role_menu.associate = function(models) {
     // associations can be defined here
   };
   return role_menu;

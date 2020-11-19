@@ -11,7 +11,7 @@ module.exports = app => {
     },
     {}
   );
-  configuration.associate = function (models) {
+  configuration.associate = function(models) {
     // associations can be defined here
   };
   return configuration;

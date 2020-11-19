@@ -9,7 +9,10 @@ module.exports.tools = {
   },
 
   // 密码“加盐”
-  async saltPassword(password, salt = crypto.createHash('md5').update(Math.random().toString()).digest('hex')) {
+  async saltPassword(password, salt = crypto.createHash('md5')
+    .update(Math.random()
+      .toString())
+    .digest('hex')) {
     const password_finally = crypto
       .createHash('md5')
       .update(password + ':' + salt)

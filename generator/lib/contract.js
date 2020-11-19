@@ -38,7 +38,8 @@ config.fields.forEach((v, i) => {
   };
   // 清除没有设置的属性
   for (const key in item[v.name]) {
-    if (item[v.name][key] === undefined || item[v.name][key].toString().match(/undefined/gi)) {
+    if (item[v.name][key] === undefined || item[v.name][key].toString()
+      .match(/undefined/gi)) {
       delete item[v.name][key];
     }
   }

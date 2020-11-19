@@ -20,7 +20,7 @@ module.exports = app => {
       paranoid: true,
     }
   );
-  user.associate = function (models) {
+  user.associate = function(models) {
     // associations can be defined here
     app.model.Users.belongsToMany(app.model.Roles, {
       through: app.model.UserRoles,

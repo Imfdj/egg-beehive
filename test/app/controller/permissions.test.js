@@ -12,13 +12,16 @@ describe('test/app/controller/permissions.test.js', () => {
   describe('POST /api/v1/permissions', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest().post('/api/v1/permissions').set('authorization', app.__authorization).send({
-        name: createPermissionName,
-        mark: createPermissionName,
-        mark_name: createPermissionName,
-        url: createPermissionName,
-        action: 'post',
-      });
+      const res = await app.httpRequest()
+        .post('/api/v1/permissions')
+        .set('authorization', app.__authorization)
+        .send({
+          name: createPermissionName,
+          mark: createPermissionName,
+          mark_name: createPermissionName,
+          url: createPermissionName,
+          action: 'post',
+        });
       assert(res.status === 201);
       assert(res.body.code === 0);
     });

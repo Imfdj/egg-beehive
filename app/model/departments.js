@@ -12,7 +12,7 @@ module.exports = app => {
     },
     {}
   );
-  department.associate = function (models) {
+  department.associate = function(models) {
     // associations can be defined here
   };
   return department;

@@ -35,7 +35,8 @@ class UserService extends Service {
   async create(payload) {
     const { ctx, app } = this;
     const { verification_type, phone, email, code } = payload;
-    const current_time = app.dayjs().format('YYYY-MM-DD hh:mm:ss');
+    const current_time = app.dayjs()
+      .format('YYYY-MM-DD hh:mm:ss');
     // 验证码 验证
     const res = await ctx.model.VerificationCodes.findOne({
       where: {
@@ -108,7 +109,8 @@ class UserService extends Service {
       };
     }
     result.update({
-      last_login: app.dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      last_login: app.dayjs()
+        .format('YYYY-MM-DD HH:mm:ss'),
     });
     result = JSON.parse(JSON.stringify(result));
     const currentRequestData = { userInfo: { id: result.id } };
@@ -116,8 +118,8 @@ class UserService extends Service {
     if (this.app.config.verification_mode === 'jwt') {
       return result
         ? {
-            token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
-          }
+          token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+        }
         : null;
     }
     ctx.session.currentRequestData = currentRequestData;
@@ -177,7 +179,8 @@ class UserService extends Service {
       },
     });
     if (user) {
-      const current_time = app.dayjs().format('YYYY-MM-DD hh:mm:ss');
+      const current_time = app.dayjs()
+        .format('YYYY-MM-DD hh:mm:ss');
       // 验证码 验证
       const verificationCode = await ctx.model.VerificationCodes.findOne({
         where: {

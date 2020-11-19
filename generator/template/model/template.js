@@ -12,7 +12,7 @@ module.exports = app => {
       $_: '{{fields}}',
     }
   );
-  _objectName_.associate = function (models) {
+  _objectName_.associate = function(models) {
     // associations can be defined here
   };
   return _objectName_;

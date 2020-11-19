@@ -27,8 +27,12 @@ class _objectName_Service extends Service {
   async create(payload) {
     const { ctx, app } = this;
     const { target, type } = payload;
-    const expiration_time = app.dayjs().add(15, 'minute').format('YYYY-MM-DD hh:mm:ss');
-    const code = Math.random().toString().substring(2, 8);
+    const expiration_time = app.dayjs()
+      .add(15, 'minute')
+      .format('YYYY-MM-DD hh:mm:ss');
+    const code = Math.random()
+      .toString()
+      .substring(2, 8);
     // 如果类型为邮箱 则发送邮件
     if (type === 1) {
       await app.mailer.send({
@@ -69,7 +73,8 @@ class _objectName_Service extends Service {
   async verification(payload) {
     const { ctx, app } = this;
     const { target, code } = payload;
-    const current_time = app.dayjs().format('YYYY-MM-DD hh:mm:ss');
+    const current_time = app.dayjs()
+      .format('YYYY-MM-DD hh:mm:ss');
     const res = await ctx.model.VerificationCodes.findOne({
       where: {
         target,

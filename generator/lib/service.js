@@ -5,13 +5,14 @@ const config = require('../config');
 let template = fs.readFileSync(path.join(__dirname, '../template/service/template.js'), 'utf8');
 
 // 如果config.name中带有下划线分割，则改为驼峰
-const name_hump = config.name.replace(/(\w*)_(\w*)/g, function ($1, $2, $3) {
+const name_hump = config.name.replace(/(\w*)_(\w*)/g, function($1, $2, $3) {
   return $2 + $3[0].toUpperCase() + $3.slice(1);
 });
 
 // 替换对象名
 // template = template.replace(/_objectName_/ig, config.name.toLowerCase().replace(/\w/, config.name.charAt(0).toUpperCase()));
-template = template.replace(/_objectNameHump_/gi, name_hump.replace(/\w/, name_hump.charAt(0).toUpperCase()));
+template = template.replace(/_objectNameHump_/gi, name_hump.replace(/\w/, name_hump.charAt(0)
+  .toUpperCase()));
 
 let fields = '';
 // 循环添加字段

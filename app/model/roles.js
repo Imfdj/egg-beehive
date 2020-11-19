@@ -11,7 +11,7 @@ module.exports = app => {
     },
     {}
   );
-  role.associate = function (models) {
+  role.associate = function(models) {
     // associations can be defined here
     app.model.Roles.belongsToMany(app.model.Permissions, {
       through: app.model.RolePermissions,

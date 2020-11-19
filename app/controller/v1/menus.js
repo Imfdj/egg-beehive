@@ -7,7 +7,6 @@ const Controller = require('egg').Controller;
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取 菜单
@@ -32,12 +31,12 @@ class RoleController extends Controller {
       prop_order: {
         type: 'enum',
         required: false,
-        values: [ ...Object.keys(ctx.rule.menuPutBodyReq), '' ],
+        values: [...Object.keys(ctx.rule.menuPutBodyReq), ''],
       },
       order: {
         type: 'enum',
         required: false,
-        values: [ 'desc', 'asc', '' ],
+        values: ['desc', 'asc', ''],
       },
       limit: {
         type: 'number',

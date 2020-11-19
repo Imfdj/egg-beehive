@@ -7,7 +7,6 @@ const Controller = require('egg').Controller;
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取 部门
@@ -27,12 +26,12 @@ class RoleController extends Controller {
       prop_order: {
         type: 'enum',
         required: false,
-        values: [ ...Object.keys(ctx.rule.departmentPutBodyReq), '' ],
+        values: [...Object.keys(ctx.rule.departmentPutBodyReq), ''],
       },
       order: {
         type: 'enum',
         required: false,
-        values: [ 'desc', 'asc', '' ],
+        values: ['desc', 'asc', ''],
       },
       limit: {
         type: 'number',
@@ -104,7 +103,6 @@ class RoleController extends Controller {
     const res = await service.departments.destroy(ctx.request.body);
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
-
 }
 
 module.exports = RoleController;

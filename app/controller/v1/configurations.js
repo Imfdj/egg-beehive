@@ -3,13 +3,11 @@
 const Controller = require('egg').Controller;
 const NodeRSA = require('node-rsa');
 
-
 /**
  * @controller 配置 configuration
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取公钥 配置
@@ -18,7 +16,6 @@ class RoleController extends Controller {
    */
   async findRsaPublicKey() {
     const { ctx, service } = this;
-    // ctx.validate(ctx.rule.configurationId, ctx.query);
     const res = await service.configurations.findRsaPublicKey(1);
     res ? ctx.helper.body.SUCCESS({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
@@ -44,7 +41,7 @@ class RoleController extends Controller {
     };
     ctx.validate(ctx.rule.configurationPutBodyReq, body);
     const res = await service.configurations.update(body);
-    res && res[ 0 ] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 }
 

@@ -7,13 +7,13 @@ module.exports = {
     const { redis } = app;
     const permissionsPromise = models.permissions.findAll({ limit: 10000 });
     const rolesPromise = models.roles.findAll({
-      attributes: [ 'id', 'name' ],
-      include: [ { attributes: [ 'id', 'url', 'action' ], model: models.permissions } ],
+      attributes: ['id', 'name'],
+      include: [{ attributes: ['id', 'url', 'action'], model: models.permissions }],
       limit: 10000,
       raw: false,
     });
     const redisKeysPermissions = redis.keys('permissions:url:*');
-    const [ permissions, roles, redisKeys ] = await Promise.all([ permissionsPromise, rolesPromise, redisKeysPermissions ]);
+    const [permissions, roles, redisKeys] = await Promise.all([permissionsPromise, rolesPromise, redisKeysPermissions]);
     const pipeline = redis.pipeline();
     // 删除所有permissions:url:*
     redisKeys.forEach(v => pipeline.del(v));
@@ -24,7 +24,7 @@ module.exports = {
       pipeline.del(ctx.helper.redisKeys.rolePermissionsBaseRoleId(e.id));
       if (e.permissions.length) {
         const arr = [];
-        e.permissions.forEach(permission => arr.push(`${ permission.action }_${ permission.url }`));
+        e.permissions.forEach(permission => arr.push(`${permission.action}_${permission.url}`));
         pipeline.sadd(ctx.helper.redisKeys.rolePermissionsBaseRoleId(e.id), arr);
       }
     });

@@ -12,13 +12,10 @@ describe('test/app/controller/verification_codes.test.js', () => {
   describe('POST /api/v1/verification_codes', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest()
-        .post('/api/v1/verification_codes')
-        .set('authorization', app.__authorization)
-        .send({
-          target: '298242069@qq.com',
-          type: 1,
-        });
+      const res = await app.httpRequest().post('/api/v1/verification_codes').set('authorization', app.__authorization).send({
+        target: '298242069@qq.com',
+        type: 1,
+      });
       assert(res.status === 201);
       assert(res.body.code === 0);
     });
@@ -87,5 +84,4 @@ describe('test/app/controller/verification_codes.test.js', () => {
   //     assert(res.status === 204);
   //   });
   // });
-
 });

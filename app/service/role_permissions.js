@@ -9,9 +9,12 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, role_id, permission_id } = payload;
     const where = app.lodash.pickBy({ role_id, permission_id }, app.lodash.identity);
     const Order = [];
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.RolePermissions.findAndCountAll({
-      limit, offset, where, order: Order,
+      limit,
+      offset,
+      where,
+      order: Order,
     });
   }
 
@@ -27,13 +30,20 @@ class _objectName_Service extends Service {
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model.RolePermissions.update(payload, { where: { id: payload.id } });
+    return await ctx.model.RolePermissions.update(payload, {
+      where: { id: payload.id },
+    });
   }
 
   async destroy(payload) {
     const { ctx } = this;
-    const delData = await ctx.model.RolePermissions.findAll({ where: { id: payload.ids } });
-    return await ctx.model.RolePermissions.destroy({ where: { id: payload.ids }, delData });
+    const delData = await ctx.model.RolePermissions.findAll({
+      where: { id: payload.ids },
+    });
+    return await ctx.model.RolePermissions.destroy({
+      where: { id: payload.ids },
+      delData,
+    });
   }
 
   /**

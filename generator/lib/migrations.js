@@ -4,7 +4,7 @@ const path = require('path');
 const config = require('../config');
 let template = fs.readFileSync(path.join(__dirname, '../template/migrations/20200110080210-create-template.js'), 'utf8');
 // 替换对象名
-template = template.replace(/_objectName_/ig, config.name);
+template = template.replace(/_objectName_/gi, config.name);
 
 let fields = '';
 const deleted_at = [];
@@ -18,20 +18,23 @@ if (config.fields_option.paranoid) {
 const config_fields = config.fields.concat(deleted_at);
 // 循环添加字段
 config_fields.forEach((v, i) => {
-  const length = v.length ? `(${ v.length })` : '';
+  const length = v.length ? `(${v.length})` : '';
   const item = {
     [v.name]: {
-      type: `Sequelize.${ v.type.toUpperCase() }${ length }`,
+      type: `Sequelize.${v.type.toUpperCase()}${length}`,
       allowNull: v.allowNull,
-      defaultValue: v.defaultValue !== undefined ? `'${ v.defaultValue }'` : undefined,
+      defaultValue: v.defaultValue !== undefined ? `'${v.defaultValue}'` : undefined,
       unique: v.unique,
-      comment: v.comment !== undefined ? `'${ v.comment }'` : undefined,
-      references: v.onUpdate !== undefined ? {
-        model: v.references.model !== undefined ? `'${ v.references.model }'` : undefined,
-        key: v.references.key !== undefined ? `'${ v.references.key }'` : undefined,
-      } : undefined,
-      onUpdate: v.onUpdate !== undefined ? `'${ v.onUpdate }'` : undefined,
-      onDelete: v.onDelete !== undefined ? `'${ v.onDelete }'` : undefined,
+      comment: v.comment !== undefined ? `'${v.comment}'` : undefined,
+      references:
+        v.onUpdate !== undefined
+          ? {
+              model: v.references.model !== undefined ? `'${v.references.model}'` : undefined,
+              key: v.references.key !== undefined ? `'${v.references.key}'` : undefined,
+            }
+          : undefined,
+      onUpdate: v.onUpdate !== undefined ? `'${v.onUpdate}'` : undefined,
+      onDelete: v.onDelete !== undefined ? `'${v.onDelete}'` : undefined,
     },
   };
   // 清除没有设置的属性
@@ -43,12 +46,12 @@ config_fields.forEach((v, i) => {
   // console.log(JSON.stringify(item, '', 1));
   fields += JSON.stringify(item, '', 1)
     .replace(/^\{\s+/, '')
-    .replace(/\s+\}$/, `,${ i === config_fields.length - 1 ? '' : '\n' }`)
-    .replace(/"/ig, '');
+    .replace(/\s+\}$/, `,${i === config_fields.length - 1 ? '' : '\n'}`)
+    .replace(/"/gi, '');
 });
 
-template = template.replace(/\$:\s'\{\{fields\}\}',/ig, fields);
+template = template.replace(/\$:\s'\{\{fields\}\}',/gi, fields);
 
 // 写文件
-fs.writeFileSync(path.join(__dirname, '../../', `/database/migrations/20200110080210-create-${ config.name }.js`), template);
+fs.writeFileSync(path.join(__dirname, '../../', `/database/migrations/20200110080210-create-${config.name}.js`), template);
 console.log('migrations -- success');

@@ -10,12 +10,12 @@ module.exports = appInfo => {
    * built-in config
    * @type {Egg.EggAppConfig}
    **/
-  const config = exports = {};
+  const config = (exports = {});
   // use for cookie sign key, should change to your own and keep security
-  config.keys = `${ appInfo.name }_1578362616760_8753,${ appInfo.name }_1578362616760_8754`;
+  config.keys = `${appInfo.name}_1578362616760_8753,${appInfo.name}_1578362616760_8754`;
 
   // add your middleware config here
-  config.middleware = [ 'jurisdictionHandler', 'errorHandler' ];
+  config.middleware = ['jurisdictionHandler', 'errorHandler'];
 
   config.security = {
     csrf: {
@@ -25,11 +25,11 @@ module.exports = appInfo => {
   };
 
   config.bodyParser = {
-    enableTypes: [ 'json', 'form', 'text' ],
+    enableTypes: ['json', 'form', 'text'],
     extendTypes: {
       json: 'application/custom-json',
       // json: 'application/json',
-      text: [ 'application/xml', 'text/xml', 'text/html' ],
+      text: ['application/xml', 'text/xml', 'text/html'],
     },
   };
 
@@ -39,7 +39,8 @@ module.exports = appInfo => {
     match: '/jwt', // optional
   };
 
-  config.validate = { // 配置参数校验器，基于parameter
+  config.validate = {
+    // 配置参数校验器，基于parameter
     convert: true, // 对参数可以使用convertType规则进行类型转换
     // validateRoot: false,   // 限制被验证值必须是一个对象。
   };
@@ -52,7 +53,7 @@ module.exports = appInfo => {
       description: 'egg-beehive api doc',
       version: '1.0.0',
     },
-    schemes: [ 'http' ],
+    schemes: ['http'],
     enable: true,
     routerMap: false,
     securityDefinitions: {
@@ -102,7 +103,8 @@ module.exports = appInfo => {
 
   config.multipart = {
     whitelist: [
-      '.jpg', '.jpeg', // image/jpeg
+      '.jpg',
+      '.jpeg', // image/jpeg
       '.png', // image/png, image/x-png
       '.gif', // image/gif
       // video

@@ -4,8 +4,8 @@ const path = require('path');
 const config = require('../config');
 let template = fs.readFileSync(path.join(__dirname, '../../', './app/router.js'), 'utf8');
 // 如果config.name中带有下划线分割，则改为驼峰
-const name_hump = config.name.replace(/(\w*)_(\w*)/g, function($1, $2, $3) {
-  return $2 + $3[ 0 ].toUpperCase() + $3.slice(1);
+const name_hump = config.name.replace(/(\w*)_(\w*)/g, function ($1, $2, $3) {
+  return $2 + $3[0].toUpperCase() + $3.slice(1);
 });
 const reg = new RegExp(`'/api/v1/${config.name}'`, 'ig');
 if (template.match(reg)) {
@@ -19,9 +19,9 @@ let fields = `
   router.get('/api/v1/_objectName_s', controller.v1._objectNameHump_s.findOne);
   router.delete('/api/v1/_objectName_s', controller.v1._objectNameHump_s.destroy);\n};\n`;
 
-fields = fields.replace(/_objectName_/ig, config.name);
-fields = fields.replace(/_objectNameHump_/ig, name_hump);
-template = template.replace(/\};\s+$/ig, fields);
+fields = fields.replace(/_objectName_/gi, config.name);
+fields = fields.replace(/_objectNameHump_/gi, name_hump);
+template = template.replace(/\};\s+$/gi, fields);
 // 写文件
 fs.writeFileSync(path.join(__dirname, '../../', './app/router.js'), template);
 console.log('router -- success');

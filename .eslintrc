@@ -3,6 +3,12 @@
   "rules": {
     "no-unused-vars": "off",
     "template-curly-spacing": "off",
-    "array-bracket-spacing": "off"
+    "array-bracket-spacing": "off",
+    "newline-per-chained-call": [
+      "error",
+      {
+        "ignoreChainWithDepth": 1
+      }
+    ]
   }
 }

@@ -1,7 +1,5 @@
 # egg-beehive
 
-
-
 ## QuickStart
 
 <!-- add docs here for user -->
@@ -11,7 +9,7 @@ see [egg docs][egg] for more detail.
 ### ToDo
 
 ```bash
-1. 
+1.
 ```
 
 ### Development
@@ -46,6 +44,7 @@ $ npm stop
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
 
 ### 参考
+
 [egg]: https://eggjs.org
 [egg-ts-helper]: https://cnpmjs.org/package/egg-ts-helper
 [sequelize]: https://sequelize.org/master/class/lib/model.js~Model.html#static-method-findOne

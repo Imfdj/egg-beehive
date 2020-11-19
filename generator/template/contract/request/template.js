@@ -16,6 +16,12 @@ module.exports = {
     ...body._objectName_BodyReq,
   },
   _objectName_DelBodyReq: {
-    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [ 1, 2 ] },
+    ids: {
+      type: 'array',
+      required: true,
+      itemType: 'number',
+      description: 'ids',
+      example: [1, 2],
+    },
   },
 };

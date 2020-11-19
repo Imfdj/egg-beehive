@@ -9,10 +9,13 @@ class RoleService extends Service {
     const { limit, offset, prop_order, order, name } = payload;
     const where = {};
     const Order = [];
-    name ? where.name = { [ Op.like ]: `%${ name }%` } : null;
-    prop_order && order ? Order.push([ prop_order, order ]) : null;
+    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Roles.findAndCountAll({
-      limit, offset, where, order: Order,
+      limit,
+      offset,
+      where,
+      order: Order,
     });
   }
 
@@ -33,8 +36,12 @@ class RoleService extends Service {
 
   async destroy(payload) {
     const { ctx } = this;
-    const allRoles = await ctx.model.Roles.findAll({ where: { id: payload.ids } });
-    if (!allRoles.every(e => e.is_default !== 1)) return { __code_wrong: 40000 };
+    const allRoles = await ctx.model.Roles.findAll({
+      where: { id: payload.ids },
+    });
+    if (!allRoles.every(e => e.is_default !== 1)) {
+      return { __code_wrong: 40000 };
+    }
     return await ctx.model.Roles.destroy({ where: { id: payload.ids } });
   }
 
@@ -43,7 +50,7 @@ class RoleService extends Service {
     const transaction = await ctx.model.transaction();
     await ctx.model.Roles.update({ is_default: 0 }, { where: { is_default: 1 }, transaction });
     const res = await ctx.model.Roles.update({ is_default: 1 }, { where: { id: payload.id }, transaction });
-    if (res && res[ 0 ] === 1) {
+    if (res && res[0] === 1) {
       await transaction.commit();
       return true;
     }

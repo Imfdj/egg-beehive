@@ -18,7 +18,8 @@ module.exports = {
     unique: false, // 是否唯一
     primaryKey: false, // 是否为主键
     autoIncrement: false, // 是否自增
-    references: { // 外键设置
+    // 外键设置
+    references: {
       model: 'xxxs', // 外键关联表
       key: 'id', // 外键字段名
     },
@@ -63,6 +64,5 @@ module.exports = {
       comment: '排序，越大越靠前', // 数据库表中字段的描述
     },
   ],
-  fields_option: {
-  },
+  fields_option: {},
 };

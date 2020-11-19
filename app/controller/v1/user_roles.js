@@ -7,7 +7,6 @@ const Controller = require('egg').Controller;
  */
 
 class RoleController extends Controller {
-
   /**
    * @apikey
    * @summary 获取 用户-角色关系表
@@ -32,12 +31,12 @@ class RoleController extends Controller {
       prop_order: {
         type: 'enum',
         required: false,
-        values: [ ...Object.keys(ctx.rule.user_rolePutBodyReq), '' ],
+        values: [...Object.keys(ctx.rule.user_rolePutBodyReq), ''],
       },
       order: {
         type: 'enum',
         required: false,
-        values: [ 'desc', 'asc', '' ],
+        values: ['desc', 'asc', ''],
       },
       limit: {
         type: 'number',

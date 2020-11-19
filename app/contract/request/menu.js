@@ -95,6 +95,12 @@ module.exports = {
     ...body.menuBodyReq,
   },
   menuDelBodyReq: {
-    ids: { type: 'array', required: true, itemType: 'number', description: 'ids', example: [ 1, 2 ] },
+    ids: {
+      type: 'array',
+      required: true,
+      itemType: 'number',
+      description: 'ids',
+      example: [1, 2],
+    },
   },
 };

@@ -9,27 +9,33 @@ class UserService extends Service {
     const { limit, offset, prop_order, order, username, email, phone, state, department_id } = payload;
     const where = {};
     const Order = [];
-    username ? where.username = { [Op.like]: `%${ username }%` } : null;
-    email ? where.email = { [Op.like]: `%${ email }%` } : null;
-    phone ? where.phone = { [Op.like]: `%${ phone }%` } : null;
-    !ctx.helper.tools.isParam(state) ? where.state = state : null;
-    !ctx.helper.tools.isParam(department_id) ? where.department_id = department_id : null;
+    username ? (where.username = { [Op.like]: `%${username}%` }) : null;
+    email ? (where.email = { [Op.like]: `%${email}%` }) : null;
+    phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
+    !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
+    !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Users.findAndCountAll({
-      limit, offset, where, order: Order, attributes: { exclude: ['password', 'deleted_at'] },
+      limit,
+      offset,
+      where,
+      order: Order,
+      attributes: { exclude: ['password', 'deleted_at'] },
     });
   }
 
   async findOne(id) {
     const { ctx } = this;
-    return await ctx.model.Users.findOne({ where: { id }, attributes: { exclude: ['password', 'deleted_at'] } });
+    return await ctx.model.Users.findOne({
+      where: { id },
+      attributes: { exclude: ['password', 'deleted_at'] },
+    });
   }
 
   async create(payload) {
     const { ctx, app } = this;
     const { verification_type, phone, email, code } = payload;
-    const current_time = app.dayjs()
-      .format('YYYY-MM-DD hh:mm:ss');
+    const current_time = app.dayjs().format('YYYY-MM-DD hh:mm:ss');
     // 验证码 验证
     const res = await ctx.model.VerificationCodes.findOne({
       where: {
@@ -50,9 +56,12 @@ class UserService extends Service {
         role_id: defaultRole.id,
       });
       // 所有相应验证码状态都变更为false
-      await ctx.model.VerificationCodes.update({ available: 0 }, {
-        where: { target: verification_type === 1 ? email : phone },
-      });
+      await ctx.model.VerificationCodes.update(
+        { available: 0 },
+        {
+          where: { target: verification_type === 1 ? email : phone },
+        }
+      );
       return res_user;
     }
     return false;
@@ -70,7 +79,9 @@ class UserService extends Service {
 
   async login(payload) {
     const { ctx, app } = this;
-    const user = await ctx.model.Users.findOne({ where: { username: payload.username } });
+    const user = await ctx.model.Users.findOne({
+      where: { username: payload.username },
+    });
     if (!user) {
       return {
         __code_wrong: 40004,
@@ -97,14 +108,17 @@ class UserService extends Service {
       };
     }
     result.update({
-      last_login: app.dayjs()
-        .format('YYYY-MM-DD HH:mm:ss'),
+      last_login: app.dayjs().format('YYYY-MM-DD HH:mm:ss'),
     });
     result = JSON.parse(JSON.stringify(result));
     const currentRequestData = { userInfo: { id: result.id } };
     // 如果验证方式是jwt，否则为session
     if (this.app.config.verification_mode === 'jwt') {
-      return result ? { token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp) } : null;
+      return result
+        ? {
+            token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          }
+        : null;
     }
     ctx.session.currentRequestData = currentRequestData;
     return result ? {} : null;
@@ -122,7 +136,8 @@ class UserService extends Service {
           model: ctx.model.Roles,
         },
       ],
-      where: { id: ctx.currentRequestData.userInfo.id }, attributes: { exclude: ['password', 'deleted_at'] },
+      where: { id: ctx.currentRequestData.userInfo.id },
+      attributes: { exclude: ['password', 'deleted_at'] },
     });
     res.dataValues.permissions = [];
     res.roles.forEach(e => {
@@ -162,8 +177,7 @@ class UserService extends Service {
       },
     });
     if (user) {
-      const current_time = app.dayjs()
-        .format('YYYY-MM-DD hh:mm:ss');
+      const current_time = app.dayjs().format('YYYY-MM-DD hh:mm:ss');
       // 验证码 验证
       const verificationCode = await ctx.model.VerificationCodes.findOne({
         where: {
@@ -176,15 +190,21 @@ class UserService extends Service {
       if (verificationCode) {
         const password_new = await ctx.helper.tools.saltPassword(password);
         password_new.password += password_new.salt;
-        const res = await ctx.model.Users.update({ password: password_new.password }, {
-          where: {
-            email,
-          },
-        });
+        const res = await ctx.model.Users.update(
+          { password: password_new.password },
+          {
+            where: {
+              email,
+            },
+          }
+        );
         // 所有相应验证码状态都变更为false
-        await ctx.model.VerificationCodes.update({ available: 0 }, {
-          where: { target: email },
-        });
+        await ctx.model.VerificationCodes.update(
+          { available: 0 },
+          {
+            where: { target: email },
+          }
+        );
         return res;
       }
       return {
@@ -215,7 +235,6 @@ class UserService extends Service {
     const { id, department_id } = payload;
     return await ctx.model.Users.update({ department_id }, { where: { id } });
   }
-
 }
 
 module.exports = UserService;

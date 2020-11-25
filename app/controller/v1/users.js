@@ -12,6 +12,7 @@ class RoleController extends Controller {
    * @apikey
    * @summary 获取 用户
    * @description 获取 用户
+   * @request query string keyword 用户名/邮箱/手机
    * @request query string username 用户名
    * @request query string email 邮箱
    * @request query string phone 手机
@@ -24,6 +25,12 @@ class RoleController extends Controller {
   async findAll() {
     const { ctx, service } = this;
     const params = {
+      keyword: {
+        type: 'string',
+        trim: true,
+        required: false,
+        max: 50,
+      },
       username: {
         ...ctx.rule.userBodyReq.username,
         required: false,

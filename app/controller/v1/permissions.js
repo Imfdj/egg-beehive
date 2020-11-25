@@ -11,7 +11,12 @@ class RoleController extends Controller {
    * @apikey
    * @summary 获取 资源
    * @description 获取 资源
+   * @request query string keyword 资源名/标识码/标识码名/路径/动作
    * @request query string name permission名
+   * @request query string mark 标识码
+   * @request query string mark_name 标识码名
+   * @request query string url 路径
+   * @request query string action 动作
    * @request query number limit limit
    * @request query number offset offset
    * @router get /api/v1/permissions/list
@@ -19,12 +24,22 @@ class RoleController extends Controller {
   async findAll() {
     const { ctx, service } = this;
     const params = {
+      keyword: {
+        type: 'string',
+        trim: true,
+        required: false,
+        max: 50,
+      },
       name: {
         ...ctx.rule.permissionBodyReq.name,
         required: false,
       },
       mark: {
         ...ctx.rule.permissionBodyReq.mark,
+        required: false,
+      },
+      mark_name: {
+        ...ctx.rule.permissionBodyReq.mark_name,
         required: false,
       },
       url: {

@@ -6,12 +6,17 @@ const { Op } = require('sequelize');
 class UserService extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, username, email, phone, state, department_id } = payload;
+    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword } = payload;
     const where = {};
+    keyword ? (where[Op.or] = [
+      { username: { [Op.like]: `%${ keyword }%` } },
+      { email: { [Op.like]: `%${ keyword }%` } },
+      { phone: { [Op.like]: `%${ keyword }%` } },
+    ]) : null;
     const Order = [];
-    username ? (where.username = { [Op.like]: `%${username}%` }) : null;
-    email ? (where.email = { [Op.like]: `%${email}%` }) : null;
-    phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
+    username ? (where.username = { [Op.like]: `%${ username }%` }) : null;
+    email ? (where.email = { [Op.like]: `%${ email }%` }) : null;
+    phone ? (where.phone = { [Op.like]: `%${ phone }%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;

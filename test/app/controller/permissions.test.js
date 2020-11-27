@@ -6,11 +6,11 @@ describe('test/app/controller/permissions.test.js', () => {
   const createPermissionName = 'name' + Math.random();
   let createPermissionData = {};
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/permissions', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .post('/api/v1/permissions')
@@ -44,6 +44,7 @@ describe('test/app/controller/permissions.test.js', () => {
 
   describe('GET /api/v1/permissions', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -59,6 +60,7 @@ describe('test/app/controller/permissions.test.js', () => {
 
   describe('PUT /api/v1/permissions', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -79,6 +81,7 @@ describe('test/app/controller/permissions.test.js', () => {
 
   describe('DELETE /api/v1/permissions', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()

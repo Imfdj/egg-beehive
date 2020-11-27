@@ -6,7 +6,6 @@ describe('test/app/controller/configurations.test.js', () => {
   const createName = 'configurationName' + Math.random();
   let createMenuData = {};
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('GET /api/v1/configurations/public_key', () => {
@@ -25,6 +24,7 @@ describe('test/app/controller/configurations.test.js', () => {
 
   describe('PUT /api/v1/configurations', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .put('/api/v1/configurations')

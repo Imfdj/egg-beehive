@@ -7,12 +7,12 @@ describe('test/app/controller/role_permissions.test.js', () => {
   let roleResRows;
   let createUserRoleTargetIds = [];
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/role_permissions/bulk_permission 创建 单角色-多资源关系', () => {
     it('should work', async () => {
       // 分别获取已有用户和角色
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const permissionRes = await app.httpRequest()
         .get('/api/v1/permissions/list')
@@ -43,6 +43,7 @@ describe('test/app/controller/role_permissions.test.js', () => {
 
   describe('GET /api/v1/role_permissions/list', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -75,6 +76,7 @@ describe('test/app/controller/role_permissions.test.js', () => {
 
   describe('DELETE /api/v1/role_permissions', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .delete('/api/v1/role_permissions')

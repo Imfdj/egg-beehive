@@ -7,12 +7,12 @@ describe('test/app/controller/role_menus.test.js', () => {
   let roleResRows;
   let createUserRoleTargetIds = [];
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/role_menus/bulk_menu 创建 单角色-多菜单关系', () => {
     it('should work', async () => {
       // 分别获取已有用户和角色
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const menuRes = await app.httpRequest()
         .get('/api/v1/menus/list')
@@ -43,6 +43,7 @@ describe('test/app/controller/role_menus.test.js', () => {
 
   describe('GET /api/v1/role_menus/list', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -75,6 +76,7 @@ describe('test/app/controller/role_menus.test.js', () => {
 
   describe('DELETE /api/v1/role_menus', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .delete('/api/v1/role_menus')

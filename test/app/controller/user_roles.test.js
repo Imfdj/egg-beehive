@@ -13,6 +13,7 @@ describe('test/app/controller/user_roles.test.js', () => {
   describe('POST /api/v1/user_roles/bulk_role 创建 单用户-多角色关系', () => {
     it('should work', async () => {
       // 分别获取已有用户和角色
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const userRes = await app.httpRequest()
         .get('/api/v1/users/list')
@@ -75,6 +76,7 @@ describe('test/app/controller/user_roles.test.js', () => {
 
   describe('DELETE /api/v1/user_roles', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .delete('/api/v1/user_roles')

@@ -6,11 +6,11 @@ describe('test/app/controller/roles.test.js', () => {
   const createRoleName = 'name' + Math.random();
   let createRoleData = {};
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/roles', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .post('/api/v1/roles')
@@ -53,6 +53,7 @@ describe('test/app/controller/roles.test.js', () => {
 
   describe('PUT /api/v1/roles', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -69,6 +70,7 @@ describe('test/app/controller/roles.test.js', () => {
 
   describe('PUT /api/v1/roles/is_default 设置默认角色', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .put('/api/v1/roles/is_default')
@@ -83,6 +85,7 @@ describe('test/app/controller/roles.test.js', () => {
 
   describe('DELETE /api/v1/roles', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const resOne = await app.model.models.roles.findOne({
         where: { is_default: 0 },

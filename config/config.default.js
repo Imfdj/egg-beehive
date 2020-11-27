@@ -19,7 +19,12 @@ module.exports = appInfo => {
 
   config.security = {
     csrf: {
-      enable: false,
+      headerName: 'x-csrf-token', // 通过 header 传递 CSRF token 的默认字段为 x-csrf-token
+      enable: true,
+      // 判断是否需要 ignore 的方法，请求上下文 context 作为第一个参数
+      ignore: ctx => {
+        return ['/api/v1/users/login'].includes(ctx.request.url);
+      },
     },
     // domainWhiteList: ['http://localhost:8000'],
   };

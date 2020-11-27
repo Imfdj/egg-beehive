@@ -124,6 +124,7 @@ class UserService extends Service {
       return result
         ? {
           token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          csrf: ctx.csrf,
         }
         : null;
     }

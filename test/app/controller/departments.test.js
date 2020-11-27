@@ -6,11 +6,11 @@ describe('test/app/controller/departments.test.js', () => {
   const createName = 'departmentName' + Math.random();
   let createMenuData = {};
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/departments', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .post('/api/v1/departments')
@@ -54,6 +54,7 @@ describe('test/app/controller/departments.test.js', () => {
 
   describe('PUT /api/v1/departments', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -72,6 +73,7 @@ describe('test/app/controller/departments.test.js', () => {
 
   describe('DELETE /api/v1/departments', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()

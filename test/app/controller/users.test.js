@@ -7,11 +7,11 @@ describe('test/app/controller/users.test.js', () => {
   let createUserData = {};
 
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/users', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const verification_codeRes = await app.httpRequest()
         .post('/api/v1/verification_codes')
@@ -57,6 +57,7 @@ describe('test/app/controller/users.test.js', () => {
 
   describe('GET /api/v1/users', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .get('/api/v1/users')
@@ -68,6 +69,7 @@ describe('test/app/controller/users.test.js', () => {
     });
     let createUserRoleTargetId;
     it('获取新增的用户，默认添加的角色关系数据', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -80,6 +82,7 @@ describe('test/app/controller/users.test.js', () => {
       createUserRoleTargetId = res.body.data.rows[0].id;
     });
     it('删除新增的用户，默认添加的角色关系数据', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
@@ -91,6 +94,7 @@ describe('test/app/controller/users.test.js', () => {
       assert(res.status === 204);
     });
     it('删除新增用户', async () => {
+      app.mockCsrf();
       const res = await app.model.models.users.destroy({
         force: true,
         where: { id: createUserData.id },

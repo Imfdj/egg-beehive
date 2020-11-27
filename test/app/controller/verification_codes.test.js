@@ -6,11 +6,11 @@ describe('test/app/controller/verification_codes.test.js', () => {
   const createRoleName = 'verification_codeName' + Math.random();
   const createRoleData = {};
   before(async () => {
-    app.mockCsrf();
   });
 
   describe('POST /api/v1/verification_codes', () => {
     it('should work', async () => {
+      app.mockCsrf();
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .post('/api/v1/verification_codes')

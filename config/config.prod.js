@@ -5,7 +5,7 @@ exports.sequelize = {
   host: '127.0.0.1',
   port: 33066,
   password: '123123',
-  database: 'egg-beehive-test',
+  database: 'egg-beehive-prod',
   timezone: '+08:00',
   define: {
     raw: true,
@@ -15,12 +15,21 @@ exports.sequelize = {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
     deletedAt: 'deleted_at',
-    dialectOptions: {
-      dateStrings: true,
-      typeCast: true,
-      // collate: 'utf8_general_ci',
-    },
   },
+  dialectOptions: {
+    dateStrings: true,
+    typeCast: true,
+    // collate: 'utf8_general_ci',
+  },
+};
+
+exports.logger = {
+  // dir: 'E:/project-E/node/egg/egg-beehive/logs/egg-beehive/prod',
+};
+
+exports.cors = {
+  // origin: [ 'http://192.168.6.150:8080' ],
+  // allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
 };
 
 exports.redis = {

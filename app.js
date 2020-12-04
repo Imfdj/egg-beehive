@@ -1,6 +1,8 @@
 'use strict';
 const lodash = require('lodash');
 const dayjs = require('dayjs');
+const path = require('path');
+const fs = require('fs');
 const { permissionsToRedis } = require('./app-boot-hook-do');
 
 class AppBootHook {
@@ -64,11 +66,14 @@ class AppBootHook {
     console.timeEnd('willReady');
     // const ctx = await this.app.createAnonymousContext();
     // await ctx.service.Biz.request();
-    console.log(999999);
-    // console.log(this.app.service);
-    // console.log(this.app.service.permissions.findAll);
-    // const permissionsList = await this.app.service.permissions.findAll({ limit: 10000, offset: 0 });
-    // console.log(permissionsList);
+
+    // 如果没有uploads文件夹，则创建
+    const { dir, upload_dir } = this.app.config.static;
+    const public_uploads = path.join(dir, upload_dir);
+    this.app.config.static.public_uploads_path = public_uploads;
+    if (!fs.existsSync(public_uploads)) {
+      fs.mkdirSync(public_uploads, { recursive: true });
+    }
   }
 
   async serverDidReady() {

@@ -5,6 +5,8 @@
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
+const path = require('path');
+
 module.exports = appInfo => {
   /**
    * built-in config
@@ -23,7 +25,7 @@ module.exports = appInfo => {
       enable: true,
       // 判断是否需要 ignore 的方法，请求上下文 context 作为第一个参数
       ignore: ctx => {
-        return ['/api/v1/users/login'].includes(ctx.request.url);
+        return ['/api/v1/users/login', '/api/v1/users/logout'].includes(ctx.request.url);
       },
     },
     // domainWhiteList: ['http://localhost:8000'],
@@ -123,6 +125,12 @@ module.exports = appInfo => {
     // 从 `Node.js 性能平台` 获取对应的接入参数
     appid: '86472',
     secret: 'aa8a9bba49cedc352d0cadcfe0db514a918c3d79',
+  };
+
+  config.static = {
+    prefix: '/public/',
+    dir: path.join(appInfo.baseDir, `../eggStatic/${appInfo.name}/public`),
+    upload_dir: 'uploads',
   };
 
   // add your user config here

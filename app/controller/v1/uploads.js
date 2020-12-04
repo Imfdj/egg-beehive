@@ -12,12 +12,6 @@ const awaitWriteStream = require('await-stream-ready').write;
 // 管道读入一个虫洞。
 const sendToWormhole = require('stream-wormhole');
 
-// 如果没有uploads文件夹，则创建
-const public_uploads = path.join(__dirname, '../../', './public/uploads');
-if (!fs.existsSync(public_uploads)) {
-  fs.mkdirSync(public_uploads);
-}
-
 class RoleController extends Controller {
   /**
    * @apikey
@@ -27,7 +21,7 @@ class RoleController extends Controller {
    * @request body menuBodyReq
    */
   async create() {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const size = ctx.request.header['content-length'] / 1024 / 1024;
     const stream = await ctx.getFileStream();
     if (size > 200) {
@@ -54,7 +48,8 @@ class RoleController extends Controller {
     const filename = `${Date.now()}_${Math.random()
       .toString()
       .substr(2, 9)}${path.extname(stream.filename)}`;
-    const target = path.join(this.config.baseDir, 'app/public/uploads', filename);
+    const { public_uploads_path, prefix, upload_dir } = app.config.static;
+    const target = path.join(public_uploads_path, filename);
     // 生成一个文件写入 文件流
     const writeStream = fs.createWriteStream(target);
     try {
@@ -62,7 +57,7 @@ class RoleController extends Controller {
       await awaitWriteStream(stream.pipe(writeStream));
       ctx.helper.body.SUCCESS({
         ctx,
-        res: { filename, path: `/public/uploads/${filename}` },
+        res: { filename, path: path.join(prefix, upload_dir, filename) },
       });
     } catch (err) {
       // 如果出现错误，关闭管道

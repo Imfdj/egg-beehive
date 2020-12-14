@@ -7,6 +7,8 @@
     "declarations": true
   },
   "dependencies": {
+    "@sentry/node": "5.5.0",
+    "@sentry/tracing": "^5.29.0",
     "await-stream-ready": "^1.0.1",
     "dayjs": "^1.8.32",
     "egg": "^2.15.1",

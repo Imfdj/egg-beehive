@@ -52,10 +52,12 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --port 7002 --title=egg-server-egg-beehive",
-    "start2": "egg-scripts start --daemon --port 7002 --title=egg-server-egg-beehive2",
-    "stop": "egg-scripts stop --title=egg-server-egg-beehive",
+    "start1": "egg-scripts start --daemon --port 7003 --title=egg-server-egg-beehive1",
+    "start2": "egg-scripts start --daemon --port 7004 --title=egg-server-egg-beehive2",
+    "stop1": "egg-scripts stop --title=egg-server-egg-beehive1",
     "stop2": "egg-scripts stop --title=egg-server-egg-beehive2",
+    "unhealthy1": "node ./unhealthy.js --title=egg-server-egg-beehive1",
+    "unhealthy2": "node ./unhealthy.js --title=egg-server-egg-beehive2",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",

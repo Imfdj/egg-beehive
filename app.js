@@ -8,6 +8,11 @@ const { permissionsToRedis } = require('./app-boot-hook-do');
 class AppBootHook {
   constructor(app) {
     this.app = app;
+    // app.running_status 供健康监测接口使用。
+    app.running_status = true;
+    process.on('SIGINT', () => {
+      app.running_status = false;
+    });
   }
 
   configWillLoad() {

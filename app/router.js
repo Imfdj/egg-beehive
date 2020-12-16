@@ -4,13 +4,11 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller, config } = app;
-  // let authHandler = {};
-  // if (config.verification_mode === 'jwt') {
-  //   authHandler = app.jwt;
-  // } else {
-  //   authHandler = app.middleware.sessionHandler({}, app);
-  // }
+  const { router, controller } = app;
+  /**
+   * 健康检查
+   */
+  router.get('/healthy', controller.v1.users.healthy);
   /**
    * 用户
    */

@@ -9,6 +9,18 @@ const NodeRSA = require('node-rsa');
 
 class RoleController extends Controller {
   /**
+   * 健康监测
+   */
+  healthy() {
+    const { ctx, app } = this;
+    if (app.running_status) {
+      ctx.body = 'ok';
+    } else {
+      ctx.status = 500;
+    }
+  }
+
+  /**
    * @apikey
    * @summary 获取 用户
    * @description 获取 用户

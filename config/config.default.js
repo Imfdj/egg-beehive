@@ -121,12 +121,6 @@ module.exports = appInfo => {
     ],
   };
 
-  config.alinode = {
-    // 从 `Node.js 性能平台` 获取对应的接入参数
-    appid: '86472',
-    secret: 'aa8a9bba49cedc352d0cadcfe0db514a918c3d79',
-  };
-
   config.static = {
     prefix: '/public/',
     dir: path.join(appInfo.baseDir, `../eggStatic/${appInfo.name}/public`),

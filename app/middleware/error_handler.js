@@ -49,7 +49,7 @@ module.exports = (option, app) => {
         };
         ctx.helper.body.VALIDATION_FAILED({ ctx, res });
       } else {
-        Sentry.captureException(err);
+        app.config.env === 'prod' ? Sentry.captureException(err) : null;
         // transaction.finish();
       }
     }

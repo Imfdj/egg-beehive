@@ -9,6 +9,7 @@
   "dependencies": {
     "@sentry/node": "5.5.0",
     "@sentry/tracing": "^5.29.0",
+    "acm-client": "^3.1.0",
     "await-stream-ready": "^1.0.1",
     "dayjs": "^1.8.32",
     "egg": "^2.15.1",
@@ -83,8 +84,7 @@
   "lint-staged": {
     "*.js": [
       "pretty-quick --staged",
-      "eslint --fix --ext .js",
-      "git add"
+      "eslint --fix --ext .js"
     ]
   },
   "ci": {

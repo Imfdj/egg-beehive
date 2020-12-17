@@ -24,7 +24,7 @@ exports.sequelize = {
 };
 
 exports.logger = {
-  // dir: 'E:/project-E/node/egg/egg-beehive/logs/egg-beehive/prod',
+  // dir: '',
 };
 
 exports.cors = {
@@ -39,4 +39,9 @@ exports.redis = {
     password: '123123',
     db: 1,
   },
+};
+
+exports.alinode = {
+  appid: '',
+  secret: '',
 };

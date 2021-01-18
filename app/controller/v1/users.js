@@ -181,7 +181,7 @@ class RoleController extends Controller {
    * @request body userBodyReq
    */
   async login() {
-    const { ctx, service } = this;
+    const { ctx, service, app } = this;
     const beforeParams = {
       username: ctx.rule.userBodyReq.username,
       password: {
@@ -195,17 +195,21 @@ class RoleController extends Controller {
       password: ctx.rule.userBodyReq.password,
     };
     ctx.validate(beforeParams, ctx.request.body);
-    // 获取配置中的rsa私钥对密码解密
-    try {
-      const { rsa_private_key } = await ctx.model.Configurations.findOne({
-        where: { id: 1 },
-      });
-      const key = new NodeRSA(rsa_private_key);
-      ctx.request.body.password = key.decrypt(ctx.request.body.password, 'utf8');
-    } catch (e) {
-      ctx.helper.body.UNAUTHORIZED({ ctx });
-      return ctx.logger.error(e);
+
+    // 如果不是开发环境 获取配置中的rsa私钥对密码解密
+    if (app.config.env !== 'local') {
+      try {
+        const { rsa_private_key } = await ctx.model.Configurations.findOne({
+          where: { id: 1 },
+        });
+        const key = new NodeRSA(rsa_private_key);
+        ctx.request.body.password = key.decrypt(ctx.request.body.password, 'utf8');
+      } catch (e) {
+        ctx.helper.body.UNAUTHORIZED({ ctx });
+        return ctx.logger.error(e);
+      }
     }
+
     ctx.validate(params, ctx.request.body);
     const res = await service.users.login(ctx.request.body);
     switch (res.__code_wrong) {

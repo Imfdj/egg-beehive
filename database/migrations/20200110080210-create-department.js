@@ -13,8 +13,15 @@ module.exports = {
         name: {
           type: Sequelize.STRING(60),
           allowNull: false,
+          unique: true,
           defaultValue: '',
           comment: '部门名称',
+        },
+        owner_id: {
+          type: Sequelize.INTEGER(11).UNSIGNED,
+          allowNull: false,
+          defaultValue: 0,
+          comment: '拥有者ID',
         },
         parent_id: {
           type: Sequelize.INTEGER(11).UNSIGNED,

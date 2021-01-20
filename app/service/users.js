@@ -6,17 +6,17 @@ const { Op } = require('sequelize');
 class UserService extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword } = payload;
+    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword, date_after_created } = payload;
     const where = {};
-    keyword ? (where[Op.or] = [
-      { username: { [Op.like]: `%${ keyword }%` } },
-      { email: { [Op.like]: `%${ keyword }%` } },
-      { phone: { [Op.like]: `%${ keyword }%` } },
-    ]) : null;
+    keyword
+      ? (where[Op.or] = [{ username: { [Op.like]: `%${keyword}%` } }, { email: { [Op.like]: `%${keyword}%` } }, { phone: { [Op.like]: `%${keyword}%` } }])
+      : null;
+    // 创建时间大于等于date_after_created
+    date_after_created ? (where[Op.and] = [{ created_at: { [Op.gte]: date_after_created } }]) : null;
     const Order = [];
-    username ? (where.username = { [Op.like]: `%${ username }%` }) : null;
-    email ? (where.email = { [Op.like]: `%${ email }%` }) : null;
-    phone ? (where.phone = { [Op.like]: `%${ phone }%` }) : null;
+    username ? (where.username = { [Op.like]: `%${username}%` }) : null;
+    email ? (where.email = { [Op.like]: `%${email}%` }) : null;
+    phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;

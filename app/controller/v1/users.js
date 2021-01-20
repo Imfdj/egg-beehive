@@ -66,6 +66,10 @@ class RoleController extends Controller {
         ...ctx.rule.userBodyReq.department_id,
         required: false,
       },
+      date_after_created: {
+        type: 'dateTime',
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,

@@ -5,7 +5,6 @@ module.exports = {
   fieldsItemExample: {
     name: 'xx_id',
     type: 'INTEGER',
-    UNSIGNED: false,
     length: 11,
     min: 1,
     max: 1,
@@ -29,7 +28,6 @@ module.exports = {
     {
       name: 'project_id',
       type: 'INTEGER',
-      UNSIGNED: true,
       length: 11,
       min: 1,
       required: true,
@@ -48,7 +46,6 @@ module.exports = {
     {
       name: 'user_id',
       type: 'INTEGER',
-      UNSIGNED: true,
       length: 11,
       min: 1,
       required: true,

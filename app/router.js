@@ -112,4 +112,40 @@ module.exports = app => {
   router.get('/api/v1/departments/list', controller.v1.departments.findAll);
   router.get('/api/v1/departments', controller.v1.departments.findOne);
   router.delete('/api/v1/departments', controller.v1.departments.destroy);
+
+  /**
+   * 项目模板
+   */
+  router.post('/api/v1/project_templates', controller.v1.projectTemplates.create);
+  router.put('/api/v1/project_templates', controller.v1.projectTemplates.update);
+  router.get('/api/v1/project_templates/list', controller.v1.projectTemplates.findAll);
+  router.get('/api/v1/project_templates', controller.v1.projectTemplates.findOne);
+  router.delete('/api/v1/project_templates', controller.v1.projectTemplates.destroy);
+
+  /**
+   * 项目模板任务
+   */
+  router.post('/api/v1/project_template_tasks', controller.v1.projectTemplateTasks.create);
+  router.put('/api/v1/project_template_tasks', controller.v1.projectTemplateTasks.update);
+  router.get('/api/v1/project_template_tasks/list', controller.v1.projectTemplateTasks.findAll);
+  router.get('/api/v1/project_template_tasks', controller.v1.projectTemplateTasks.findOne);
+  router.delete('/api/v1/project_template_tasks', controller.v1.projectTemplateTasks.destroy);
+
+  /**
+   * 项目
+   */
+  router.post('/api/v1/projects', controller.v1.projects.create);
+  router.put('/api/v1/projects', controller.v1.projects.update);
+  router.get('/api/v1/projects/list', controller.v1.projects.findAll);
+  router.get('/api/v1/projects', controller.v1.projects.findOne);
+  router.delete('/api/v1/projects', controller.v1.projects.destroy);
+
+  /**
+   * 用户-项目关系
+   */
+  router.post('/api/v1/user_projects', controller.v1.userProjects.create);
+  router.put('/api/v1/user_projects', controller.v1.userProjects.update);
+  router.get('/api/v1/user_projects/list', controller.v1.userProjects.findAll);
+  router.get('/api/v1/user_projects', controller.v1.userProjects.findOne);
+  router.delete('/api/v1/user_projects', controller.v1.userProjects.destroy);
 };

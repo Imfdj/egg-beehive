@@ -1,5 +1,11 @@
 'use strict';
 
+exports.security = {
+  csrf: {
+    enable: false,
+  },
+};
+
 exports.sequelize = {
   dialect: 'mysql',
   host: '127.0.0.1',

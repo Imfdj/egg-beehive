@@ -6,11 +6,15 @@
 
 see [egg docs][egg] for more detail.
 
-### ToDo
+### Todo
 
-```bash
-1.
-```
+- [ ] 优先级配置
+- [ ] 标签配置
+- [ ] ~~任务类型配置~~
+- [ ] 任务-参与者关系表
+- [ ] 任务工时
+- [ ] 任务动态表
+- [ ] 任务附件表
 
 ### Development
 

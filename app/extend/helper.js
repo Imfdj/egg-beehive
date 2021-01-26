@@ -23,7 +23,7 @@ module.exports.tools = {
     };
   },
 
-  async apply(ctx, params = {}, exp = 60) {
+  async apply(ctx, params = {}, exp = 60, secret = ctx.app.config.jwt.secret) {
     return ctx.app.jwt.sign(
       {
         data: params,
@@ -31,7 +31,7 @@ module.exports.tools = {
         exp: Math.floor(Date.now() / 1000) + exp,
         // exp: Math.floor(Date.now() / 1000) + (10),
       },
-      ctx.app.config.jwt.secret
+      secret
     );
   },
 
@@ -84,13 +84,13 @@ module.exports.body = {
   },
 
   // [*]：表示用户没有认证（令牌、用户名、密码错误）。
-  UNAUTHORIZED({ ctx, res = null, msg = '没有认证（令牌、用户名、密码错误）' }) {
+  UNAUTHORIZED({ ctx, res = null, msg = '没有认证（令牌、用户名、密码错误）', status = 401 }) {
     ctx.body = {
       code: 401,
       data: res,
       msg,
     };
-    ctx.status = 401;
+    ctx.status = status;
   },
 
   // [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。

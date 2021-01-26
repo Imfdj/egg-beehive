@@ -42,6 +42,7 @@ module.exports = appInfo => {
 
   config.jwt = {
     secret: 'Great4-M',
+    secret_refresh: 'Great4-M-refresh',
     enable: true, // default is false
     match: '/jwt', // optional
   };
@@ -131,7 +132,8 @@ module.exports = appInfo => {
   const userConfig = {
     // myAppName: 'egg',
     verification_mode: 'jwt',
-    jwt_exp: 60 * 60 * 24, // jwt过期时间(秒)
+    jwt_exp: 60 * 10, // jwt过期时间(秒)
+    jwt_refresh_exp: 60 * 60 * 24 * 15, // refreshToken过期时间(秒)
   };
 
   return {

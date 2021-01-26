@@ -67,7 +67,12 @@ module.exports = (option, app) => {
       }
     } catch (err) {
       app.emit('error', err, this);
-      ctx.helper.body.UNAUTHORIZED({ ctx, msg: err.message });
+      // 如果是token过期，status为202
+      if (err.name === 'TokenExpiredError') {
+        ctx.helper.body.UNAUTHORIZED({ ctx, msg: err.message, status: 202 });
+      } else {
+        ctx.helper.body.UNAUTHORIZED({ ctx, msg: err.message });
+      }
       // throw err;
     }
   };

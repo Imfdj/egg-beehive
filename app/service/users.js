@@ -2,6 +2,7 @@
 
 const Service = require('egg').Service;
 const { Op } = require('sequelize');
+const NodeRSA = require('node-rsa');
 
 class UserService extends Service {
   async findAll(payload) {
@@ -123,7 +124,8 @@ class UserService extends Service {
     if (this.app.config.verification_mode === 'jwt') {
       return result
         ? {
-          token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          accessToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          refreshToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_refresh_exp, ctx.app.config.jwt.secret_refresh),
           csrf: ctx.csrf,
         }
         : null;
@@ -232,8 +234,8 @@ class UserService extends Service {
    */
   async logout() {
     const { ctx, app } = this;
-    const token = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[1];
-    return await app.redis.setex(token, app.config.jwt_exp, '1');
+    const accessToken = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[1];
+    return await app.redis.setex(accessToken, app.config.jwt_exp, '1');
   }
 
   /**
@@ -243,6 +245,50 @@ class UserService extends Service {
     const { ctx } = this;
     const { id, department_id } = payload;
     return await ctx.model.Users.update({ department_id }, { where: { id } });
+  }
+
+  /**
+   * 刷新accessToken
+   */
+  async refreshToken(payload) {
+    const { ctx, app } = this;
+    const { refreshToken, secret } = payload;
+    try {
+      const { data: currentRequestData } = await ctx.app.jwt.verify(refreshToken, ctx.app.config.jwt.secret_refresh);
+      const { rsa_private_key } = await ctx.model.Configurations.findOne({
+        where: { id: 1 },
+      });
+      const key = new NodeRSA(rsa_private_key);
+      try {
+        const _secret = key.decrypt(secret, 'utf8');
+        if (currentRequestData.userInfo && currentRequestData.userInfo.id && currentRequestData.userInfo.id.toString() === _secret) {
+          return {
+            accessToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+            refreshToken,
+          };
+        }
+        return {
+          __code_wrong: 40003,
+          message: 'refreshToken与secret不匹配',
+        };
+      } catch (e) {
+        return {
+          __code_wrong: 40002,
+          message: 'secret有误',
+        };
+      }
+    } catch (e) {
+      if (e.name === 'TokenExpiredError') {
+        return {
+          __code_wrong: 40000,
+          message: '登录已过期',
+        };
+      }
+      return {
+        __code_wrong: 40001,
+        message: 'refreshToken有误',
+      };
+    }
   }
 }
 

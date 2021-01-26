@@ -351,6 +351,52 @@ class RoleController extends Controller {
     const res = await service.users.updateUserDepartment(ctx.request.body);
     res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
+
+  /**
+   * @summary 刷新token
+   * @description 刷新token
+   * @router post /api/v1/users/refreshToken
+   */
+  async refreshToken() {
+    const { ctx, app, service } = this;
+    const params = {
+      refreshToken: {
+        type: 'string',
+        required: true,
+        trim: true,
+        example: '',
+        description: 'refreshToken',
+      },
+      secret: {
+        type: 'string',
+        required: true,
+        trim: true,
+        example: '',
+        description: '秘钥',
+      },
+    };
+    ctx.validate(params, ctx.request.body);
+    // 如果验证方式是jwt，否则为session
+    if (app.config.verification_mode === 'jwt') {
+      const res = await service.users.refreshToken(ctx.request.body);
+      switch (res.__code_wrong) {
+        case undefined:
+          ctx.helper.body.SUCCESS({ ctx, res });
+          break;
+        case 40000:
+        case 40001:
+        case 40002:
+        case 40003:
+          ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: res.message });
+          break;
+        default:
+          ctx.helper.body.INVALID_REQUEST({ ctx });
+          break;
+      }
+    } else {
+      ctx.helper.body.INVALID_REQUEST({ ctx });
+    }
+  }
 }
 
 module.exports = RoleController;

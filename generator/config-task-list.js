@@ -30,8 +30,8 @@ module.exports = {
     {
       name: 'name',
       type: 'string',
-      length: 255,
-      max: 255,
+      length: 30,
+      max: 30,
       min: 1,
       trim: true,
       required: true,
@@ -45,6 +45,7 @@ module.exports = {
     {
       name: 'project_id',
       type: 'INTEGER',
+      UNSIGNED: true,
       length: 11,
       min: 1,
       required: true,

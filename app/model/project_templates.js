@@ -15,6 +15,10 @@ module.exports = app => {
   );
   project_template.associate = function(models) {
     // associations can be defined here
+    app.model.ProjectTemplates.hasMany(app.model.ProjectTemplateTasks, {
+      foreignKey: 'project_template_id',
+      targetKey: 'id',
+    });
   };
   return project_template;
 };

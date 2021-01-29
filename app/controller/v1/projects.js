@@ -12,6 +12,7 @@ class RoleController extends Controller {
    * @summary 获取 项目
    * @description 获取 项目
    * @request query string name project名
+   * @request query number state 状态 enum:1,2,3 eg:项目状态.1为正常、2为已归档、3为已删除
    * @request query number limit limit
    * @request query number offset offset
    * @router get /api/v1/projects/list
@@ -22,6 +23,12 @@ class RoleController extends Controller {
       name: {
         ...ctx.rule.projectBodyReq.name,
         required: false,
+      },
+      state: {
+        ...ctx.rule.projectBodyReq.state,
+        required: false,
+        type: 'enum',
+        values: [1, 2, 3, '1', '2', '3'],
       },
       prop_order: {
         type: 'enum',
@@ -71,7 +78,14 @@ class RoleController extends Controller {
    */
   async create() {
     const ctx = this.ctx;
-    ctx.validate(ctx.rule.projectBodyReq, ctx.request.body);
+    const params = {
+      ...ctx.rule.projectBodyReq,
+      state: {
+        ...ctx.rule.projectBodyReq.state,
+        required: false,
+      },
+    };
+    ctx.validate(params, ctx.request.body);
     await ctx.service.projects.create(ctx.request.body);
     ctx.helper.body.CREATED_UPDATE({ ctx });
   }
@@ -85,7 +99,14 @@ class RoleController extends Controller {
    */
   async update() {
     const { ctx, service } = this;
-    ctx.validate(ctx.rule.projectPutBodyReq, ctx.request.body);
+    const params = {
+      ...ctx.rule.projectBodyReq,
+      state: {
+        ...ctx.rule.projectBodyReq.state,
+        required: false,
+      },
+    };
+    ctx.validate(params, ctx.request.body);
     const res = await service.projects.update(ctx.request.body);
     res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }

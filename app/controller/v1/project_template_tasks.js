@@ -23,6 +23,10 @@ class RoleController extends Controller {
         ...ctx.rule.project_template_taskBodyReq.name,
         required: false,
       },
+      project_template_id: {
+        ...ctx.rule.project_template_taskBodyReq.project_template_id,
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,

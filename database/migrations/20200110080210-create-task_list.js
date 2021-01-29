@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'project_template_tasks',
+      'task_lists',
       {
         id: {
           allowNull: false,
@@ -11,18 +11,18 @@ module.exports = {
           type: Sequelize.INTEGER(11).UNSIGNED,
         },
         name: {
-          type: Sequelize.STRING(255),
+          type: Sequelize.STRING(30),
           allowNull: false,
           defaultValue: '',
           unique: false,
-          comment: '项目模板名称',
+          comment: '任务列表名称',
         },
-        project_template_id: {
+        project_id: {
           type: Sequelize.INTEGER(11).UNSIGNED,
           allowNull: false,
-          comment: '所属项目模板ID',
+          comment: '所属项目ID',
           references: {
-            model: 'project_templates',
+            model: 'projects',
             key: 'id',
           },
           onUpdate: 'CASCADE',
@@ -47,6 +47,6 @@ module.exports = {
     );
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('project_template_tasks');
+    return queryInterface.dropTable('task_lists');
   },
 };

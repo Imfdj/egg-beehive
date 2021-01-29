@@ -22,5 +22,9 @@ module.exports = app => {
   project.associate = function(models) {
     // associations can be defined here
   };
+  project.associate = function(models) {
+    // associations can be defined here
+    project.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'manager_id' });
+  };
   return project;
 };

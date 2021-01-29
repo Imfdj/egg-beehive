@@ -6,13 +6,12 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name, project_template_id } = payload;
+    const { limit, offset, prop_order, order, name } = payload;
     const where = {};
     const Order = [];
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
-    project_template_id ? (where.project_template_id = project_template_id) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
-    return await ctx.model.ProjectTemplateTasks.findAndCountAll({
+    return await ctx.model.TaskLists.findAndCountAll({
       limit,
       offset,
       where,
@@ -22,24 +21,24 @@ class _objectName_Service extends Service {
 
   async findOne(id) {
     const { ctx } = this;
-    return await ctx.model.ProjectTemplateTasks.findOne({ where: { id } });
+    return await ctx.model.TaskLists.findOne({ where: { id } });
   }
 
   async create(payload) {
     const { ctx } = this;
-    return await ctx.model.ProjectTemplateTasks.create(payload);
+    return await ctx.model.TaskLists.create(payload);
   }
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model.ProjectTemplateTasks.update(payload, {
+    return await ctx.model.TaskLists.update(payload, {
       where: { id: payload.id },
     });
   }
 
   async destroy(payload) {
     const { ctx } = this;
-    return await ctx.model.ProjectTemplateTasks.destroy({
+    return await ctx.model.TaskLists.destroy({
       where: { id: payload.ids },
     });
   }

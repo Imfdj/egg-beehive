@@ -149,4 +149,10 @@ module.exports = app => {
   router.get('/api/v1/user_projects/list', controller.v1.userProjects.findAll);
   router.get('/api/v1/user_projects', controller.v1.userProjects.findOne);
   router.delete('/api/v1/user_projects', controller.v1.userProjects.destroy);
+
+  router.post('/api/v1/task_lists', controller.v1.taskLists.create);
+  router.put('/api/v1/task_lists', controller.v1.taskLists.update);
+  router.get('/api/v1/task_lists/list', controller.v1.taskLists.findAll);
+  router.get('/api/v1/task_lists', controller.v1.taskLists.findOne);
+  router.delete('/api/v1/task_lists', controller.v1.taskLists.destroy);
 };

@@ -29,10 +29,6 @@ module.exports = (option, app) => {
             }
             const decoded = await ctx.app.jwt.verify(token, ctx.app.config.jwt.secret);
             ctx.currentRequestData = decoded.data;
-            // 如果所剩时间小于 3小时 刷新jwt
-            if ((decoded.exp * 1000 - Date.now()) / 1000 < 60 * 60 * 3) {
-              ctx.set('Authorization', await ctx.helper.tools.apply(ctx, decoded.data, app.config.jwt_exp));
-            }
           } else if (app.config.verification_mode === 'session') {
             // 如果认证模式为session
             if (ctx.session && ctx.session.currentRequestData) {

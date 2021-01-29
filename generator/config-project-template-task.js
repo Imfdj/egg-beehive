@@ -40,7 +40,7 @@ module.exports = {
       allowNull: false, // 是否允许为空
       defaultValue: '', // 数据库表中字段的默认值
       comment: '项目模板名称', // 数据库表中字段的描述
-      unique: true, // 是否唯一
+      unique: false, // 是否唯一
     },
     {
       name: 'project_template_id',

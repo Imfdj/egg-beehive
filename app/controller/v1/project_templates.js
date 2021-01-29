@@ -23,6 +23,10 @@ class RoleController extends Controller {
         ...ctx.rule.project_templateBodyReq.name,
         required: false,
       },
+      is_custom: {
+        ...ctx.rule.project_templateBodyReq.is_custom,
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,
@@ -71,6 +75,8 @@ class RoleController extends Controller {
    */
   async create() {
     const ctx = this.ctx;
+    // 如果创建时没有设置封面则，使用默认图片
+    if (!ctx.request.body.cover) ctx.request.body.cover = 'https://i.picsum.photos/id/144/290/160.jpg?hmac=YqNSGR5rI_GhpG42s5ed0XbRwXv4JXDCdH3b0OqB9fE';
     ctx.validate(ctx.rule.project_templateBodyReq, ctx.request.body);
     await ctx.service.projectTemplates.create(ctx.request.body);
     ctx.helper.body.CREATED_UPDATE({ ctx });

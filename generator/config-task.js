@@ -29,10 +29,10 @@ module.exports = {
   fields: [
     {
       name: 'name',
-      type: 'string',
-      length: 255,
-      max: 255,
-      min: 2,
+      type: 'text',
+      length: 'tiny',
+      max: 500,
+      min: 1,
       trim: true,
       required: true,
       description: '任务名称', // 供swagger使用

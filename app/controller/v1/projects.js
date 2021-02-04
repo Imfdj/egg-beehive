@@ -82,7 +82,9 @@ class RoleController extends Controller {
       ...ctx.rule.projectBodyReq,
       state: {
         ...ctx.rule.projectBodyReq.state,
+        type: 'enum',
         required: false,
+        values: [1, 2, 3, '1', '2', '3'],
       },
     };
     ctx.validate(params, ctx.request.body);
@@ -103,7 +105,9 @@ class RoleController extends Controller {
       ...ctx.rule.projectBodyReq,
       state: {
         ...ctx.rule.projectBodyReq.state,
+        type: 'enum',
         required: false,
+        values: [1, 2, 3, '1', '2', '3'],
       },
     };
     ctx.validate(params, ctx.request.body);

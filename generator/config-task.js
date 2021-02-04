@@ -104,22 +104,17 @@ module.exports = {
       onDelete: 'NO ACTION', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
     },
     {
-      name: 'performer_id',
+      name: 'executor_id',
       type: 'INTEGER',
+      UNSIGNED: true,
       length: 11,
       min: 1,
-      required: true,
+      required: false,
       description: '执行者ID', // 供swagger使用
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '执行者ID', // 数据库表中字段的描述
-      // 外键设置
-      references: {
-        model: 'users', // 外键关联表
-        key: 'id', // 外键字段名
-      },
-      onUpdate: 'NO ACTION', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
-      onDelete: 'NO ACTION', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      defaultValue: 0, // 数据库表中字段的默认值
     },
     {
       name: 'start_date',

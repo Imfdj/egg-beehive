@@ -22,8 +22,9 @@ module.exports = app => {
   router.get('/api/v1/users/user_info', controller.v1.users.userInfo);
   router.get('/api/v1/users/exists_user_unique_fields', controller.v1.users.existsUserUniqueFields);
   router.put('/api/v1/users/password', controller.v1.users.updateUserPassword);
-  router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
+  // router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
   router.post('/api/v1/users/refreshToken', controller.v1.users.refreshToken);
+  router.put('/api/v1/users/department', controller.v1.users.minus);
 
   /**
    * 角色

@@ -5,6 +5,7 @@ module.exports = {
   fieldsItemExample: {
     name: 'xx_id',
     type: 'INTEGER',
+    UNSIGNED: false,
     length: 11,
     min: 1,
     max: 1,

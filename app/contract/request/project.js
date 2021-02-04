@@ -70,7 +70,7 @@ const body = {
     state: {
       type: 'number',
       required: false,
-      enum: [1, 2, 3],
+      values: [1, 2, 3],
       description: '项目状态.1为正常、2为已归档、3为已删除',
     },
     intro: {

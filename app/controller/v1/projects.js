@@ -12,7 +12,7 @@ class RoleController extends Controller {
    * @summary 获取 项目
    * @description 获取 项目
    * @request query string name project名
-   * @request query number state 状态 enum:1,2,3 eg:项目状态.1为正常、2为已归档、3为已删除
+   * @request query number state 状态 enum:1,2,3 eg:项目状态.1为正常、2为已归档、3为已在回收站
    * @request query number limit limit
    * @request query number offset offset
    * @router get /api/v1/projects/list

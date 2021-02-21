@@ -71,7 +71,7 @@ const body = {
       type: 'number',
       required: false,
       values: [1, 2, 3],
-      description: '项目状态.1为正常、2为已归档、3为已删除',
+      description: '项目状态.1为正常、2为已归档、3为已在回收站',
     },
     intro: {
       type: 'string',

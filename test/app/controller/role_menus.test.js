@@ -6,8 +6,7 @@ describe('test/app/controller/role_menus.test.js', () => {
   let menuResRows;
   let roleResRows;
   let createUserRoleTargetIds = [];
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('POST /api/v1/role_menus/bulk_menu 创建 单角色-多菜单关系', () => {
     it('should work', async () => {

@@ -5,8 +5,7 @@ const { assert, app } = require('egg-mock/bootstrap');
 describe('test/app/controller/verification_codes.test.js', () => {
   const createRoleName = 'verification_codeName' + Math.random();
   const createRoleData = {};
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('POST /api/v1/verification_codes', () => {
     it('should work', async () => {

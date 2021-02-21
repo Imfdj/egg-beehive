@@ -45,8 +45,8 @@ module.exports = {
     {
       name: 'color',
       type: 'string',
-      length: 10,
-      max: 10,
+      length: 30,
+      max: 30,
       min: 1,
       trim: true,
       required: true,
@@ -56,6 +56,25 @@ module.exports = {
       defaultValue: '', // 数据库表中字段的默认值
       comment: '颜色', // 数据库表中字段的描述
       unique: false, // 是否唯一
+    },
+    {
+      name: 'project_id',
+      UNSIGNED: true,
+      type: 'INTEGER',
+      length: 11,
+      min: 1,
+      required: true,
+      description: '所属项目ID', // 供swagger使用
+      example: 1, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      comment: '所属项目ID', // 数据库表中字段的描述
+      // 外键设置
+      references: {
+        model: 'projects', // 外键关联表
+        key: 'id', // 外键字段名
+      },
+      onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
     },
   ],
   fields_option: {},

@@ -7,8 +7,9 @@ const NodeRSA = require('node-rsa');
 class UserService extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword, date_after_created } = payload;
+    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword, date_after_created, project_id } = payload;
     const where = {};
+    let project_where = null;
     keyword
       ? (where[Op.or] = [{ username: { [Op.like]: `%${keyword}%` } }, { email: { [Op.like]: `%${keyword}%` } }, { phone: { [Op.like]: `%${keyword}%` } }])
       : null;
@@ -20,6 +21,7 @@ class UserService extends Service {
     phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
+    !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Users.findAndCountAll({
       limit,
@@ -27,6 +29,12 @@ class UserService extends Service {
       where,
       order: Order,
       attributes: { exclude: ['password', 'deleted_at'] },
+      include: {
+        model: ctx.model.Projects,
+        attributes: ['id'],
+        where: project_where,
+      },
+      distinct: true,
     });
   }
 

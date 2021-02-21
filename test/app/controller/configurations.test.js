@@ -5,8 +5,7 @@ const { assert, app } = require('egg-mock/bootstrap');
 describe('test/app/controller/configurations.test.js', () => {
   const createName = 'configurationName' + Math.random();
   let createMenuData = {};
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('GET /api/v1/configurations/public_key', () => {
     it('should work', async () => {

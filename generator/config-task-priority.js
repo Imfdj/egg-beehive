@@ -62,7 +62,7 @@ module.exports = {
       type: 'INTEGER',
       length: 11,
       max: 999999999,
-      required: true,
+      required: false,
       description: '排序，越大越靠前', // 供swagger使用
       example: 0, // 供swagger使用
       allowNull: false, // 是否允许为空

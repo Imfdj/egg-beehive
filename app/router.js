@@ -22,7 +22,7 @@ module.exports = app => {
   router.get('/api/v1/users/user_info', controller.v1.users.userInfo);
   router.get('/api/v1/users/exists_user_unique_fields', controller.v1.users.existsUserUniqueFields);
   router.put('/api/v1/users/password', controller.v1.users.updateUserPassword);
-  // router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
+  router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
   router.post('/api/v1/users/refreshToken', controller.v1.users.refreshToken);
   router.put('/api/v1/users/department', controller.v1.users.minus);
 
@@ -151,9 +151,68 @@ module.exports = app => {
   router.get('/api/v1/user_projects', controller.v1.userProjects.findOne);
   router.delete('/api/v1/user_projects', controller.v1.userProjects.destroy);
 
+  /**
+   * 任务列表
+   */
   router.post('/api/v1/task_lists', controller.v1.taskLists.create);
   router.put('/api/v1/task_lists', controller.v1.taskLists.update);
   router.get('/api/v1/task_lists/list', controller.v1.taskLists.findAll);
   router.get('/api/v1/task_lists', controller.v1.taskLists.findOne);
   router.delete('/api/v1/task_lists', controller.v1.taskLists.destroy);
+
+  /**
+   * 任务优先级
+   */
+  router.post('/api/v1/task_prioritys', controller.v1.taskPrioritys.create);
+  router.put('/api/v1/task_prioritys', controller.v1.taskPrioritys.update);
+  router.get('/api/v1/task_prioritys/list', controller.v1.taskPrioritys.findAll);
+  router.get('/api/v1/task_prioritys', controller.v1.taskPrioritys.findOne);
+  router.delete('/api/v1/task_prioritys', controller.v1.taskPrioritys.destroy);
+
+  /**
+   * 任务状态
+   */
+  router.post('/api/v1/task_states', controller.v1.taskStates.create);
+  router.put('/api/v1/task_states', controller.v1.taskStates.update);
+  router.get('/api/v1/task_states/list', controller.v1.taskStates.findAll);
+  router.get('/api/v1/task_states', controller.v1.taskStates.findOne);
+  router.delete('/api/v1/task_states', controller.v1.taskStates.destroy);
+
+  /**
+   * 任务类型
+   */
+  router.post('/api/v1/task_types', controller.v1.taskTypes.create);
+  router.put('/api/v1/task_types', controller.v1.taskTypes.update);
+  router.get('/api/v1/task_types/list', controller.v1.taskTypes.findAll);
+  router.get('/api/v1/task_types', controller.v1.taskTypes.findOne);
+  router.delete('/api/v1/task_types', controller.v1.taskTypes.destroy);
+
+  /**
+   * 任务
+   */
+  router.post('/api/v1/tasks', controller.v1.tasks.create);
+  router.put('/api/v1/tasks', controller.v1.tasks.update);
+  router.get('/api/v1/tasks/list', controller.v1.tasks.findAll);
+  router.get('/api/v1/tasks', controller.v1.tasks.findOne);
+  router.delete('/api/v1/tasks', controller.v1.tasks.destroy);
+  router.put('/api/v1/tasks/sort', controller.v1.tasks.sort);
+
+  /**
+   * 任务标签
+   */
+  router.post('/api/v1/task_tags', controller.v1.taskTags.create);
+  router.put('/api/v1/task_tags', controller.v1.taskTags.update);
+  router.get('/api/v1/task_tags/list', controller.v1.taskTags.findAll);
+  router.get('/api/v1/task_tags', controller.v1.taskTags.findOne);
+  router.delete('/api/v1/task_tags', controller.v1.taskTags.destroy);
+
+  /**
+   * 任务-任务标签关系表
+   */
+  router.post('/api/v1/task_task_tags', controller.v1.taskTaskTags.create);
+  router.put('/api/v1/task_task_tags', controller.v1.taskTaskTags.update);
+  router.get('/api/v1/task_task_tags/list', controller.v1.taskTaskTags.findAll);
+  router.get('/api/v1/task_task_tags', controller.v1.taskTaskTags.findOne);
+  router.delete('/api/v1/task_task_tags', controller.v1.taskTaskTags.destroy);
+  router.post('/api/v1/task_task_tags/change', controller.v1.taskTaskTags.change);
 };

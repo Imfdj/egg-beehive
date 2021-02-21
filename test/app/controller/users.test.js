@@ -6,8 +6,7 @@ describe('test/app/controller/users.test.js', () => {
   const createUserName = 'name' + Math.random();
   let createUserData = {};
 
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('POST /api/v1/users', () => {
     it('should work', async () => {

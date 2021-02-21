@@ -6,10 +6,12 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name } = payload;
+    const { limit, offset, prop_order, order, name, user_id, project_id } = payload;
     const where = {};
     const Order = [];
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    !ctx.helper.tools.isParam(user_id) ? (where.user_id = user_id) : null;
+    !ctx.helper.tools.isParam(project_id) ? (where.project_id = project_id) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.UserProjects.findAndCountAll({
       limit,

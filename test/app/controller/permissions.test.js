@@ -5,8 +5,7 @@ const { assert, app } = require('egg-mock/bootstrap');
 describe('test/app/controller/permissions.test.js', () => {
   const createPermissionName = 'name' + Math.random();
   let createPermissionData = {};
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('POST /api/v1/permissions', () => {
     it('should work', async () => {

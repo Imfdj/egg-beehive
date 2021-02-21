@@ -17,7 +17,7 @@ describe('test/app/controller/task_lists.test.js', () => {
         .set('authorization', app.__authorization)
         .send({
           name: createName,
-          project_id: 1,
+          project_id: 999999,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);
@@ -61,7 +61,7 @@ describe('test/app/controller/task_lists.test.js', () => {
         .send({
           id: createMenuData.id,
           name: createMenuData.name + 1,
-          project_id: 1,
+          project_id: 999999,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);

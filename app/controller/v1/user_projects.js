@@ -23,6 +23,14 @@ class RoleController extends Controller {
         ...ctx.rule.user_projectBodyReq.name,
         required: false,
       },
+      user_id: {
+        ...ctx.rule.user_projectBodyReq.user_id,
+        required: false,
+      },
+      project_id: {
+        ...ctx.rule.user_projectBodyReq.project_id,
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,

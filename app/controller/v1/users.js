@@ -70,6 +70,10 @@ class RoleController extends Controller {
         type: 'dateTime',
         required: false,
       },
+      project_id: {
+        type: 'number',
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,

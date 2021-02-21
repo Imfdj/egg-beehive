@@ -83,7 +83,6 @@
   },
   "lint-staged": {
     "*.js": [
-      "pretty-quick --staged",
       "eslint --fix --ext .js"
     ]
   },

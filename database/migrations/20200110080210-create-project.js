@@ -67,7 +67,7 @@ module.exports = {
           type: Sequelize.TINYINT(1),
           allowNull: false,
           defaultValue: '1',
-          comment: '项目状态.1为正常、2为已归档、3为已删除',
+          comment: '项目状态.1为正常、2为已归档、3为已在回收站',
         },
         intro: {
           type: Sequelize.STRING(255),

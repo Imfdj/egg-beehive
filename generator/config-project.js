@@ -140,11 +140,11 @@ module.exports = {
       min: 1,
       max: 3,
       required: false,
-      description: '项目状态.1为正常、2为已归档、3为已删除', // 供swagger使用
+      description: '项目状态.1为正常、2为已归档、3为已在回收站', // 供swagger使用
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       defaultValue: 1, // 数据库表中字段的默认值
-      comment: '项目状态.1为正常、2为已归档、3为已删除', // 数据库表中字段的描述
+      comment: '项目状态.1为正常、2为已归档、3为已在回收站', // 数据库表中字段的描述
     },
     {
       name: 'intro',

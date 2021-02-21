@@ -14,6 +14,10 @@ module.exports = app => {
   );
   task_list.associate = function(models) {
     // associations can be defined here
+    app.model.TaskLists.hasMany(app.model.Tasks, {
+      foreignKey: 'task_list_id',
+      targetKey: 'id',
+    });
   };
   return task_list;
 };

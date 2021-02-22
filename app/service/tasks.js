@@ -29,6 +29,12 @@ class _objectName_Service extends Service {
           // attributes: ['id', 'name', 'color', 'task_task_tags'],
           // exclude: ['created_at', 'updated_at', 'task_task_tags'],
         },
+        {
+          model: ctx.model.Users,
+          // as: 'users',
+          attributes: ['id', 'username', 'avatar'],
+          // exclude: ['created_at', 'updated_at', 'task_task_tags'],
+        },
       ],
     });
   }

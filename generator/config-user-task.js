@@ -36,7 +36,7 @@ module.exports = {
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '用户ID', // 数据库表中字段的描述
-      unique: 'user_task_unique',
+      unique: "'user_task_unique'",
       // 外键设置
       references: {
         model: 'users', // 外键关联表
@@ -56,7 +56,7 @@ module.exports = {
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '任务ID', // 数据库表中字段的描述
-      unique: 'user_task_unique',
+      unique: "'user_task_unique'",
       references: {
         // 外键设置
         model: 'tasks', // 外键关联表

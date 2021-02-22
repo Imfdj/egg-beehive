@@ -215,4 +215,14 @@ module.exports = app => {
   router.get('/api/v1/task_task_tags', controller.v1.taskTaskTags.findOne);
   router.delete('/api/v1/task_task_tags', controller.v1.taskTaskTags.destroy);
   router.post('/api/v1/task_task_tags/change', controller.v1.taskTaskTags.change);
+
+  /**
+   * 用户-任务标签关系表
+   */
+  // router.post('/api/v1/user_tasks', controller.v1.userTasks.create);
+  // router.put('/api/v1/user_tasks', controller.v1.userTasks.update);
+  // router.get('/api/v1/user_tasks/list', controller.v1.userTasks.findAll);
+  // router.get('/api/v1/user_tasks', controller.v1.userTasks.findOne);
+  // router.delete('/api/v1/user_tasks', controller.v1.userTasks.destroy);
+  router.post('/api/v1/user_tasks/change', controller.v1.userTasks.change);
 };

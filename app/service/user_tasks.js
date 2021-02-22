@@ -11,7 +11,7 @@ class _objectName_Service extends Service {
     const Order = [];
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
-    return await ctx.model.TaskTaskTags.findAndCountAll({
+    return await ctx.model.UserTasks.findAndCountAll({
       limit,
       offset,
       where,
@@ -21,38 +21,37 @@ class _objectName_Service extends Service {
 
   async findOne(id) {
     const { ctx } = this;
-    return await ctx.model.TaskTaskTags.findOne({ where: { id } });
+    return await ctx.model.UserTasks.findOne({ where: { id } });
   }
 
   async create(payload) {
     const { ctx } = this;
-    return await ctx.model.TaskTaskTags.create(payload);
+    return await ctx.model.UserTasks.create(payload);
   }
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model.TaskTaskTags.update(payload, {
+    return await ctx.model.UserTasks.update(payload, {
       where: { id: payload.id },
     });
   }
 
   async destroy(payload) {
     const { ctx } = this;
-    return await ctx.model.TaskTaskTags.destroy({
+    return await ctx.model.UserTasks.destroy({
       where: { id: payload.ids },
     });
   }
 
   async change(payload) {
     const { ctx } = this;
-    const one = await ctx.model.TaskTaskTags.findOne({ where: payload });
+    const one = await ctx.model.UserTasks.findOne({ where: payload });
     if (one) {
-      return await ctx.model.TaskTaskTags.destroy({
+      return await ctx.model.UserTasks.destroy({
         where: payload,
       });
     }
-    return await ctx.model.TaskTaskTags.create(payload);
-
+    return await ctx.model.UserTasks.create(payload);
   }
 }
 

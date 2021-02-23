@@ -225,4 +225,13 @@ module.exports = app => {
   // router.get('/api/v1/user_tasks', controller.v1.userTasks.findOne);
   // router.delete('/api/v1/user_tasks', controller.v1.userTasks.destroy);
   router.post('/api/v1/user_tasks/change', controller.v1.userTasks.change);
+
+  /**
+   * 任务日志
+   */
+  router.post('/api/v1/task_logs', controller.v1.taskLogs.create);
+  router.put('/api/v1/task_logs', controller.v1.taskLogs.update);
+  router.get('/api/v1/task_logs/list', controller.v1.taskLogs.findAll);
+  // router.get('/api/v1/task_logs', controller.v1.taskLogs.findOne);
+  router.delete('/api/v1/task_logs', controller.v1.taskLogs.destroy);
 };

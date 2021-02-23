@@ -7,6 +7,7 @@ module.exports = app => {
     {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: Sequelize.TEXT('tiny'),
+      project_id: Sequelize.INTEGER(11),
       parent_id: Sequelize.INTEGER(11),
       task_list_id: Sequelize.INTEGER(11),
       task_state_id: Sequelize.INTEGER(11),

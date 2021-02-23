@@ -91,6 +91,10 @@ class RoleController extends Controller {
         ...ctx.rule.taskPutBodyReq.name,
         required: false,
       },
+      project_id: {
+        ...ctx.rule.taskPutBodyReq.project_id,
+        required: false,
+      },
       task_list_id: {
         ...ctx.rule.taskPutBodyReq.task_list_id,
         required: false,

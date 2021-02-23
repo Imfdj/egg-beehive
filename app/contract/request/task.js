@@ -21,6 +21,13 @@ const body = {
       example: '0',
       description: '父ID',
     },
+    project_id: {
+      type: 'number',
+      required: true,
+      min: 1,
+      example: '1',
+      description: '所属项目ID',
+    },
     task_list_id: {
       type: 'number',
       required: true,

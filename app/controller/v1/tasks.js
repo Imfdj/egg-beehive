@@ -85,7 +85,30 @@ class RoleController extends Controller {
    */
   async update() {
     const { ctx, service } = this;
-    ctx.validate(ctx.rule.taskBodyReq, ctx.request.body);
+    const params = {
+      ...ctx.rule.taskPutBodyReq,
+      name: {
+        ...ctx.rule.taskPutBodyReq.name,
+        required: false,
+      },
+      task_list_id: {
+        ...ctx.rule.taskPutBodyReq.task_list_id,
+        required: false,
+      },
+      task_state_id: {
+        ...ctx.rule.taskPutBodyReq.task_state_id,
+        required: false,
+      },
+      task_type_id: {
+        ...ctx.rule.taskPutBodyReq.task_type_id,
+        required: false,
+      },
+      task_priority_id: {
+        ...ctx.rule.taskPutBodyReq.task_priority_id,
+        required: false,
+      },
+    };
+    ctx.validate(params, ctx.request.body);
     const res = await service.tasks.update(ctx.request.body);
     res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }

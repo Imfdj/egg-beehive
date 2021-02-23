@@ -31,9 +31,8 @@ class _objectName_Service extends Service {
         },
         {
           model: ctx.model.Users,
-          // as: 'users',
+          as: 'participators',
           attributes: ['id', 'username', 'avatar'],
-          // exclude: ['created_at', 'updated_at', 'task_task_tags'],
         },
       ],
     });
@@ -48,8 +47,6 @@ class _objectName_Service extends Service {
       },
       order: [['sort', 'desc']],
     });
-    console.log(tasks);
-    console.log(tasks[0]);
     payload.sort = tasks[0] ? tasks[0].sort + 65536 : 65536;
     return await ctx.model.Tasks.create(payload);
   }

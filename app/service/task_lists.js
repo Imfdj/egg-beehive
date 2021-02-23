@@ -34,6 +34,7 @@ class _objectName_Service extends Service {
             {
               model: ctx.model.Users,
               attributes: ['username', 'id', 'avatar'],
+              as: 'executor',
             },
           ],
         },

@@ -25,11 +25,12 @@ module.exports = app => {
   );
   task.associate = function(models) {
     // associations can be defined here
-    // task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id' });
+    task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id', as: 'executor' });
     app.model.Tasks.belongsToMany(app.model.Users, {
       through: app.model.UserTasks,
       foreignKey: 'task_id',
       otherKey: 'user_id',
+      as: 'participators',
     });
   };
   return task;

@@ -27,6 +27,10 @@ class RoleController extends Controller {
         ...ctx.rule.task_logBodyReq.task_id,
         required: false,
       },
+      is_comment: {
+        ...ctx.rule.task_logBodyReq.is_comment,
+        required: false,
+      },
       prop_order: {
         type: 'enum',
         required: false,

@@ -62,10 +62,12 @@ class _objectName_Service extends Service {
       project_id: task.project_id,
       operator_id: ctx.currentRequestData.userInfo.id,
       type: '',
+      icon: '',
     };
     if (app.lodash.has(payload, 'name')) {
       taskLog.remark = '更新了内容';
       taskLog.type = 'name';
+      taskLog.icon = 'el-icon-edit';
       taskLog.content = payload.name;
     }
     if (app.lodash.has(payload, 'task_state_id')) {
@@ -73,6 +75,7 @@ class _objectName_Service extends Service {
         where: { id: payload.task_state_id },
       });
       taskLog.remark = `修改执行状态为 ${ state.name }`;
+      taskLog.icon = 'el-icon-pie-chart';
       taskLog.type = 'state';
     }
     if (app.lodash.has(payload, 'task_type_id')) {
@@ -81,6 +84,7 @@ class _objectName_Service extends Service {
       });
       taskLog.remark = `修改任务类型为 ${ type.name }`;
       taskLog.type = 'type';
+      taskLog.icon = 'el-icon-edit';
     }
     if (app.lodash.has(payload, 'task_priority_id')) {
       const priority = await ctx.model.TaskPrioritys.findOne({
@@ -88,6 +92,7 @@ class _objectName_Service extends Service {
       });
       taskLog.remark = `修改任务优先级为 ${ priority.name }`;
       taskLog.type = 'priority';
+      taskLog.icon = 'el-icon-edit';
     }
     if (app.lodash.has(payload, 'executor_id')) {
       if (payload.executor_id === 0) {
@@ -101,6 +106,7 @@ class _objectName_Service extends Service {
         taskLog.remark = `指派给了 ${ executor.username }`;
       }
       taskLog.type = 'priority';
+      taskLog.icon = 'el-icon-user';
     }
     if (app.lodash.has(payload, 'start_date')) {
       if (payload.start_date) {
@@ -109,6 +115,7 @@ class _objectName_Service extends Service {
         taskLog.remark = '清除了开始时间';
       }
       taskLog.type = 'start_date';
+      taskLog.icon = 'el-icon-date';
     }
     if (app.lodash.has(payload, 'end_date')) {
       if (payload.end_date) {
@@ -117,15 +124,18 @@ class _objectName_Service extends Service {
         taskLog.remark = '清除了截止时间';
       }
       taskLog.type = 'end_date';
+      taskLog.icon = 'el-icon-date';
     }
     if (app.lodash.has(payload, 'remark')) {
       taskLog.remark = '更新了备注';
       taskLog.type = 'remark';
       taskLog.content = payload.remark;
+      taskLog.icon = 'el-icon-document';
     }
     if (app.lodash.has(payload, 'is_recycle')) {
       taskLog.remark = payload.is_recycle ? '将任务放入了回收站' : '从回收站中还原了任务';
       taskLog.type = 'is_recycle';
+      taskLog.icon = 'el-icon-delete';
     }
     await ctx.model.TaskLogs.create(taskLog);
 

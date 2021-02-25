@@ -9,7 +9,7 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, name } = payload;
     const where = {};
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    name ? (where.name = { [Op.like]: `%${ name }%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.UserTasks.findAndCountAll({
       limit,
@@ -47,9 +47,25 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     const one = await ctx.model.UserTasks.findOne({ where: payload });
     if (one) {
-      return await ctx.model.UserTasks.destroy({
-        where: payload,
-      });
+      const { user_id, task_id } = payload;
+      const transition = await ctx.model.transaction();
+      try {
+        const res = await ctx.model.UserTasks.destroy({
+          where: payload,
+        });
+        // 如果当前用户退出的任务中，是执行者，则将执行者置为待认领
+        await ctx.model.Tasks.update({ executor_id: 0 }, {
+          where: {
+            id: task_id,
+            executor_id: user_id,
+          },
+        });
+        await transition.commit();
+        return res;
+      } catch (e) {
+        await transition.rollback();
+        throw e;
+      }
     }
     return await ctx.model.UserTasks.create(payload);
   }

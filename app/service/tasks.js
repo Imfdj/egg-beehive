@@ -64,84 +64,99 @@ class _objectName_Service extends Service {
       type: '',
       icon: '',
     };
-    if (app.lodash.has(payload, 'name')) {
-      taskLog.remark = '更新了内容';
-      taskLog.type = 'name';
-      taskLog.icon = 'el-icon-edit';
-      taskLog.content = payload.name;
-    }
-    if (app.lodash.has(payload, 'task_state_id')) {
-      const state = await ctx.model.TaskStates.findOne({
-        where: { id: payload.task_state_id },
-      });
-      taskLog.remark = `修改执行状态为 ${ state.name }`;
-      taskLog.icon = 'el-icon-pie-chart';
-      taskLog.type = 'state';
-    }
-    if (app.lodash.has(payload, 'task_type_id')) {
-      const type = await ctx.model.TaskTypes.findOne({
-        where: { id: payload.task_type_id },
-      });
-      taskLog.remark = `修改任务类型为 ${ type.name }`;
-      taskLog.type = 'type';
-      taskLog.icon = 'el-icon-edit';
-    }
-    if (app.lodash.has(payload, 'task_priority_id')) {
-      const priority = await ctx.model.TaskPrioritys.findOne({
-        where: { id: payload.task_priority_id },
-      });
-      taskLog.remark = `修改任务优先级为 ${ priority.name }`;
-      taskLog.type = 'priority';
-      taskLog.icon = 'el-icon-edit';
-    }
-    if (app.lodash.has(payload, 'executor_id')) {
-      if (payload.executor_id === 0) {
-        taskLog.remark = '移除了执行者';
-      } else if (payload.executor_id === ctx.currentRequestData.userInfo.id) {
-        taskLog.remark = '认领了任务';
-      } else {
-        const executor = await ctx.model.Users.findOne({
-          where: { id: payload.executor_id },
+    const transition = await ctx.model.transaction();
+    try {
+      if (app.lodash.has(payload, 'name')) {
+        taskLog.remark = '更新了内容';
+        taskLog.type = 'name';
+        taskLog.icon = 'el-icon-edit';
+        taskLog.content = payload.name;
+      }
+      if (app.lodash.has(payload, 'task_state_id')) {
+        const state = await ctx.model.TaskStates.findOne({
+          where: { id: payload.task_state_id },
         });
-        taskLog.remark = `指派给了 ${ executor.username }`;
+        taskLog.remark = `修改执行状态为 ${ state.name }`;
+        taskLog.icon = 'el-icon-pie-chart';
+        taskLog.type = 'state';
       }
-      taskLog.type = 'priority';
-      taskLog.icon = 'el-icon-user';
-    }
-    if (app.lodash.has(payload, 'start_date')) {
-      if (payload.start_date) {
-        taskLog.remark = `更新开始时间为 ${ payload.start_date }`;
-      } else {
-        taskLog.remark = '清除了开始时间';
+      if (app.lodash.has(payload, 'task_type_id')) {
+        const type = await ctx.model.TaskTypes.findOne({
+          where: { id: payload.task_type_id },
+        });
+        taskLog.remark = `修改任务类型为 ${ type.name }`;
+        taskLog.type = 'type';
+        taskLog.icon = 'el-icon-edit';
       }
-      taskLog.type = 'start_date';
-      taskLog.icon = 'el-icon-date';
-    }
-    if (app.lodash.has(payload, 'end_date')) {
-      if (payload.end_date) {
-        taskLog.remark = `更新截止时间为 ${ payload.end_date }`;
-      } else {
-        taskLog.remark = '清除了截止时间';
+      if (app.lodash.has(payload, 'task_priority_id')) {
+        const priority = await ctx.model.TaskPrioritys.findOne({
+          where: { id: payload.task_priority_id },
+        });
+        taskLog.remark = `修改任务优先级为 ${ priority.name }`;
+        taskLog.type = 'priority';
+        taskLog.icon = 'el-icon-edit';
       }
-      taskLog.type = 'end_date';
-      taskLog.icon = 'el-icon-date';
+      if (app.lodash.has(payload, 'executor_id')) {
+        const { executor_id } = payload;
+        if (executor_id === 0) {
+          taskLog.remark = '移除了执行者';
+        } else if (executor_id === ctx.currentRequestData.userInfo.id) {
+          taskLog.remark = '认领了任务';
+        } else {
+          const executor = await ctx.model.Users.findOne({
+            where: { id: executor_id },
+          });
+          // 如果此用户还没参与此任务，则参与任务
+          await ctx.model.UserTasks.findOrCreate({
+            where: {
+              user_id: executor_id,
+              task_id: payload.id,
+            },
+          });
+          taskLog.remark = `指派给了 ${ executor.username }`;
+        }
+        taskLog.type = 'priority';
+        taskLog.icon = 'el-icon-user';
+      }
+      if (app.lodash.has(payload, 'start_date')) {
+        if (payload.start_date) {
+          taskLog.remark = `更新开始时间为 ${ payload.start_date }`;
+        } else {
+          taskLog.remark = '清除了开始时间';
+        }
+        taskLog.type = 'start_date';
+        taskLog.icon = 'el-icon-date';
+      }
+      if (app.lodash.has(payload, 'end_date')) {
+        if (payload.end_date) {
+          taskLog.remark = `更新截止时间为 ${ payload.end_date }`;
+        } else {
+          taskLog.remark = '清除了截止时间';
+        }
+        taskLog.type = 'end_date';
+        taskLog.icon = 'el-icon-date';
+      }
+      if (app.lodash.has(payload, 'remark')) {
+        taskLog.remark = '更新了备注';
+        taskLog.type = 'remark';
+        taskLog.content = payload.remark;
+        taskLog.icon = 'el-icon-document';
+      }
+      if (app.lodash.has(payload, 'is_recycle')) {
+        taskLog.remark = payload.is_recycle ? '将任务放入了回收站' : '从回收站中还原了任务';
+        taskLog.type = 'is_recycle';
+        taskLog.icon = 'el-icon-delete';
+      }
+      await ctx.model.TaskLogs.create(taskLog);
+      const res = await ctx.model.Tasks.update(payload, {
+        where: { id: payload.id },
+      });
+      await transition.commit();
+      return res;
+    } catch (e) {
+      await transition.rollback();
+      throw e;
     }
-    if (app.lodash.has(payload, 'remark')) {
-      taskLog.remark = '更新了备注';
-      taskLog.type = 'remark';
-      taskLog.content = payload.remark;
-      taskLog.icon = 'el-icon-document';
-    }
-    if (app.lodash.has(payload, 'is_recycle')) {
-      taskLog.remark = payload.is_recycle ? '将任务放入了回收站' : '从回收站中还原了任务';
-      taskLog.type = 'is_recycle';
-      taskLog.icon = 'el-icon-delete';
-    }
-    await ctx.model.TaskLogs.create(taskLog);
-
-    return await ctx.model.Tasks.update(payload, {
-      where: { id: payload.id },
-    });
   }
 
   async destroy(payload) {

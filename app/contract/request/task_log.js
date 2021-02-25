@@ -7,7 +7,7 @@ const body = {
   task_logBodyReq: {
     remark: {
       type: 'string',
-      required: true,
+      required: false,
       min: 1,
       max: 255,
       trim: true,

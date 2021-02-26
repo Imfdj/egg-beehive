@@ -48,7 +48,10 @@ class _objectName_Service extends Service {
       order: [['sort', 'desc']],
     });
     payload.sort = tasks[0] ? tasks[0].sort + 65536 : 65536;
-    return await ctx.model.Tasks.create(payload);
+    return await ctx.model.Tasks.create({
+      ...payload,
+      creator_id: ctx.currentRequestData.userInfo.id,
+    });
   }
 
   async update(payload) {

@@ -22,6 +22,18 @@ module.exports = {
           defaultValue: '0',
           comment: '父ID',
         },
+        creator_id: {
+          type: Sequelize.INTEGER(11).UNSIGNED,
+          allowNull: false,
+          defaultValue: 1,
+          comment: '创建者ID',
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        },
         task_list_id: {
           type: Sequelize.INTEGER(11).UNSIGNED,
           allowNull: false,

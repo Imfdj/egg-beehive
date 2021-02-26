@@ -54,6 +54,25 @@ module.exports = {
       comment: '父ID', // 数据库表中字段的描述
     },
     {
+      name: 'creator_id',
+      UNSIGNED: true,
+      type: 'INTEGER',
+      length: 11,
+      min: 1,
+      required: false,
+      description: '创建者ID', // 供swagger使用
+      example: 1, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      comment: '创建者ID', // 数据库表中字段的描述
+      // 外键设置
+      references: {
+        model: 'users', // 外键关联表
+        key: 'id', // 外键字段名
+      },
+      onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+    },
+    {
       name: 'task_list_id',
       UNSIGNED: true,
       type: 'INTEGER',

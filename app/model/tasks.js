@@ -7,6 +7,7 @@ module.exports = app => {
     {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: Sequelize.TEXT('tiny'),
+      creator_id: Sequelize.INTEGER(11),
       project_id: Sequelize.INTEGER(11),
       parent_id: Sequelize.INTEGER(11),
       task_list_id: Sequelize.INTEGER(11),
@@ -27,6 +28,7 @@ module.exports = app => {
   task.associate = function(models) {
     // associations can be defined here
     task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id', as: 'executor' });
+    task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'creator_id', as: 'creator' });
     app.model.Tasks.belongsToMany(app.model.Users, {
       through: app.model.UserTasks,
       foreignKey: 'task_id',

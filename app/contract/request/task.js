@@ -21,6 +21,13 @@ const body = {
       example: '0',
       description: '父ID',
     },
+    creator_id: {
+      type: 'number',
+      required: false,
+      min: 1,
+      example: 1,
+      description: '创建者ID',
+    },
     project_id: {
       type: 'number',
       required: true,

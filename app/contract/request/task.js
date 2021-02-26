@@ -101,6 +101,14 @@ const body = {
       example: '0',
       description: '是否为隐私模式.1为true,0为false',
     },
+    is_done: {
+      type: 'number',
+      required: false,
+      min: 0,
+      max: 1,
+      example: 0,
+      description: '是否完成.1为true,0为false',
+    },
     is_recycle: {
       type: 'number',
       required: false,

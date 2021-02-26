@@ -18,6 +18,7 @@ module.exports = app => {
       start_date: Sequelize.STRING(30),
       end_date: Sequelize.STRING(30),
       remark: Sequelize.TEXT('medium'),
+      is_done: Sequelize.TINYINT(1),
       is_privacy: Sequelize.TINYINT(1),
       is_recycle: Sequelize.TINYINT(1),
       likes: Sequelize.INTEGER(11),

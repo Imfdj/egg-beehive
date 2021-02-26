@@ -103,6 +103,12 @@ module.exports = {
           unique: false,
           comment: '任务备注',
         },
+        is_done: {
+          type: Sequelize.TINYINT(1),
+          allowNull: false,
+          defaultValue: 0,
+          comment: '是否完成.1为true,0为false',
+        },
         is_privacy: {
           type: Sequelize.TINYINT(1),
           allowNull: false,

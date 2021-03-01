@@ -43,17 +43,37 @@ class _objectName_Service extends Service {
   async create(payload) {
     const { ctx } = this;
     const { task_list_id } = payload;
-    const tasks = await ctx.model.Tasks.findAll({
-      where: {
-        task_list_id,
-      },
-      order: [['sort', 'desc']],
-    });
-    payload.sort = tasks[0] ? tasks[0].sort + 65536 : 65536;
-    return await ctx.model.Tasks.create({
-      ...payload,
-      creator_id: ctx.currentRequestData.userInfo.id,
-    });
+    const { id: userId } = ctx.currentRequestData.userInfo;
+    const transaction = await ctx.model.transaction();
+    try {
+      const tasks = await ctx.model.Tasks.findAll({
+        where: {
+          task_list_id,
+        },
+        order: [['sort', 'desc']],
+      });
+      payload.sort = tasks[0] ? tasks[0].sort + 65536 : 65536;
+      const res = await ctx.model.Tasks.create({
+        ...payload,
+        creator_id: userId,
+      }, { transaction });
+      // 创建任务，默认创建日志：“创建了任务”
+      const taskLog = {
+        remark: '创建了任务',
+        content: payload.name,
+        task_id: res.id,
+        project_id: payload.project_id,
+        operator_id: userId,
+        type: 'create',
+        icon: 'el-icon-plus',
+      };
+      await ctx.model.TaskLogs.create(taskLog, { transaction });
+      await transaction.commit();
+      return res;
+    } catch (e) {
+      await transaction.rollback();
+      throw e;
+    }
   }
 
   async update(payload) {
@@ -69,7 +89,7 @@ class _objectName_Service extends Service {
       type: '',
       icon: '',
     };
-    const transition = await ctx.model.transaction();
+    const transaction = await ctx.model.transaction();
     try {
       if (app.lodash.has(payload, 'name')) {
         taskLog.remark = '更新了内容';
@@ -117,6 +137,7 @@ class _objectName_Service extends Service {
               user_id: executor_id,
               task_id: payload.id,
             },
+            transaction,
           });
           taskLog.remark = `指派给了 ${ executor.username }`;
         }
@@ -152,14 +173,15 @@ class _objectName_Service extends Service {
         taskLog.type = 'is_recycle';
         taskLog.icon = 'el-icon-delete';
       }
-      await ctx.model.TaskLogs.create(taskLog);
+      await ctx.model.TaskLogs.create(taskLog, { transaction });
       const res = await ctx.model.Tasks.update(payload, {
         where: { id: payload.id },
+        transaction,
       });
-      await transition.commit();
+      await transaction.commit();
       return res;
     } catch (e) {
-      await transition.rollback();
+      await transaction.rollback();
       throw e;
     }
   }

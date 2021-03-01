@@ -48,10 +48,11 @@ class _objectName_Service extends Service {
     const one = await ctx.model.UserTasks.findOne({ where: payload });
     if (one) {
       const { user_id, task_id } = payload;
-      const transition = await ctx.model.transaction();
+      const transaction = await ctx.model.transaction();
       try {
         const res = await ctx.model.UserTasks.destroy({
           where: payload,
+          transaction,
         });
         // 如果当前用户退出的任务中，是执行者，则将执行者置为待认领
         await ctx.model.Tasks.update({ executor_id: 0 }, {
@@ -59,11 +60,12 @@ class _objectName_Service extends Service {
             id: task_id,
             executor_id: user_id,
           },
+          transaction,
         });
-        await transition.commit();
+        await transaction.commit();
         return res;
       } catch (e) {
-        await transition.rollback();
+        await transaction.rollback();
         throw e;
       }
     }

@@ -68,6 +68,11 @@ class _objectName_Service extends Service {
         icon: 'el-icon-plus',
       };
       await ctx.model.TaskLogs.create(taskLog, { transaction });
+      // 创建任务，默认将创建者加入参与此任务
+      await ctx.model.UserTasks.create({
+        user_id: userId,
+        task_id: res.id,
+      }, { transaction });
       await transaction.commit();
       return res;
     } catch (e) {

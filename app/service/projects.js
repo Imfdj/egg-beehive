@@ -9,7 +9,7 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, name, state } = payload;
     const where = {};
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    name ? (where.name = { [Op.like]: `%${ name }%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = parseInt(state)) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Projects.findAndCountAll({
@@ -51,12 +51,12 @@ class _objectName_Service extends Service {
         };
       });
       // 根据project_template_id获取对应的templateTask生成TaskList
-      await ctx.model.TaskLists.bulkCreate(project_template_tasks);
+      await ctx.model.TaskLists.bulkCreate(project_template_tasks, { transaction });
       // 创建项目同时将创建者加入此项目
       await ctx.service.userProjects.create({
         user_id: ctx.currentRequestData.userInfo.id,
         project_id: project.id,
-      });
+      }, { transaction });
       await transaction.commit();
       return project;
     } catch (e) {

@@ -1,5 +1,6 @@
 'use strict';
 const crypto = require('crypto');
+const lodash = require('lodash');
 
 module.exports.tools = {
   // 根据ID验证数据是否存在；存在则返回对象，不存在则抛出404。
@@ -38,6 +39,57 @@ module.exports.tools = {
   isParam(param) {
     return !param && param !== 0;
   },
+
+  findAllParamsDeal(rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}) {
+    const _rule = lodash.cloneDeep(rule);
+    const query = {
+      where: {},
+    };
+    for (const ruleKey in _rule) {
+      _rule[ruleKey].required = false;
+    }
+    const findAllParams = {
+      prop_order: {
+        type: 'enum',
+        required: false,
+        values: [...Object.keys(_rule), ''],
+      },
+      order: {
+        type: 'enum',
+        required: false,
+        values: ['desc', 'asc', ''],
+      },
+      limit: {
+        type: 'number',
+        required: false,
+      },
+      offset: {
+        type: 'number',
+        required: false,
+        default: 0,
+      },
+      ...findAllParamsOther,
+    };
+    const allRule = {
+      ..._rule,
+      ...ruleOther,
+      ...findAllParams,
+    };
+    // 根据rule处理query，剔除非rule检查字段
+    for (const queryKey in queryOrigin) {
+      if (_rule.hasOwnProperty(queryKey)) {
+        query.where[queryKey] = queryOrigin[queryKey];
+      }
+      if (allRule.hasOwnProperty(queryKey)) {
+        query[queryKey] = queryOrigin[queryKey];
+      }
+    }
+    return {
+      allRule,
+      query,
+    };
+  },
+
 };
 
 module.exports.body = {
@@ -127,14 +179,14 @@ module.exports.body = {
 module.exports.redisKeys = {
   // 资源基于action和url存储到redis中的key
   permissionsBaseActionUrl(action = '', url = '') {
-    return `permissions:action:${action}:url:${url}`;
+    return `permissions:action:${ action }:url:${ url }`;
   },
   // 角色资源基于roleId存储到redis中的key
   rolePermissionsBaseRoleId(id = '') {
-    return `rolePermissions:roleId:${id}`;
+    return `rolePermissions:roleId:${ id }`;
   },
   // 用户拥有的所有角色id，基于userId存储到redis中的key
   userRoleIdsBaseUserId(id = '') {
-    return `userRoleIds:userId:${id}`;
+    return `userRoleIds:userId:${ id }`;
   },
 };

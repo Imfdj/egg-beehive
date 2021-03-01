@@ -127,6 +127,12 @@ module.exports = {
           defaultValue: '0',
           comment: '点赞数',
         },
+        plan_work_hours: {
+          type: Sequelize.INTEGER(11).UNSIGNED,
+          allowNull: false,
+          defaultValue: 0,
+          comment: '计划工时',
+        },
         sort: {
           type: Sequelize.INTEGER(11).UNSIGNED,
           allowNull: false,

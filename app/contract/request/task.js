@@ -124,6 +124,13 @@ const body = {
       example: '0',
       description: '点赞数',
     },
+    plan_work_hours: {
+      type: 'number',
+      required: false,
+      min: 0,
+      example: 0,
+      description: '计划工时',
+    },
     sort: {
       type: 'number',
       required: false,

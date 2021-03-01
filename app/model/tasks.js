@@ -22,6 +22,7 @@ module.exports = app => {
       is_privacy: Sequelize.TINYINT(1),
       is_recycle: Sequelize.TINYINT(1),
       likes: Sequelize.INTEGER(11),
+      plan_work_hours: Sequelize.INTEGER(11),
       sort: Sequelize.INTEGER(11),
     },
     {}

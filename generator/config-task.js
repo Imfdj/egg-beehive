@@ -251,6 +251,19 @@ module.exports = {
       comment: '点赞数', // 数据库表中字段的描述
     },
     {
+      name: 'plan_work_hours',
+      type: 'INTEGER',
+      UNSIGNED: true,
+      length: 11,
+      min: 0,
+      required: false,
+      description: '计划工时', // 供swagger使用
+      example: 0, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      defaultValue: 0, // 数据库表中字段的默认值
+      comment: '计划工时', // 数据库表中字段的描述
+    },
+    {
       name: 'sort',
       type: 'DOUBLE',
       UNSIGNED: true,

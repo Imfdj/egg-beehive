@@ -6,12 +6,12 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name } = payload;
+    const { limit, offset, prop_order, order, title } = payload;
     const where = payload.where;
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    title ? (where.title = { [Op.like]: `%${title}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
-    return await ctx.model._objectNameHump_s.findAndCountAll({
+    return await ctx.model.ProjectFiles.findAndCountAll({
       limit,
       offset,
       where,
@@ -21,24 +21,24 @@ class _objectName_Service extends Service {
 
   async findOne(id) {
     const { ctx } = this;
-    return await ctx.model._objectNameHump_s.findOne({ where: { id } });
+    return await ctx.model.ProjectFiles.findOne({ where: { id } });
   }
 
   async create(payload) {
     const { ctx } = this;
-    return await ctx.model._objectNameHump_s.create(payload);
+    return await ctx.model.ProjectFiles.create(payload);
   }
 
   async update(payload) {
     const { ctx } = this;
-    return await ctx.model._objectNameHump_s.update(payload, {
+    return await ctx.model.ProjectFiles.update(payload, {
       where: { id: payload.id },
     });
   }
 
   async destroy(payload) {
     const { ctx } = this;
-    return await ctx.model._objectNameHump_s.destroy({
+    return await ctx.model.ProjectFiles.destroy({
       where: { id: payload.ids },
     });
   }

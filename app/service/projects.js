@@ -22,6 +22,14 @@ class _objectName_Service extends Service {
           model: ctx.model.Users,
           attributes: ['username', 'id', 'avatar'],
         },
+        {
+          model: ctx.model.Users,
+          as: 'collector',
+          where: {
+            id: ctx.currentRequestData.userInfo.id,
+          },
+          required: false,
+        },
       ],
     });
   }

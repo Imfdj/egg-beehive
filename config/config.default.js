@@ -110,16 +110,7 @@ module.exports = appInfo => {
   };
 
   config.multipart = {
-    whitelist: [
-      '.jpg',
-      '.jpeg', // image/jpeg
-      '.png', // image/png, image/x-png
-      '.gif', // image/gif
-      // video
-      '.mp3',
-      '.mp4',
-      '.avi',
-    ],
+    fileSize: '200mb',
   };
 
   config.static = {

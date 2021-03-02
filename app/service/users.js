@@ -11,14 +11,14 @@ class UserService extends Service {
     const where = {};
     let project_where = null;
     keyword
-      ? (where[Op.or] = [{ username: { [Op.like]: `%${keyword}%` } }, { email: { [Op.like]: `%${keyword}%` } }, { phone: { [Op.like]: `%${keyword}%` } }])
+      ? (where[Op.or] = [{ username: { [Op.like]: `%${ keyword }%` } }, { email: { [Op.like]: `%${ keyword }%` } }, { phone: { [Op.like]: `%${ keyword }%` } }])
       : null;
     // 创建时间大于等于date_after_created
     date_after_created ? (where[Op.and] = [{ created_at: { [Op.gte]: date_after_created } }]) : null;
     const Order = [];
-    username ? (where.username = { [Op.like]: `%${username}%` }) : null;
-    email ? (where.email = { [Op.like]: `%${email}%` }) : null;
-    phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
+    username ? (where.username = { [Op.like]: `%${ username }%` }) : null;
+    email ? (where.email = { [Op.like]: `%${ email }%` }) : null;
+    phone ? (where.phone = { [Op.like]: `%${ phone }%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
     !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
@@ -297,6 +297,20 @@ class UserService extends Service {
         message: 'refreshToken有误',
       };
     }
+  }
+
+  async findOneCollectProject(id) {
+    const { ctx } = this;
+    return await ctx.model.Users.findOne({
+      where: { id },
+      include: [
+        {
+          model: ctx.model.Projects,
+          as: 'collect_projects',
+        },
+      ],
+      attributes: { exclude: ['password', 'deleted_at'] },
+    });
   }
 }
 

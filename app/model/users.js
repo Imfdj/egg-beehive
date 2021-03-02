@@ -31,6 +31,12 @@ module.exports = app => {
       foreignKey: 'user_id',
       otherKey: 'project_id',
     });
+    app.model.Users.belongsToMany(app.model.Projects, {
+      through: app.model.UserProjectCollects,
+      foreignKey: 'user_id',
+      otherKey: 'project_id',
+      as: 'collect_projects',
+    });
   };
   return user;
 };

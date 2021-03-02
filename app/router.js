@@ -25,6 +25,7 @@ module.exports = app => {
   router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
   router.post('/api/v1/users/refreshToken', controller.v1.users.refreshToken);
   router.put('/api/v1/users/department', controller.v1.users.minus);
+  router.get('/api/v1/users/collect_project', controller.v1.users.findOneCollectProject);
 
   /**
    * 角色
@@ -252,4 +253,9 @@ module.exports = app => {
   router.get('/api/v1/project_files/list', controller.v1.projectFiles.findAll);
   router.get('/api/v1/project_files', controller.v1.projectFiles.findOne);
   router.delete('/api/v1/project_files', controller.v1.projectFiles.destroy);
+
+  /**
+   * 用户-项目-收藏关系表
+   */
+  router.post('/api/v1/user_project_collects/change', controller.v1.userProjectCollects.change);
 };

@@ -243,4 +243,13 @@ module.exports = app => {
   router.get('/api/v1/task_working_hours/list', controller.v1.taskWorkingHours.findAll);
   // router.get('/api/v1/task_working_hours', controller.v1.taskWorkingHours.findOne);
   router.delete('/api/v1/task_working_hours', controller.v1.taskWorkingHours.destroy);
+
+  /**
+   * 项目文件
+   */
+  router.post('/api/v1/project_files', controller.v1.projectFiles.create);
+  router.put('/api/v1/project_files', controller.v1.projectFiles.update);
+  router.get('/api/v1/project_files/list', controller.v1.projectFiles.findAll);
+  router.get('/api/v1/project_files', controller.v1.projectFiles.findOne);
+  router.delete('/api/v1/project_files', controller.v1.projectFiles.destroy);
 };

@@ -121,6 +121,32 @@ module.exports = {
       comment: '是否为私有项目.1为true,0为false', // 数据库表中字段的描述
     },
     {
+      name: 'is_recycle',
+      type: 'TINYINT',
+      length: 1,
+      min: 0,
+      max: 1,
+      required: false,
+      description: '是否进入回收站.1为true,0为false', // 供swagger使用
+      example: 1, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      defaultValue: 1, // 数据库表中字段的默认值
+      comment: '是否进入回收站.1为true,0为false', // 数据库表中字段的描述
+    },
+    {
+      name: 'is_archived',
+      type: 'TINYINT',
+      length: 1,
+      min: 0,
+      max: 1,
+      required: false,
+      description: '是否已归档.1为true,0为false', // 供swagger使用
+      example: 1, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      defaultValue: 1, // 数据库表中字段的默认值
+      comment: '是否已归档.1为true,0为false', // 数据库表中字段的描述
+    },
+    {
       name: 'is_auto_progress',
       type: 'TINYINT',
       length: 1,

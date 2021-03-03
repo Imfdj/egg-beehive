@@ -57,6 +57,18 @@ module.exports = {
           defaultValue: '1',
           comment: '是否为私有项目.1为true,0为false',
         },
+        is_recycle: {
+          type: Sequelize.TINYINT(1),
+          allowNull: false,
+          defaultValue: 0,
+          comment: '是否进入回收站.1为true,0为false',
+        },
+        is_archived: {
+          type: Sequelize.TINYINT(1),
+          allowNull: false,
+          defaultValue: 0,
+          comment: '是否已归档.1为true,0为false',
+        },
         is_auto_progress: {
           type: Sequelize.TINYINT(1),
           allowNull: false,
@@ -66,8 +78,8 @@ module.exports = {
         state: {
           type: Sequelize.TINYINT(1),
           allowNull: false,
-          defaultValue: '1',
-          comment: '项目状态.1为正常、2为已归档、3为已在回收站',
+          defaultValue: 1,
+          comment: '项目状态.1为正常',
         },
         intro: {
           type: Sequelize.STRING(255),

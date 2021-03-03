@@ -418,19 +418,6 @@ class RoleController extends Controller {
     }
   }
 
-  /**
-   * @apikey
-   * @summary 获取某个 用户的收藏项目
-   * @description 获取某个 用户的收藏项目
-   * @router get /api/v1/users/collect_project
-   * @request query number *id eg:1 userID
-   */
-  async findOneCollectProject() {
-    const { ctx, service } = this;
-    ctx.validate(ctx.rule.userId, ctx.query);
-    const res = await service.users.findOneCollectProject(ctx.query.id);
-    res ? ctx.helper.body.SUCCESS({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
-  }
 }
 
 module.exports = RoleController;

@@ -12,6 +12,8 @@ module.exports = app => {
       project_template_id: Sequelize.INTEGER(11),
       progress: Sequelize.INTEGER(11),
       cover: Sequelize.STRING(255),
+      is_recycle: Sequelize.TINYINT(1),
+      is_archived: Sequelize.TINYINT(1),
       is_private: Sequelize.TINYINT(1),
       is_auto_progress: Sequelize.TINYINT(1),
       state: Sequelize.TINYINT(1),

@@ -25,7 +25,6 @@ module.exports = app => {
   router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
   router.post('/api/v1/users/refreshToken', controller.v1.users.refreshToken);
   router.put('/api/v1/users/department', controller.v1.users.minus);
-  router.get('/api/v1/users/collect_project', controller.v1.users.findOneCollectProject);
 
   /**
    * 角色

@@ -19,39 +19,32 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const params = {
-      name: {
-        ...ctx.rule.projectBodyReq.name,
-        required: false,
-      },
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.projectBodyReq, ctx.query, {
       state: {
         ...ctx.rule.projectBodyReq.state,
         required: false,
         type: 'enum',
-        values: [1, 2, 3, '1', '2', '3'],
+        values: [1, '1'],
       },
-      prop_order: {
+      is_recycle: {
+        ...ctx.rule.projectBodyReq.is_recycle,
         type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.projectPutBodyReq), ''],
+        values: [0, '0', 1, '1'],
       },
-      order: {
+      is_archived: {
+        ...ctx.rule.projectBodyReq.is_recycle,
         type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
+        values: [0, '0', 1, '1'],
       },
-      limit: {
-        type: 'number',
+      collection: {
+        type: 'enum',
+        values: [0, '0', 1, '1'],
         required: false,
+        description: '是否只显示收藏.1为true,0为false',
       },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.projects.findAll(ctx.query);
+    });
+    ctx.validate(allRule, query);
+    const res = await service.projects.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 
@@ -83,8 +76,17 @@ class RoleController extends Controller {
       state: {
         ...ctx.rule.projectBodyReq.state,
         type: 'enum',
-        required: false,
         values: [1, 2, 3, '1', '2', '3'],
+      },
+      is_recycle: {
+        ...ctx.rule.projectBodyReq.is_recycle,
+        type: 'enum',
+        values: [0, 1, '0', '1'],
+      },
+      is_archived: {
+        ...ctx.rule.projectBodyReq.is_recycle,
+        type: 'enum',
+        values: [0, 1, '0', '1'],
       },
     };
     ctx.validate(params, ctx.request.body);
@@ -102,12 +104,22 @@ class RoleController extends Controller {
   async update() {
     const { ctx, service } = this;
     const params = {
-      ...ctx.rule.projectBodyReq,
+      ...ctx.rule.projectPutBodyReq,
       state: {
-        ...ctx.rule.projectBodyReq.state,
+        ...ctx.rule.projectPutBodyReq.state,
         type: 'enum',
         required: false,
         values: [1, 2, 3, '1', '2', '3'],
+      },
+      is_recycle: {
+        ...ctx.rule.projectPutBodyReq.is_recycle,
+        type: 'enum',
+        values: [0, 1, '0', '1'],
+      },
+      is_archived: {
+        ...ctx.rule.projectPutBodyReq.is_recycle,
+        type: 'enum',
+        values: [0, 1, '0', '1'],
       },
     };
     ctx.validate(params, ctx.request.body);

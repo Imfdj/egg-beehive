@@ -299,19 +299,6 @@ class UserService extends Service {
     }
   }
 
-  async findOneCollectProject(id) {
-    const { ctx } = this;
-    return await ctx.model.Users.findOne({
-      where: { id },
-      include: [
-        {
-          model: ctx.model.Projects,
-          as: 'collect_projects',
-        },
-      ],
-      attributes: { exclude: ['password', 'deleted_at'] },
-    });
-  }
 }
 
 module.exports = UserService;

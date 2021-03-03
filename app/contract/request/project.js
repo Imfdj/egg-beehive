@@ -67,11 +67,25 @@ const body = {
       example: '0',
       description: '是否自动更新项目进度.1为true,0为false',
     },
+    is_recycle: {
+      type: 'number',
+      required: false,
+      values: [0, 1],
+      example: 0,
+      description: '是否进入回收站.1为true,0为false',
+    },
+    is_archived: {
+      type: 'number',
+      required: false,
+      values: [0, 1],
+      example: 0,
+      description: '是否已归档.1为true,0为false',
+    },
     state: {
       type: 'number',
       required: false,
-      values: [1, 2, 3],
-      description: '项目状态.1为正常、2为已归档、3为已在回收站',
+      values: [1],
+      description: '项目状态.1为正常',
     },
     intro: {
       type: 'string',

@@ -178,6 +178,11 @@ class _objectName_Service extends Service {
         taskLog.type = 'is_recycle';
         taskLog.icon = 'el-icon-delete';
       }
+      if (app.lodash.has(payload, 'is_done')) {
+        taskLog.remark = payload.is_done === 1 ? '完成了任务' : '重做了任务';
+        taskLog.type = 'is_done';
+        taskLog.icon = 'el-icon-check';
+      }
       await ctx.model.TaskLogs.create(taskLog, { transaction });
       const res = await ctx.model.Tasks.update(payload, {
         where: { id: payload.id },

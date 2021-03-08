@@ -14,7 +14,7 @@ const body = {
       example: '工作进展',
       description: '工作进展',
     },
-    workTime: {
+    work_time: {
       type: 'number',
       required: true,
       min: 0,
@@ -42,7 +42,7 @@ const body = {
     },
     end_date: {
       type: 'string',
-      required: true,
+      required: false,
       description: '结束时间',
     },
   },

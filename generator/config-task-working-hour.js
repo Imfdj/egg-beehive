@@ -42,7 +42,7 @@ module.exports = {
       defaultValue: '', // 数据库表中字段的默认值
     },
     {
-      name: 'workTime',
+      name: 'work_time',
       type: 'INTEGER',
       UNSIGNED: true,
       length: 11,

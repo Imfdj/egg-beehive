@@ -7,7 +7,7 @@ module.exports = app => {
     {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       description: Sequelize.STRING(255),
-      workTime: Sequelize.INTEGER(11),
+      work_time: Sequelize.INTEGER(11),
       task_id: Sequelize.INTEGER(11),
       executor_id: Sequelize.INTEGER(11),
       start_date: Sequelize.DATE,
@@ -18,6 +18,7 @@ module.exports = app => {
     }
   );
   task_working_hour.associate = function(models) {
+    task_working_hour.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id', as: 'executor' });
     // associations can be defined here
   };
   return task_working_hour;

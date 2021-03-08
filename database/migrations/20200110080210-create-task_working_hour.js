@@ -16,7 +16,7 @@ module.exports = {
           defaultValue: '',
           comment: '工作进展',
         },
-        workTime: {
+        work_time: {
           type: Sequelize.INTEGER(11).UNSIGNED,
           allowNull: false,
           defaultValue: '0',

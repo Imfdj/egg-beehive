@@ -19,7 +19,7 @@ describe('test/app/controller/task_working_hours.test.js', () => {
         .set('authorization', app.__authorization)
         .send({
           description: createName,
-          workTime: 1.2,
+          work_time: 1.2,
           task_id: 999999,
           executor_id: 1,
           start_date: date.format('YYYY-MM-DD HH:mm:ss'),
@@ -68,7 +68,7 @@ describe('test/app/controller/task_working_hours.test.js', () => {
         .send({
           id: createMenuData.id,
           description: createName + 1,
-          workTime: 1.2,
+          work_time: 1.2,
           task_id: 999999,
           executor_id: 1,
           start_date: date.format('YYYY-MM-DD HH:mm:ss'),

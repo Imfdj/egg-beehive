@@ -9,13 +9,20 @@ class _objectName_Service extends Service {
     const { limit, offset, prop_order, order, description } = payload;
     const where = payload.where;
     const Order = [];
-    description ? (where.description = { [Op.like]: `%${description}%` }) : null;
+    description ? (where.description = { [Op.like]: `%${ description }%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.TaskWorkingHours.findAndCountAll({
       limit,
       offset,
       where,
       order: Order,
+      include: [
+        {
+          model: ctx.model.Users,
+          attributes: ['username', 'id', 'avatar'],
+          as: 'executor',
+        },
+      ],
     });
   }
 

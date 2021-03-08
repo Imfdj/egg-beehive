@@ -50,3 +50,19 @@ exports.redis = {
 };
 
 exports.jwt_exp = 60 * 60 * 24 * 15; // 开发环境下，jwt过期时间(秒)
+
+exports.io = {
+  init: {
+    // allowEIO3: true,
+  }, // passed to engine.io
+  namespace: {
+    '/socketIo': {
+      connectionMiddleware: ['connection'],
+      packetMiddleware: ['packet'],
+    },
+  },
+  generateId: req => { // 自定义 socket.id 生成函数
+    // const data = qs.parse(req.url.split('?')[1]);
+    return req._query.userId; // custom id must be unique
+  },
+};

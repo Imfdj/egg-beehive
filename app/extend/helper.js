@@ -1,6 +1,24 @@
 'use strict';
 const crypto = require('crypto');
 const lodash = require('lodash');
+const { v4: uuidv4 } = require('uuid');
+
+module.exports = {
+  /**
+   * socket消息规则解析
+   */
+  parseSocketMsg(params, clientId, action, method = 'publish') {
+    const data = {
+      id: uuidv4(),
+      clientId,
+      action,
+      method,
+      params,
+    };
+    this.ctx.app.redis.set(this.redisKeys.socketBaseSocketId(data.id), JSON.stringify(data));
+    return data;
+  },
+};
 
 module.exports.tools = {
   // 根据ID验证数据是否存在；存在则返回对象，不存在则抛出404。
@@ -40,6 +58,14 @@ module.exports.tools = {
     return !param && param !== 0;
   },
 
+  /**
+   * findAll请求根据rule处理query值
+   * @param rule
+   * @param queryOrigin
+   * @param ruleOther
+   * @param findAllParamsOther
+   * @return {{query: {where: {}}, allRule: {offset: {default: number, type: string, required: boolean}, prop_order: {values, type: string, required: boolean}, limit: {type: string, required: boolean}, order: {values: [string, string, string], type: string, required: boolean}}}}
+   */
   findAllParamsDeal(rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}) {
     const _rule = lodash.cloneDeep(rule);
     const query = {
@@ -188,5 +214,9 @@ module.exports.redisKeys = {
   // 用户拥有的所有角色id，基于userId存储到redis中的key
   userRoleIdsBaseUserId(id = '') {
     return `userRoleIds:userId:${ id }`;
+  },
+  // socket发送后基于ID存储到redis中的key
+  socketBaseSocketId(id = '') {
+    return `socket:Id:${ id }`;
   },
 };

@@ -125,6 +125,7 @@ module.exports = appInfo => {
     verification_mode: 'jwt',
     jwt_exp: 60 * 10, // jwt过期时间(秒)
     jwt_refresh_exp: 60 * 60 * 24 * 15, // refreshToken过期时间(秒)
+    socketProjectRoomNamePrefix: 'roomProject:', // socket项目房间名前缀
   };
 
   return {

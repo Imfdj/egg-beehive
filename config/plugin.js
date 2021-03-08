@@ -43,4 +43,8 @@ module.exports = {
     package: 'egg-alinode',
     env: ['prod'],
   },
+  io: {
+    enable: true,
+    package: 'egg-socket.io',
+  },
 };

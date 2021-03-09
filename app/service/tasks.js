@@ -187,6 +187,7 @@ class _objectName_Service extends Service {
       const res = await ctx.model.Tasks.update(payload, {
         where: { id: payload.id },
         transaction,
+        individualHooks: true,
       });
       await transaction.commit();
       return res;
@@ -200,6 +201,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.Tasks.destroy({
       where: { id: payload.ids },
+      individualHooks: true,
     });
   }
 
@@ -216,6 +218,7 @@ class _objectName_Service extends Service {
           { sort, task_list_id },
           {
             where: { id: payload.id },
+            individualHooks: true,
           }
         );
       }
@@ -228,6 +231,7 @@ class _objectName_Service extends Service {
         { sort, task_list_id },
         {
           where: { id: payload.id },
+          individualHooks: true,
         }
       );
     }
@@ -238,6 +242,7 @@ class _objectName_Service extends Service {
         { sort, task_list_id },
         {
           where: { id: payload.id },
+          individualHooks: true,
         }
       );
     }
@@ -246,6 +251,7 @@ class _objectName_Service extends Service {
         { task_list_id },
         {
           where: { id: payload.id },
+          individualHooks: true,
         }
       );
     }

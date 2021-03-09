@@ -55,6 +55,31 @@ module.exports = app => {
       });
     });
   });
+  task.addHook('afterUpdate', async (task, options) => {
+    const ctx = await app.createAnonymousContext();
+    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
+    const nsp = app.io.of('/socketIo');
+    nsp.adapter.clients([roomName], (err, clients) => {
+      clients.forEach(clientId => {
+        const data = ctx.helper.parseSocketMsg(task, clientId, 'update:task');
+        const socket = nsp.to(clientId);
+        socket.emit('message', data);
+      });
+    });
+  });
+
+  task.addHook('afterDestroy', async (task, options) => {
+    const ctx = await app.createAnonymousContext();
+    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
+    const nsp = app.io.of('/socketIo');
+    nsp.adapter.clients([roomName], (err, clients) => {
+      clients.forEach(clientId => {
+        const data = ctx.helper.parseSocketMsg(task, clientId, 'delete:task');
+        const socket = nsp.to(clientId);
+        socket.emit('message', data);
+      });
+    });
+  });
 
   task.associate = function(models) {
     // associations can be defined here

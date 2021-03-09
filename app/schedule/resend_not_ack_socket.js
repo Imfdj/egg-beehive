@@ -19,7 +19,7 @@ module.exports = {
     const intersection = lodash.intersection(ctx.app.socketIdOnRedisKeys, socketKeys);
     // const data = await redis.mget(...intersection);
     const nsp = io.of('/socketIo');
-    console.log(nsp.adapter.rooms);
+    // console.log(nsp.adapter.rooms);
     try {
       intersection.forEach(id => {
         redis.get(id, (err, data) => {

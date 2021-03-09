@@ -18,10 +18,11 @@ if (config.fields_option.paranoid) {
 const config_fields = config.fields.concat(deleted_at);
 // 循环添加字段
 config_fields.forEach((v, i) => {
-  const length = v.length ? `(${v.length})` : '';
+  const _length = typeof v.length === 'string' ? `'${v.length}'` : v.length;
+  const length = v.length ? `(${_length})` : '';
   const item = {
     [v.name]: {
-      type: `Sequelize.${v.type.toUpperCase()}${length}`,
+      type: `Sequelize.${v.type.toUpperCase()}${length}${v.UNSIGNED ? '.UNSIGNED' : ''}`,
       allowNull: v.allowNull,
       defaultValue: v.defaultValue !== undefined ? `'${v.defaultValue}'` : undefined,
       unique: v.unique,

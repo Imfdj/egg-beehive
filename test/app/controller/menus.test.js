@@ -5,8 +5,7 @@ const { assert, app } = require('egg-mock/bootstrap');
 describe('test/app/controller/menus.test.js', () => {
   const createMenuName = 'menuName' + Math.random();
   let createMenuData = {};
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('POST /api/v1/menus', () => {
     it('should work', async () => {

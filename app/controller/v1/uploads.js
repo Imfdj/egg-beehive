@@ -22,32 +22,35 @@ class RoleController extends Controller {
    */
   async create() {
     const { ctx, app } = this;
-    const size = ctx.request.header['content-length'] / 1024 / 1024;
+    const size = ctx.request.header['content-length'];
     const stream = await ctx.getFileStream();
-    if (size > 200) {
+    const { fileSize } = app.config.multipart;
+    if (size > fileSize) {
       ctx.helper.body.INVALID_REQUEST({
         ctx,
-        msg: '文件容量不可超过200Mb',
+        msg: `文件容量不可超过${ fileSize / 1024 / 1024 }Mb`,
       });
       return;
     }
-    if (/^image\/(png|jpeg|git)$/i.test(stream.mimeType) && size > 5) {
+    if (/^image\/.*$/i.test(stream.mimeType) && size > 5 * 1024 * 1024) {
       ctx.helper.body.INVALID_REQUEST({
         ctx,
         msg: '图片容量不可超过5Mb',
       });
       return;
     }
-    if (/^video\/(mp4|avi)$/i.test(stream.mimeType) && size > 50) {
+    if (/^video\/.*$/i.test(stream.mimeType) && size > 50 * 1024 * 1024) {
       ctx.helper.body.INVALID_REQUEST({
         ctx,
         msg: '媒体文件容量不可超过50Mb',
       });
       return;
     }
-    const filename = `${Date.now()}_${Math.random()
+    const nowDate = app.dayjs();
+    const extension = path.extname(stream.filename);
+    const filename = `${ nowDate.format('YYYYMMDDHHmmss') }_${ Math.random()
       .toString()
-      .substr(2, 9)}${path.extname(stream.filename)}`;
+      .substr(2, 9) }${ extension }`;
     const { public_uploads_path, prefix, upload_dir } = app.config.static;
     const target = path.join(public_uploads_path, filename);
     // 生成一个文件写入 文件流
@@ -57,7 +60,13 @@ class RoleController extends Controller {
       await awaitWriteStream(stream.pipe(writeStream));
       ctx.helper.body.SUCCESS({
         ctx,
-        res: { filename, path: path.join(prefix, upload_dir, filename) },
+        res: {
+          filename,
+          path: path.join(prefix, upload_dir, filename),
+          file_type: stream.mimeType,
+          size,
+          extension,
+        },
       });
     } catch (err) {
       // 如果出现错误，关闭管道

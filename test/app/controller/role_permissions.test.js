@@ -6,8 +6,7 @@ describe('test/app/controller/role_permissions.test.js', () => {
   let permissionResRows;
   let roleResRows;
   let createUserRoleTargetIds = [];
-  before(async () => {
-  });
+  before(async () => {});
 
   describe('POST /api/v1/role_permissions/bulk_permission 创建 单角色-多资源关系', () => {
     it('should work', async () => {

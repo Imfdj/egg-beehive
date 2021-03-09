@@ -1,0 +1,9 @@
+instances:
+  - port: 7006
+    title: 7006 # 自定义标题，避免与同机上其他 eggjs 重名
+  - port: 7007
+    title: 7007
+startCommand: service nginx start # nginx 启动命令，运行时若 nginx 未运行会尝试执行
+reloadCommand: nginx -s reload # nginx reload 命令
+nginxConfig: nginx.conf # nginx 配置地址，可以是绝对地址，如果放置于项目下，记得在 nginx 全局配置里 include
+waitStopTime: 5000 # 停止前的等待时间

@@ -7,6 +7,7 @@ module.exports = app => {
     {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: Sequelize.STRING(60),
+      owner_id: Sequelize.INTEGER(11),
       parent_id: Sequelize.INTEGER(11),
       sort: Sequelize.INTEGER(11),
     },

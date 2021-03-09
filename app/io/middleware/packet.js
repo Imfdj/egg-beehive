@@ -1,0 +1,15 @@
+'use strict';
+
+module.exports = app => {
+  return async (ctx, next) => {
+    const { packet, app: { redis } } = ctx;
+    ctx.socket.emit('packet', 'packet received!');
+    console.log('packet:', packet);
+    // if (packet && packet[0] === 'ack') {
+    //   await redis.del('12341234');
+    // }
+    console.log('packet before');
+    await next();
+    console.log('packet after');
+  };
+};

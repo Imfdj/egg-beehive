@@ -1,5 +1,6 @@
 'use strict';
 const lodash = require('lodash');
+const { v4: uuidv4 } = require('uuid');
 const dayjs = require('dayjs');
 const path = require('path');
 const fs = require('fs');
@@ -45,6 +46,7 @@ class AppBootHook {
     // 例如：从数据库加载数据到内存缓存
     // this.app.cacheData = await this.app.model.query(QUERY_CACHE_SQL);
     this.app.lodash = lodash;
+    this.app.uuidv4 = uuidv4;
     this.app.dayjs = dayjs;
     console.log('willReady');
     console.time('willReady');

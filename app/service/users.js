@@ -2,23 +2,26 @@
 
 const Service = require('egg').Service;
 const { Op } = require('sequelize');
+const NodeRSA = require('node-rsa');
 
 class UserService extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword } = payload;
+    const { limit, offset, prop_order, order, username, email, phone, state, department_id, keyword, date_after_created, project_id } = payload;
     const where = {};
-    keyword ? (where[Op.or] = [
-      { username: { [Op.like]: `%${ keyword }%` } },
-      { email: { [Op.like]: `%${ keyword }%` } },
-      { phone: { [Op.like]: `%${ keyword }%` } },
-    ]) : null;
+    let project_where = null;
+    keyword
+      ? (where[Op.or] = [{ username: { [Op.like]: `%${ keyword }%` } }, { email: { [Op.like]: `%${ keyword }%` } }, { phone: { [Op.like]: `%${ keyword }%` } }])
+      : null;
+    // 创建时间大于等于date_after_created
+    date_after_created ? (where[Op.and] = [{ created_at: { [Op.gte]: date_after_created } }]) : null;
     const Order = [];
     username ? (where.username = { [Op.like]: `%${ username }%` }) : null;
     email ? (where.email = { [Op.like]: `%${ email }%` }) : null;
     phone ? (where.phone = { [Op.like]: `%${ phone }%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
+    !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Users.findAndCountAll({
       limit,
@@ -26,6 +29,12 @@ class UserService extends Service {
       where,
       order: Order,
       attributes: { exclude: ['password', 'deleted_at'] },
+      include: {
+        model: ctx.model.Projects,
+        attributes: ['id'],
+        where: project_where,
+      },
+      distinct: true,
     });
   }
 
@@ -123,7 +132,8 @@ class UserService extends Service {
     if (this.app.config.verification_mode === 'jwt') {
       return result
         ? {
-          token: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          accessToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          refreshToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_refresh_exp, ctx.app.config.jwt.secret_refresh),
           csrf: ctx.csrf,
         }
         : null;
@@ -232,8 +242,8 @@ class UserService extends Service {
    */
   async logout() {
     const { ctx, app } = this;
-    const token = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[1];
-    return await app.redis.setex(token, app.config.jwt_exp, '1');
+    const accessToken = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[1];
+    return await app.redis.setex(accessToken, app.config.jwt_exp, '1');
   }
 
   /**
@@ -244,6 +254,51 @@ class UserService extends Service {
     const { id, department_id } = payload;
     return await ctx.model.Users.update({ department_id }, { where: { id } });
   }
+
+  /**
+   * 刷新accessToken
+   */
+  async refreshToken(payload) {
+    const { ctx, app } = this;
+    const { refreshToken, secret } = payload;
+    try {
+      const { data: currentRequestData } = await ctx.app.jwt.verify(refreshToken, ctx.app.config.jwt.secret_refresh);
+      const { rsa_private_key } = await ctx.model.Configurations.findOne({
+        where: { id: 1 },
+      });
+      const key = new NodeRSA(rsa_private_key);
+      try {
+        const _secret = key.decrypt(secret, 'utf8');
+        if (currentRequestData.userInfo && currentRequestData.userInfo.id && currentRequestData.userInfo.id.toString() === _secret) {
+          return {
+            accessToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+            refreshToken,
+          };
+        }
+        return {
+          __code_wrong: 40003,
+          message: 'refreshToken与secret不匹配',
+        };
+      } catch (e) {
+        return {
+          __code_wrong: 40002,
+          message: 'secret有误',
+        };
+      }
+    } catch (e) {
+      if (e.name === 'TokenExpiredError') {
+        return {
+          __code_wrong: 40000,
+          message: '登录已过期',
+        };
+      }
+      return {
+        __code_wrong: 40001,
+        message: 'refreshToken有误',
+      };
+    }
+  }
+
 }
 
 module.exports = UserService;

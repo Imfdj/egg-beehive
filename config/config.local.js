@@ -1,5 +1,17 @@
 'use strict';
 
+exports.security = {
+  csrf: {
+    headerName: 'x-csrf-token', // 通过 header 传递 CSRF token 的默认字段为 x-csrf-token
+    enable: false,
+    // 判断是否需要 ignore 的方法，请求上下文 context 作为第一个参数
+    ignore: ctx => {
+      return ['/api/v1/users/login', '/api/v1/users/logout'].includes(ctx.request.url);
+    },
+  },
+  // domainWhiteList: ['http://localhost:8000'],
+};
+
 exports.sequelize = {
   dialect: 'mysql',
   host: '127.0.0.1',
@@ -34,5 +46,24 @@ exports.redis = {
     host: '127.0.0.1',
     password: '123123',
     db: 1,
+  },
+};
+
+exports.jwt_exp = 60 * 60 * 24 * 15; // 开发环境下，jwt过期时间(秒)
+
+exports.io = {
+  init: {
+    // pingInterval: 5000,
+    // allowEIO3: true,
+  }, // passed to engine.io
+  namespace: {
+    '/socketIo': {
+      connectionMiddleware: ['connection'],
+      packetMiddleware: ['packet'],
+    },
+  },
+  generateId: req => { // 自定义 socket.id 生成函数
+    // const data = qs.parse(req.url.split('?')[1]);
+    return req._query.userId; // custom id must be unique
   },
 };

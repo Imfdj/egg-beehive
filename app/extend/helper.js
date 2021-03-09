@@ -1,5 +1,24 @@
 'use strict';
 const crypto = require('crypto');
+const lodash = require('lodash');
+const { v4: uuidv4 } = require('uuid');
+
+module.exports = {
+  /**
+   * socket消息规则解析
+   */
+  parseSocketMsg(params, clientId, action, method = 'publish') {
+    const data = {
+      id: uuidv4(),
+      clientId,
+      action,
+      method,
+      params,
+    };
+    this.ctx.app.redis.set(this.redisKeys.socketBaseSocketId(data.id), JSON.stringify(data));
+    return data;
+  },
+};
 
 module.exports.tools = {
   // 根据ID验证数据是否存在；存在则返回对象，不存在则抛出404。
@@ -23,7 +42,7 @@ module.exports.tools = {
     };
   },
 
-  async apply(ctx, params = {}, exp = 60) {
+  async apply(ctx, params = {}, exp = 60, secret = ctx.app.config.jwt.secret) {
     return ctx.app.jwt.sign(
       {
         data: params,
@@ -31,13 +50,72 @@ module.exports.tools = {
         exp: Math.floor(Date.now() / 1000) + exp,
         // exp: Math.floor(Date.now() / 1000) + (10),
       },
-      ctx.app.config.jwt.secret
+      secret
     );
   },
 
   isParam(param) {
     return !param && param !== 0;
   },
+
+  /**
+   * findAll请求根据rule处理query值
+   * @param rule
+   * @param queryOrigin
+   * @param ruleOther
+   * @param findAllParamsOther
+   * @return {{query: {where: {}}, allRule: {offset: {default: number, type: string, required: boolean}, prop_order: {values, type: string, required: boolean}, limit: {type: string, required: boolean}, order: {values: [string, string, string], type: string, required: boolean}}}}
+   */
+  findAllParamsDeal(rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}) {
+    const _rule = lodash.cloneDeep(rule);
+    const query = {
+      where: {},
+    };
+    for (const ruleKey in _rule) {
+      _rule[ruleKey].required = false;
+    }
+    const findAllParams = {
+      prop_order: {
+        type: 'enum',
+        required: false,
+        values: [...Object.keys(_rule), ''],
+      },
+      order: {
+        type: 'enum',
+        required: false,
+        values: ['desc', 'asc', ''],
+      },
+      limit: {
+        type: 'number',
+        required: false,
+      },
+      offset: {
+        type: 'number',
+        required: false,
+        default: 0,
+      },
+      ...findAllParamsOther,
+    };
+    const allRule = {
+      ..._rule,
+      ...ruleOther,
+      ...findAllParams,
+    };
+    // 根据rule处理query，剔除非rule检查字段
+    for (const queryKey in queryOrigin) {
+      if (_rule.hasOwnProperty(queryKey)) {
+        query.where[queryKey] = queryOrigin[queryKey];
+      }
+      if (allRule.hasOwnProperty(queryKey)) {
+        query[queryKey] = queryOrigin[queryKey];
+      }
+    }
+    return {
+      allRule,
+      query,
+    };
+  },
+
 };
 
 module.exports.body = {
@@ -84,13 +162,13 @@ module.exports.body = {
   },
 
   // [*]：表示用户没有认证（令牌、用户名、密码错误）。
-  UNAUTHORIZED({ ctx, res = null, msg = '没有认证（令牌、用户名、密码错误）' }) {
+  UNAUTHORIZED({ ctx, res = null, msg = '没有认证（令牌、用户名、密码错误）', status = 401 }) {
     ctx.body = {
       code: 401,
       data: res,
       msg,
     };
-    ctx.status = 401;
+    ctx.status = status;
   },
 
   // [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。
@@ -127,14 +205,18 @@ module.exports.body = {
 module.exports.redisKeys = {
   // 资源基于action和url存储到redis中的key
   permissionsBaseActionUrl(action = '', url = '') {
-    return `permissions:action:${action}:url:${url}`;
+    return `permissions:action:${ action }:url:${ url }`;
   },
   // 角色资源基于roleId存储到redis中的key
   rolePermissionsBaseRoleId(id = '') {
-    return `rolePermissions:roleId:${id}`;
+    return `rolePermissions:roleId:${ id }`;
   },
   // 用户拥有的所有角色id，基于userId存储到redis中的key
   userRoleIdsBaseUserId(id = '') {
-    return `userRoleIds:userId:${id}`;
+    return `userRoleIds:userId:${ id }`;
+  },
+  // socket发送后基于ID存储到redis中的key
+  socketBaseSocketId(id = '') {
+    return `socket:Id:${ id }`;
   },
 };

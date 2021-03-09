@@ -42,6 +42,7 @@ module.exports = appInfo => {
 
   config.jwt = {
     secret: 'Great4-M',
+    secret_refresh: 'Great4-M-refresh',
     enable: true, // default is false
     match: '/jwt', // optional
   };
@@ -109,16 +110,7 @@ module.exports = appInfo => {
   };
 
   config.multipart = {
-    whitelist: [
-      '.jpg',
-      '.jpeg', // image/jpeg
-      '.png', // image/png, image/x-png
-      '.gif', // image/gif
-      // video
-      '.mp3',
-      '.mp4',
-      '.avi',
-    ],
+    fileSize: '200mb',
   };
 
   config.static = {
@@ -131,7 +123,9 @@ module.exports = appInfo => {
   const userConfig = {
     // myAppName: 'egg',
     verification_mode: 'jwt',
-    jwt_exp: 60 * 60 * 24, // jwt过期时间(秒)
+    jwt_exp: 60 * 10, // jwt过期时间(秒)
+    jwt_refresh_exp: 60 * 60 * 24 * 15, // refreshToken过期时间(秒)
+    socketProjectRoomNamePrefix: 'roomProject:', // socket项目房间名前缀
   };
 
   return {

@@ -11,7 +11,8 @@ let fields_option = '';
 
 // 循环添加字段
 config.fields.forEach((v, i) => {
-  const length = v.length ? `(${v.length})` : '';
+  const _length = typeof v.length === 'string' ? `'${v.length}'` : v.length;
+  const length = v.length ? `(${_length})` : '';
   const item = {
     [v.name]: `Sequelize.${v.type.toUpperCase()}${length}`,
   };

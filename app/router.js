@@ -4,7 +4,15 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller } = app;
+  const { router, controller, io } = app;
+
+  /**
+   * webSocket
+   */
+  const socketIo = io.of('/socketIo');
+  socketIo.route('server', io.controller.index.ping);
+  socketIo.route('ack', io.controller.index.ack);
+
   /**
    * 健康检查
    */

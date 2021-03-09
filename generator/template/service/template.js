@@ -7,7 +7,7 @@ class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
     const { limit, offset, prop_order, order, name } = payload;
-    const where = {};
+    const where = payload.where;
     const Order = [];
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;

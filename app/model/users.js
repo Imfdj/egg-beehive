@@ -21,11 +21,15 @@ module.exports = app => {
     }
   );
   user.associate = function(models) {
-    // associations can be defined here
     app.model.Users.belongsToMany(app.model.Roles, {
       through: app.model.UserRoles,
       foreignKey: 'user_id',
       otherKey: 'role_id',
+    });
+    app.model.Users.belongsToMany(app.model.Projects, {
+      through: app.model.UserProjects,
+      foreignKey: 'user_id',
+      otherKey: 'project_id',
     });
   };
   return user;

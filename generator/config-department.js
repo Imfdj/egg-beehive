@@ -33,12 +33,25 @@ module.exports = {
       length: 60,
       max: 60,
       trim: true,
+      unique: true,
       required: true,
       description: '部门名称', // 供swagger使用
       example: '研发部', // 供swagger使用
       allowNull: false, // 是否允许为空
       defaultValue: '', // 数据库表中字段的默认值
       comment: '部门名称', // 数据库表中字段的描述
+    },
+    {
+      name: 'owner_id',
+      type: 'INTEGER',
+      length: 11,
+      min: 0,
+      required: true,
+      description: '拥有者ID', // 供swagger使用
+      example: 0, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      defaultValue: 0, // 数据库表中字段的默认值
+      comment: '拥有者ID', // 数据库表中字段的描述
     },
     {
       name: 'parent_id',

@@ -13,6 +13,13 @@ const body = {
       example: '研发部',
       description: '部门名称',
     },
+    owner_id: {
+      type: 'number',
+      required: false,
+      min: 0,
+      example: 0,
+      description: '拥有者ID',
+    },
     parent_id: {
       type: 'number',
       required: true,

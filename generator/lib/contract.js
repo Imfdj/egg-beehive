@@ -16,6 +16,7 @@ config.fields.forEach((v, i) => {
       type = 'number';
       break;
     case 'STRING':
+    case 'TEXT':
       type = 'string';
       break;
     case 'DATE':

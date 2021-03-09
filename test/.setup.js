@@ -18,7 +18,7 @@ before(async () => {
     })
     .expect(200);
   if (app.config.verification_mode === 'jwt') {
-    app.__authorization = `Bearer ${res.body.data.token}`;
+    app.__authorization = `Bearer ${res.body.data.accessToken}`;
   } else {
     app.__authorization = '';
     app.__cookies = res.headers['set-cookie'][0].split('EGG_SESS=')[1].split(';')[0];

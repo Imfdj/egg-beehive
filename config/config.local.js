@@ -53,11 +53,12 @@ exports.jwt_exp = 60 * 60 * 24 * 15; // 开发环境下，jwt过期时间(秒)
 
 exports.io = {
   init: {
+    // transports: ['websocket'],
     // pingInterval: 5000,
     // allowEIO3: true,
   }, // passed to engine.io
   namespace: {
-    '/socketIo': {
+    '/': {
       connectionMiddleware: ['connection'],
       packetMiddleware: ['packet'],
     },

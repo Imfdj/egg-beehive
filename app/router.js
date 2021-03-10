@@ -9,9 +9,9 @@ module.exports = app => {
   /**
    * webSocket
    */
-  const socketIo = io.of('/socketIo');
-  socketIo.route('server', io.controller.index.ping);
-  socketIo.route('ack', io.controller.index.ack);
+  const nsp = io.of('/');
+  nsp.route('server', io.controller.index.ping);
+  nsp.route('ack', io.controller.index.ack);
 
   /**
    * 健康检查

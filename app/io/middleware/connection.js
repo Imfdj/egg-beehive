@@ -3,13 +3,13 @@
 module.exports = app => {
   return async (ctx, next) => {
     const { socket, logger } = ctx;
-    const nsp = app.io.of('/socketIo');
+    const nsp = app.io.of('/');
     console.log('start connection!');
     console.log('allSockets');
     // console.log(socket.rooms);
-    // console.log(app.io.of('/socketIo').name);
-    // console.log(app.io.of('/socketIo').connected);
-    // console.log(app.io.of('/socketIo').rooms);
+    // console.log(app.io.of('/').name);
+    // console.log(app.io.of('/').connected);
+    // console.log(app.io.of('/').rooms);
     try {
       const { accessToken, userId } = socket.handshake.query;
       const token = accessToken.split('Bearer ')[1];

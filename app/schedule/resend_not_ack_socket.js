@@ -18,7 +18,7 @@ module.exports = {
     // 没有直接获取到就重发，是为了，避免小于2秒存入的重发。
     const intersection = lodash.intersection(ctx.app.socketIdOnRedisKeys, socketKeys);
     // const data = await redis.mget(...intersection);
-    const nsp = io.of('/socketIo');
+    const nsp = io.of('/');
     // console.log(nsp.adapter.rooms);
     try {
       intersection.forEach(id => {

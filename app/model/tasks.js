@@ -45,8 +45,8 @@ module.exports = app => {
       plan_work_hours: 0,
     }, task.dataValues);
     const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/socketIo');
-    // app.io.of('/socketIo').to(roomName).emit(newTask); // broadcast to everyone in the room
+    const nsp = app.io.of('/');
+    // app.io.of('/').to(roomName).emit(newTask); // broadcast to everyone in the room
     nsp.adapter.clients([roomName], (err, clients) => {
       clients.forEach(clientId => {
         const data = ctx.helper.parseSocketMsg(newTask, clientId, 'create:task');
@@ -58,7 +58,7 @@ module.exports = app => {
   task.addHook('afterUpdate', async (task, options) => {
     const ctx = await app.createAnonymousContext();
     const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/socketIo');
+    const nsp = app.io.of('/');
     nsp.adapter.clients([roomName], (err, clients) => {
       clients.forEach(clientId => {
         const data = ctx.helper.parseSocketMsg(task, clientId, 'update:task');
@@ -71,7 +71,7 @@ module.exports = app => {
   task.addHook('afterDestroy', async (task, options) => {
     const ctx = await app.createAnonymousContext();
     const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/socketIo');
+    const nsp = app.io.of('/');
     nsp.adapter.clients([roomName], (err, clients) => {
       clients.forEach(clientId => {
         const data = ctx.helper.parseSocketMsg(task, clientId, 'delete:task');

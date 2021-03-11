@@ -72,6 +72,7 @@ class _objectName_Service extends Service {
       await ctx.model.UserTasks.create({
         user_id: userId,
         task_id: res.id,
+        project_id: payload.project_id,
       }, { transaction });
       await transaction.commit();
       return res;

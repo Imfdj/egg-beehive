@@ -8,6 +8,7 @@ module.exports = app => {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       user_id: Sequelize.INTEGER(11),
       task_id: Sequelize.INTEGER(11),
+      project_id: Sequelize.INTEGER(11),
     },
     {
 

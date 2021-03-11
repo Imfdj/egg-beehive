@@ -26,6 +26,10 @@ class _objectName_Service extends Service {
 
   async create(payload) {
     const { ctx } = this;
+    const { task_id } = payload;
+    const task = await ctx.model.Tasks.findOne({ where: { id: task_id } });
+    if (!task) return false;
+    payload.project_id = task.project_id;
     return await ctx.model.UserTasks.create(payload);
   }
 
@@ -69,6 +73,10 @@ class _objectName_Service extends Service {
         throw e;
       }
     }
+    const { task_id } = payload;
+    const task = await ctx.model.Tasks.findOne({ where: { id: task_id } });
+    if (!task) return false;
+    payload.project_id = task.project_id;
     return await ctx.model.UserTasks.create(payload);
   }
 }

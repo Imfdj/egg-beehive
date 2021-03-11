@@ -32,6 +32,17 @@ module.exports = {
           onUpdate: 'CASCADE',
           onDelete: 'CASCADE',
         },
+        project_id: {
+          type: Sequelize.INTEGER(11).UNSIGNED,
+          allowNull: false,
+          comment: '所属项目ID',
+          references: {
+            model: 'projects',
+            key: 'id',
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        },
         created_at: {
           allowNull: false,
           type: Sequelize.DATE,

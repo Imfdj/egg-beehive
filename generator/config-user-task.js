@@ -65,6 +65,26 @@ module.exports = {
       onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
       onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
     },
+    {
+      name: 'project_id',
+      type: 'INTEGER',
+      UNSIGNED: true,
+      length: 11,
+      min: 1,
+      required: true,
+      description: '项目ID', // 供swagger使用
+      example: 1, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      comment: '项目ID', // 数据库表中字段的描述
+      defaultValue: 0, // 数据库表中字段的默认值
+      // 外键设置
+      references: {
+        model: 'projects', // 外键关联表
+        key: 'id', // 外键字段名
+      },
+      onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+    },
   ],
   fields_option: {},
 };

@@ -132,6 +132,14 @@ class _objectName_Service extends Service {
         if (executor_id === 0) {
           taskLog.remark = '移除了执行者';
         } else if (executor_id === ctx.currentRequestData.userInfo.id) {
+          // 如果此用户还没参与此任务，则参与任务
+          await ctx.model.UserTasks.findOrCreate({
+            where: {
+              user_id: executor_id,
+              task_id: payload.id,
+            },
+            transaction,
+          });
           taskLog.remark = '认领了任务';
         } else {
           const executor = await ctx.model.Users.findOne({

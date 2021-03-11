@@ -26,10 +26,6 @@ class _objectName_Service extends Service {
 
   async create(payload) {
     const { ctx } = this;
-    const { task_id } = payload;
-    const task = await ctx.model.Tasks.findOne({ where: { id: task_id } });
-    if (!task) return false;
-    payload.project_id = task.project_id;
     return await ctx.model.UserTasks.create(payload);
   }
 
@@ -37,6 +33,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.UserTasks.update(payload, {
       where: { id: payload.id },
+      individualHooks: true,
     });
   }
 
@@ -44,6 +41,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.UserTasks.destroy({
       where: { id: payload.ids },
+      individualHooks: true,
     });
   }
 
@@ -57,6 +55,7 @@ class _objectName_Service extends Service {
         const res = await ctx.model.UserTasks.destroy({
           where: payload,
           transaction,
+          individualHooks: true,
         });
         // 如果当前用户退出的任务中，是执行者，则将执行者置为待认领
         await ctx.model.Tasks.update({ executor_id: 0 }, {
@@ -74,10 +73,6 @@ class _objectName_Service extends Service {
         throw e;
       }
     }
-    const { task_id } = payload;
-    const task = await ctx.model.Tasks.findOne({ where: { id: task_id } });
-    if (!task) return false;
-    payload.project_id = task.project_id;
     return await ctx.model.UserTasks.create(payload);
   }
 }

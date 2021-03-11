@@ -9,6 +9,7 @@ module.exports = app => {
       description: Sequelize.STRING(255),
       work_time: Sequelize.INTEGER(11),
       task_id: Sequelize.INTEGER(11),
+      project_id: Sequelize.INTEGER(11),
       executor_id: Sequelize.INTEGER(11),
       start_date: Sequelize.DATE,
       end_date: Sequelize.DATE,

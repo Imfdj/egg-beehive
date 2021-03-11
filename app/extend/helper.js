@@ -20,9 +20,10 @@ module.exports = {
   /**
    * 发送socket消息给room里的每个连接,并录入redis
    */
-  sendSocketToClientOfRoom(params, action, roomName = `${ this.app.config.socketProjectRoomNamePrefix }${ params.project_id }`, message = 'message', method = 'publish') {
+  sendSocketToClientOfRoom(params, action, project_id = params.project_id, message = 'message', method = 'publish') {
     const { ctx, app, redisKeys } = this;
     const nsp = app.io.of('/');
+    const roomName = `${ this.app.config.socketProjectRoomNamePrefix }${ project_id }`;
     nsp.adapter.clients([roomName], (err, clients) => {
       clients.forEach(clientId => {
         const data = ctx.helper.parseSocketMsg(params, clientId, action, method);

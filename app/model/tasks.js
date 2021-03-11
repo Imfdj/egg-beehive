@@ -44,43 +44,16 @@ module.exports = app => {
       likes: 0,
       plan_work_hours: 0,
     }, task.dataValues);
-    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/');
-    // app.io.of('/').to(roomName).emit(newTask); // broadcast to everyone in the room
-    nsp.adapter.clients([roomName], (err, clients) => {
-      clients.forEach(clientId => {
-        const data = ctx.helper.parseSocketMsg(newTask, clientId, 'create:task');
-        const socket = nsp.to(clientId);
-        socket.emit('message', data);
-      });
-    });
+    ctx.helper.sendSocketToClientOfRoom(newTask, 'create:task');
   });
   task.addHook('afterUpdate', async (task, options) => {
     const ctx = await app.createAnonymousContext();
-    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/');
-    nsp.adapter.clients([roomName], (err, clients) => {
-      clients.forEach(clientId => {
-        const data = ctx.helper.parseSocketMsg(task, clientId, 'update:task');
-        const socket = nsp.to(clientId);
-        socket.emit('message', data);
-      });
-    });
+    ctx.helper.sendSocketToClientOfRoom(task, 'update:task');
   });
-
   task.addHook('afterDestroy', async (task, options) => {
     const ctx = await app.createAnonymousContext();
-    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/');
-    nsp.adapter.clients([roomName], (err, clients) => {
-      clients.forEach(clientId => {
-        const data = ctx.helper.parseSocketMsg(task, clientId, 'delete:task');
-        const socket = nsp.to(clientId);
-        socket.emit('message', data);
-      });
-    });
+    ctx.helper.sendSocketToClientOfRoom(task, 'delete:task');
   });
-
   task.associate = function(models) {
     // associations can be defined here
     task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id', as: 'executor' });

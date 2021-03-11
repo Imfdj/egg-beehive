@@ -65,6 +65,7 @@ class _objectName_Service extends Service {
             executor_id: user_id,
           },
           transaction,
+          individualHooks: true,
         });
         await transaction.commit();
         return res;

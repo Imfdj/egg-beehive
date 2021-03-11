@@ -48,10 +48,14 @@ module.exports = app => {
   });
   task.addHook('afterUpdate', async (task, options) => {
     const ctx = await app.createAnonymousContext();
+    // 根据_changed，仅传输改动字段，及id，project_id
+    // const data = app.lodash.pick(task.dataValues, [...Object.keys(task._changed), 'id', 'project_id']);
     ctx.helper.sendSocketToClientOfRoom(task, 'update:task');
   });
   task.addHook('afterDestroy', async (task, options) => {
     const ctx = await app.createAnonymousContext();
+    // 仅传输id
+    // const data = app.lodash.pick(task.dataValues, ['id']);
     ctx.helper.sendSocketToClientOfRoom(task, 'delete:task');
   });
   task.associate = function(models) {

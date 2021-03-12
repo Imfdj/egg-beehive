@@ -22,6 +22,30 @@ module.exports = app => {
 
     }
   );
+
+  project_file.addHook('afterCreate', async (project_file, options) => {
+    const ctx = await app.createAnonymousContext();
+    const newProjectFile = Object.assign({
+      task_id: null,
+      filename: '',
+      path: '',
+      extension: '',
+      file_type: '',
+      size: 0,
+      downloads: 0,
+      is_recycle: 0,
+    }, project_file.dataValues);
+    ctx.helper.sendSocketToClientOfRoom(newProjectFile, 'create:project_file');
+  });
+  project_file.addHook('afterUpdate', async (project_file, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(project_file, 'update:project_file');
+  });
+  project_file.addHook('afterDestroy', async (project_file, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(project_file, 'delete:project_file');
+  });
+
   project_file.associate = function(models) {
     // associations can be defined here
   };

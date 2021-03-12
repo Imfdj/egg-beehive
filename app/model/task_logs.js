@@ -19,6 +19,26 @@ module.exports = app => {
 
     }
   );
+
+  task_log.addHook('afterCreate', async (task_log, options) => {
+    const ctx = await app.createAnonymousContext();
+    const newProjectFile = Object.assign({
+      remark: '',
+      icon: '',
+      content: '',
+      is_comment: 0,
+    }, task_log.dataValues);
+    ctx.helper.sendSocketToClientOfRoom(newProjectFile, 'create:task_log');
+  });
+  task_log.addHook('afterUpdate', async (task_log, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(task_log, 'update:task_log');
+  });
+  task_log.addHook('afterDestroy', async (task_log, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(task_log, 'delete:task_log');
+  });
+
   task_log.associate = function(models) {
     task_log.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'operator_id', as: 'operator' });
     // associations can be defined here

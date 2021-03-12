@@ -22,6 +22,15 @@ module.exports = app => {
     {}
   );
 
+  project.addHook('afterUpdate', async (project, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(project, 'update:project', project.id);
+  });
+  project.addHook('afterDestroy', async (project, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(project, 'delete:project', project.id);
+  });
+
   project.associate = function(models) {
     // associations can be defined here
     project.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'manager_id' });

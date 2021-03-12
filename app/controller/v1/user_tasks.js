@@ -72,8 +72,8 @@ class RoleController extends Controller {
   async create() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.user_taskBodyReq, ctx.request.body);
-    await ctx.service.userTasks.create(ctx.request.body);
-    ctx.helper.body.CREATED_UPDATE({ ctx });
+    const res = await ctx.service.userTasks.create(ctx.request.body);
+    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
 
   /**
@@ -114,8 +114,8 @@ class RoleController extends Controller {
   async change() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.user_taskBodyReq, ctx.request.body);
-    await ctx.service.userTasks.change(ctx.request.body);
-    ctx.helper.body.CREATED_UPDATE({ ctx });
+    const res = await ctx.service.userTasks.change(ctx.request.body);
+    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
 }
 

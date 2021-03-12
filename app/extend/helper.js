@@ -15,8 +15,24 @@ module.exports = {
       method,
       params,
     };
-    this.ctx.app.redis.set(this.redisKeys.socketBaseSocketId(data.id), JSON.stringify(data));
     return data;
+  },
+  /**
+   * 发送socket消息给room里的每个连接,并录入redis
+   */
+  sendSocketToClientOfRoom(params, action, project_id = params.project_id, message = 'message', method = 'publish') {
+    const { ctx, app, redisKeys } = this;
+    const nsp = app.io.of('/');
+    const roomName = `${ this.app.config.socketProjectRoomNamePrefix }${ project_id }`;
+    nsp.adapter.clients([roomName], (err, clients) => {
+      clients.forEach(clientId => {
+        const data = ctx.helper.parseSocketMsg(params, clientId, action, method);
+        const socket = nsp.to(clientId);
+        socket.emit(message, data);
+        // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+        app.redis.setex(redisKeys.socketBaseSocketId(data.id), this.app.config.socketRedisExp, JSON.stringify(data));
+      });
+    });
   },
 };
 

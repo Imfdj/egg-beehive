@@ -49,7 +49,7 @@ exports.redis = {
   },
 };
 
-exports.jwt_exp = 60 * 60 * 24 * 15; // 开发环境下，jwt过期时间(秒)
+exports.jwt_exp = 60 * 60 * 24 * 90; // 开发环境下，jwt过期时间(秒)
 
 exports.io = {
   init: {

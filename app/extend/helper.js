@@ -20,7 +20,7 @@ module.exports = {
   /**
    * 发送socket消息给room里的每个连接,并录入redis
    */
-  sendSocketToClientOfRoom(params, action, project_id = params.project_id, message = 'message', method = 'publish') {
+  sendSocketToClientOfRoom(params, action, project_id = params.project_id, messageType = 'sync', method = 'publish') {
     const { ctx, app, redisKeys } = this;
     const nsp = app.io.of('/');
     const roomName = `${ this.app.config.socketProjectRoomNamePrefix }${ project_id }`;
@@ -28,9 +28,10 @@ module.exports = {
       clients.forEach(clientId => {
         const data = ctx.helper.parseSocketMsg(params, clientId, action, method);
         const socket = nsp.to(clientId);
-        socket.emit(message, data);
+        const emitData = [messageType, data];
+        socket.emit(...emitData);
         // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
-        app.redis.setex(redisKeys.socketBaseSocketId(data.id), this.app.config.socketRedisExp, JSON.stringify(data));
+        app.redis.setex(redisKeys.socketBaseSocketId(data.id), this.app.config.socketRedisExp, JSON.stringify(emitData));
       });
     });
   },

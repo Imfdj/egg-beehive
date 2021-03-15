@@ -87,6 +87,7 @@ class _objectName_Service extends Service {
     const task = await ctx.model.Tasks.findOne({
       where: { id: payload.id },
     });
+    const taskNameSpan = `<span class="name">${ task.name }</span>`;
     const taskLog = {
       remark: '',
       task_id: payload.id,
@@ -94,6 +95,14 @@ class _objectName_Service extends Service {
       operator_id: ctx.currentRequestData.userInfo.id,
       type: '',
       icon: '',
+    };
+    // 创建站内信
+    const message = {
+      actor_id: ctx.currentRequestData.userInfo.id,
+      receiver_id: '',
+      content: '',
+      type: 'inform',
+      url: `/pojectManagement/Project/${ task.project_id }?taskId=${ payload.id }`,
     };
     const transaction = await ctx.model.transaction();
     try {
@@ -110,6 +119,7 @@ class _objectName_Service extends Service {
         taskLog.remark = `修改执行状态为 ${ state.name }`;
         taskLog.icon = 'el-icon-pie-chart';
         taskLog.type = 'state';
+        message.content = `更改了任务 ${taskNameSpan} 的执行状态为 ${ state.name }`;
       }
       if (app.lodash.has(payload, 'task_type_id')) {
         const type = await ctx.model.TaskTypes.findOne({
@@ -130,17 +140,22 @@ class _objectName_Service extends Service {
       if (app.lodash.has(payload, 'executor_id')) {
         const { executor_id } = payload;
         if (executor_id === 0) {
+          taskLog.type = 'executor_remove';
           taskLog.remark = '移除了执行者';
+          message.content = `移除了任务 ${taskNameSpan} 的执行者`;
         } else if (executor_id === ctx.currentRequestData.userInfo.id) {
           // 如果此用户还没参与此任务，则参与任务
           await ctx.model.UserTasks.findOrCreate({
             where: {
               user_id: executor_id,
               task_id: payload.id,
+              project_id: task.project_id,
             },
             transaction,
           });
+          taskLog.type = 'executor_claim';
           taskLog.remark = '认领了任务';
+          message.content = `认领了任务 ${taskNameSpan}`;
         } else {
           const executor = await ctx.model.Users.findOne({
             where: { id: executor_id },
@@ -150,12 +165,14 @@ class _objectName_Service extends Service {
             where: {
               user_id: executor_id,
               task_id: payload.id,
+              project_id: task.project_id,
             },
             transaction,
           });
+          taskLog.type = 'executor_assign';
           taskLog.remark = `指派给了 ${ executor.username }`;
+          message.content = `将任务 ${taskNameSpan} 指派给了 ${ executor.username }`;
         }
-        taskLog.type = 'priority';
         taskLog.icon = 'el-icon-user';
       }
       if (app.lodash.has(payload, 'start_date')) {
@@ -188,9 +205,11 @@ class _objectName_Service extends Service {
         taskLog.icon = 'el-icon-delete';
       }
       if (app.lodash.has(payload, 'is_done')) {
-        taskLog.remark = payload.is_done === 1 ? '完成了任务' : '重做了任务';
+        const { is_done } = payload;
+        taskLog.remark = is_done === 1 ? '完成了任务' : '重做了任务';
         taskLog.type = 'is_done';
         taskLog.icon = 'el-icon-check';
+        message.content = `更改了任务 ${taskNameSpan} 的完成状态为 ${ is_done === 1 ? '已完成' : '未完成' }`;
       }
       await ctx.model.TaskLogs.create(taskLog, { transaction });
       const res = await ctx.model.Tasks.update(payload, {
@@ -199,6 +218,22 @@ class _objectName_Service extends Service {
         individualHooks: true,
       });
       await transaction.commit();
+      // 当修改了是否完成状态、执行状态、执行者 则创建站内信，发送给非操作者的所有任务参与者
+      if (app.lodash.has(payload, 'is_done') || app.lodash.has(payload, 'executor_id') || app.lodash.has(payload, 'task_state_id')) {
+        ctx.model.UserTasks.findAll({ where: { task_id: payload.id } })
+          .then(userTasks => {
+            userTasks.forEach(userTask => {
+              // 除去操作者
+              if (userTask.user_id.toString() === ctx.currentRequestData.userInfo.id.toString()) return;
+              message.receiver_id = userTask.user_id;
+              // 如果是执行者更改的指派情况，message的接收者和执行者的id相同
+              if (taskLog.type === 'executor_assign' && payload.executor_id === message.receiver_id) {
+                message.content = `指派给你一个任务 <span class="name">${ task.name }</span>`;
+              }
+              ctx.model.Messages.create(message);
+            });
+          });
+      }
       return res;
     } catch (e) {
       await transaction.rollback();

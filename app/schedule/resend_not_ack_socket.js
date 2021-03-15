@@ -20,13 +20,17 @@ module.exports = {
     // const data = await redis.mget(...intersection);
     const nsp = io.of('/');
     // console.log(nsp.adapter.rooms);
+    // nsp.clients((error, clients) => {
+    //   if (error) throw error;
+    //   console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
+    // });
     try {
       intersection.forEach(id => {
         redis.get(id, (err, data) => {
           if (!err) {
-            const _data = JSON.parse(data);
-            const socket = nsp.to(_data.clientId);
-            socket.emit('message', _data);
+            const emitData = JSON.parse(data);
+            const socket = nsp.to(emitData[1].clientId);
+            socket.emit(...emitData);
           }
         });
       });

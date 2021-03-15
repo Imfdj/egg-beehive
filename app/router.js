@@ -265,4 +265,13 @@ module.exports = app => {
    * 用户-项目-收藏关系表
    */
   router.post('/api/v1/user_project_collects/change', controller.v1.userProjectCollects.change);
+
+  /**
+   * 站内信
+   */
+  router.post('/api/v1/messages', controller.v1.messages.create);
+  router.put('/api/v1/messages', controller.v1.messages.update);
+  router.get('/api/v1/messages/list', controller.v1.messages.findAll);
+  router.get('/api/v1/messages', controller.v1.messages.findOne);
+  router.delete('/api/v1/messages', controller.v1.messages.destroy);
 };

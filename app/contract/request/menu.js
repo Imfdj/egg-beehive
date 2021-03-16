@@ -85,6 +85,13 @@ const body = {
       example: '',
       description: '路由重定向路径',
     },
+    sort: {
+      type: 'number',
+      required: false,
+      max: 999999999,
+      example: '0',
+      description: '排序，越大越靠前',
+    },
   },
 };
 

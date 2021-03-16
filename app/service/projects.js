@@ -8,12 +8,18 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     const { limit, offset, prop_order, order, name, collection } = payload;
     const where = payload.where;
+    where[Op.or] = [
+      { is_private: 0 },
+      {
+        '$member.id$': ctx.currentRequestData.userInfo.id,
+      },
+    ];
     const Order = [];
     const collectorRequired = collection ? (parseInt(collection) === 1) : false;
     name ? (where.name = { [Op.like]: `%${ name }%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Projects.findAndCountAll({
-      limit,
+      // limit,
       offset,
       where,
       order: Order,
@@ -21,6 +27,7 @@ class _objectName_Service extends Service {
         {
           model: ctx.model.Users,
           attributes: ['username', 'id', 'avatar'],
+          as: 'creator',
         },
         {
           model: ctx.model.Users,
@@ -29,6 +36,10 @@ class _objectName_Service extends Service {
             id: ctx.currentRequestData.userInfo.id,
           },
           required: collectorRequired,
+        },
+        {
+          model: ctx.model.Users,
+          as: 'member',
         },
       ],
     });

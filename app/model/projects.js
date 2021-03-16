@@ -33,7 +33,13 @@ module.exports = app => {
 
   project.associate = function(models) {
     // associations can be defined here
-    project.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'manager_id' });
+    project.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'manager_id', as: 'creator' });
+    app.model.Projects.belongsToMany(app.model.Users, {
+      through: app.model.UserProjects,
+      foreignKey: 'project_id',
+      otherKey: 'user_id',
+      as: 'member',
+    });
     app.model.Projects.belongsToMany(app.model.Users, {
       through: app.model.UserProjectCollects,
       foreignKey: 'project_id',

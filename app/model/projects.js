@@ -22,6 +22,37 @@ module.exports = app => {
     {}
   );
 
+  project.addHook('afterCreate', async (project, options) => {
+    const ctx = await app.createAnonymousContext();
+    // 发送socket消息
+    const { id, manager_id } = project;
+    const creator = await ctx.model.Users.findOne({ where: { id: manager_id } });
+    const newProject = Object.assign(
+      {
+        collector: [],
+        parent_id: 0,
+        progress: 0,
+        cover: '',
+        is_private: 1,
+        is_auto_progress: 0,
+        is_recycle: 0,
+        is_archived: 0,
+        state: 1,
+        intro: '',
+        creator,
+      },
+      project.dataValues
+    );
+    const nsp = app.io.of('/');
+    const roomName = `${app.config.socketProjectRoomNamePrefix}${id}`;
+    const socket = nsp.sockets[manager_id];
+    // 将创建者加入新创建的项目room
+    socket &&
+      socket.join(roomName, () => {
+        ctx.helper.sendMessageToSocket(socket, newProject, 'create:project');
+      });
+  });
+
   project.addHook('afterUpdate', async (project, options) => {
     const ctx = await app.createAnonymousContext();
     ctx.helper.sendSocketToClientOfRoom(project, 'update:project', project.id);

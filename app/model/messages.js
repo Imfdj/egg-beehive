@@ -19,22 +19,21 @@ module.exports = app => {
   message.addHook('afterCreate', async (message, options) => {
     const ctx = await app.createAnonymousContext();
     // 发送socket消息
-    const newMessage = Object.assign({
-      is_read: 0,
-      url: '',
-    }, message.dataValues);
+    const newMessage = Object.assign(
+      {
+        is_read: 0,
+        url: '',
+      },
+      message.dataValues
+    );
     const nsp = app.io.of('/');
     const { receiver_id, type } = message;
     nsp.clients((error, clients) => {
       if (error) throw error;
       // 当此用户在线，则发送消息
       if (clients.includes(receiver_id.toString())) {
-        const socket = nsp.to(receiver_id);
-        const _message = ctx.helper.parseSocketMsg(newMessage, receiver_id, type);
-        const emitData = ['message', _message];
-        socket.emit(...emitData);
-        // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
-        app.redis.setex(ctx.helper.redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+        const socket = nsp.sockets[receiver_id];
+        ctx.helper.sendMessageToSocket(socket, newMessage, type, 'message');
       }
     });
   });

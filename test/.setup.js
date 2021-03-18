@@ -13,7 +13,7 @@ before(async () => {
     .httpRequest()
     .post('/api/v1/users/login')
     .send({
-      username: 'imfdj',
+      username: 'admin',
       password,
     })
     .expect(200);

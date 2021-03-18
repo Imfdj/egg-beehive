@@ -6,6 +6,7 @@ module.exports = app => {
     'users',
     {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      user_id_github: Sequelize.INTEGER,
       username: Sequelize.STRING(60),
       department_id: Sequelize.INTEGER,
       nickname: Sequelize.STRING(60),
@@ -14,6 +15,8 @@ module.exports = app => {
       state: Sequelize.TINYINT,
       phone: Sequelize.STRING(15),
       avatar: Sequelize.STRING(255),
+      company: Sequelize.STRING(80),
+      city: Sequelize.STRING(80),
       last_login: Sequelize.DATE,
     },
     {

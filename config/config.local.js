@@ -63,8 +63,17 @@ exports.io = {
       packetMiddleware: ['packet'],
     },
   },
-  generateId: req => { // 自定义 socket.id 生成函数
+  generateId: req => {
+    // 自定义 socket.id 生成函数
     // const data = qs.parse(req.url.split('?')[1]);
     return req._query.userId; // custom id must be unique
   },
+};
+
+// github授权登录请求参数
+exports.github = {
+  access_token_url: 'https://github.com/login/oauth/access_token',
+  user_info_url: 'https://api.github.com/user',
+  client_id: 'The client ID you received from GitHub for your app.',
+  client_secret: 'The client secret you received from GitHub for your OAuth App.',
 };

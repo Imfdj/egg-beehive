@@ -33,6 +33,7 @@ module.exports = app => {
   router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
   router.post('/api/v1/users/refreshToken', controller.v1.users.refreshToken);
   router.put('/api/v1/users/department', controller.v1.users.minus);
+  router.post('/api/v1/users/github/login', controller.v1.users.githubLogin);
 
   /**
    * 角色

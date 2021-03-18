@@ -11,14 +11,14 @@ class UserService extends Service {
     const where = {};
     let project_where = null;
     keyword
-      ? (where[Op.or] = [{ username: { [Op.like]: `%${ keyword }%` } }, { email: { [Op.like]: `%${ keyword }%` } }, { phone: { [Op.like]: `%${ keyword }%` } }])
+      ? (where[Op.or] = [{ username: { [Op.like]: `%${keyword}%` } }, { email: { [Op.like]: `%${keyword}%` } }, { phone: { [Op.like]: `%${keyword}%` } }])
       : null;
     // 创建时间大于等于date_after_created
     date_after_created ? (where[Op.and] = [{ created_at: { [Op.gte]: date_after_created } }]) : null;
     const Order = [];
-    username ? (where.username = { [Op.like]: `%${ username }%` }) : null;
-    email ? (where.email = { [Op.like]: `%${ email }%` }) : null;
-    phone ? (where.phone = { [Op.like]: `%${ phone }%` }) : null;
+    username ? (where.username = { [Op.like]: `%${username}%` }) : null;
+    email ? (where.email = { [Op.like]: `%${email}%` }) : null;
+    phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
     !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
@@ -63,21 +63,32 @@ class UserService extends Service {
     if (res) {
       payload = Object.assign(payload, await ctx.helper.tools.saltPassword(payload.password));
       payload.password += payload.salt;
-      const res_user = await ctx.model.Users.create(payload);
-      const defaultRole = await ctx.model.Roles.findOne({ is_default: 1 });
-      // 分配 默认角色
-      await ctx.model.UserRoles.create({
-        user_id: res_user.id,
-        role_id: defaultRole.id,
-      });
-      // 所有相应验证码状态都变更为false
-      await ctx.model.VerificationCodes.update(
-        { available: 0 },
-        {
-          where: { target: verification_type === 1 ? email : phone },
-        }
-      );
-      return res_user;
+      const transaction = await ctx.model.transaction();
+      try {
+        const res_user = await ctx.model.Users.create(payload, { transaction });
+        const defaultRole = await ctx.model.Roles.findOne({ is_default: 1 });
+        // 分配 默认角色
+        await ctx.model.UserRoles.create(
+          {
+            user_id: res_user.id,
+            role_id: defaultRole.id,
+          },
+          { transaction }
+        );
+        // 所有相应验证码状态都变更为false
+        await ctx.model.VerificationCodes.update(
+          { available: 0 },
+          {
+            where: { target: verification_type === 1 ? email : phone },
+          },
+          { transaction }
+        );
+        await transaction.commit();
+        return res_user;
+      } catch (e) {
+        await transaction.rollback();
+        ctx.logger.error(e);
+      }
     }
     return false;
   }
@@ -104,7 +115,7 @@ class UserService extends Service {
     }
     payload = Object.assign(payload, await ctx.helper.tools.saltPassword(payload.password, user.dataValues.password.substr(32)));
     payload.password += payload.salt;
-    let result = await ctx.model.Users.findOne({
+    const result = await ctx.model.Users.findOne({
       include: [
         {
           model: ctx.model.Roles,
@@ -117,29 +128,7 @@ class UserService extends Service {
         __code_wrong: 40000,
       };
     }
-    if (result.state !== 1) {
-      return {
-        __code_wrong: 40005,
-      };
-    }
-    result.update({
-      last_login: app.dayjs()
-        .format('YYYY-MM-DD HH:mm:ss'),
-    });
-    result = JSON.parse(JSON.stringify(result));
-    const currentRequestData = { userInfo: { id: result.id } };
-    // 如果验证方式是jwt，否则为session
-    if (this.app.config.verification_mode === 'jwt') {
-      return result
-        ? {
-          accessToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
-          refreshToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_refresh_exp, ctx.app.config.jwt.secret_refresh),
-          csrf: ctx.csrf,
-        }
-        : null;
-    }
-    ctx.session.currentRequestData = currentRequestData;
-    return result ? {} : null;
+    return await this.loginDeal(ctx, result);
   }
 
   /**
@@ -299,6 +288,98 @@ class UserService extends Service {
     }
   }
 
+  async githubLogin(payload) {
+    const { ctx } = this;
+    const { login, id, avatar_url, name, company, location, email } = payload;
+    let user = await ctx.model.Users.findOne({
+      where: {
+        username: login,
+        user_id_github: id,
+      },
+    });
+    //  如果用户还没有注册，则注册
+    if (!user) {
+      const existUser = await ctx.model.Users.findOne({
+        where: {
+          username: login,
+        },
+      });
+      if (existUser) {
+        return {
+          __code_wrong: 40002,
+        };
+      }
+      const transaction = await ctx.model.transaction();
+      try {
+        const res_user = await ctx.model.Users.create(
+          {
+            username: login,
+            user_id_github: id,
+            nickname: name,
+            avatar: avatar_url,
+            company: company || '',
+            city: location || '',
+            password: 'password',
+            email,
+          },
+          { transaction }
+        );
+        const defaultRole = await ctx.model.Roles.findOne({ is_default: 1 });
+        // 分配 默认角色
+        await ctx.model.UserRoles.create(
+          {
+            user_id: res_user.id,
+            role_id: defaultRole.id,
+          },
+          { transaction }
+        );
+        await transaction.commit();
+        // 完成创建重新获取一下
+        user = await ctx.model.Users.findOne({
+          where: {
+            username: login,
+            user_id_github: id,
+          },
+        });
+      } catch (e) {
+        await transaction.rollback();
+        ctx.logger.error(e);
+        return {
+          __code_wrong: 40000,
+        };
+      }
+    }
+    return this.loginDeal(ctx, user);
+  }
+
+  /**
+   * 登录用户，获取到user后处理
+   */
+  async loginDeal(ctx, user) {
+    const { app } = ctx;
+    if (user.state !== 1) {
+      return {
+        __code_wrong: 40005,
+      };
+    }
+    user.update({
+      last_login: app.dayjs()
+        .format('YYYY-MM-DD HH:mm:ss'),
+    });
+    const currentRequestData = { userInfo: { id: user.id } };
+    // 如果验证方式是jwt，否则为session
+    if (app.config.verification_mode === 'jwt') {
+      return user
+        ? {
+          accessToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_exp),
+          refreshToken: await ctx.helper.tools.apply(ctx, currentRequestData, app.config.jwt_refresh_exp, app.config.jwt.secret_refresh),
+          csrf: ctx.csrf,
+        }
+        : null;
+    }
+    ctx.session.currentRequestData = currentRequestData;
+    return user ? {} : null;
+  }
 }
 
 module.exports = UserService;

@@ -22,35 +22,9 @@ module.exports = app => {
   permission.associate = function(models) {
     // associations can be defined here
   };
-  permission.addHook('beforeValidate', (permission, options) => {
-    console.log(11);
-  });
-  permission.addHook('afterValidate', (permission, options) => {
-    console.log(22);
-  });
-  permission.addHook('validationFailed', (permission, options) => {
-    console.log(33);
-  });
-  permission.addHook('beforeCreate', (permission, options) => {
-    // console.log(permission.name);
-    // console.log(permission.state);
-    // console.log(options);
-  });
   permission.addHook('afterCreate', (permission, options) => {
     const { dataValues } = permission;
     app.redis.hmset(ctx.helper.redisKeys.permissionsBaseActionUrl(dataValues.action, dataValues.url), dataValues);
-  });
-  permission.addHook('beforeSave', (permission, options) => {
-    console.log(88);
-  });
-  permission.addHook('afterSave', (permission, options) => {
-    console.log(99);
-  });
-  permission.addHook('beforeDestroy', (permission, options) => {
-    console.log(12);
-  });
-  permission.addHook('afterDestroy', (permission, options) => {
-    console.log(13);
   });
   permission.afterBulkUpdate(async options => {
     const { attributes } = options;

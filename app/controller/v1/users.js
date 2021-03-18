@@ -418,6 +418,75 @@ class RoleController extends Controller {
     }
   }
 
+  /**
+   * @summary github授权登录
+   * @description github授权登录
+   * @router post /api/v1/users/github/login
+   */
+  async githubLogin() {
+    const {
+      ctx,
+      service,
+      app: {
+        config: { github },
+      },
+    } = this;
+    ctx.validate(ctx.rule.userGithubReq, ctx.request.body);
+    const { code } = ctx.request.body;
+    try {
+      const result = await ctx.curl(github.access_token_url, {
+        method: 'POST',
+        contentType: 'application/json',
+        data: {
+          ...github,
+          code,
+        },
+        dataType: 'json',
+        timeout: 3000,
+      });
+      if (result.data.error) {
+        ctx.helper.body.UNAUTHORIZED({ ctx, res: result.data });
+      } else {
+        const userInfo = await ctx.curl(github.user_info_url, {
+          method: 'GET',
+          headers: {
+            Authorization: `token ${result.data.access_token}`,
+          },
+          contentType: 'application/json',
+          dataType: 'json',
+          timeout: 3000,
+        });
+        if (userInfo.data.error) {
+          ctx.helper.body.UNAUTHORIZED({ ctx, res: result.data });
+        }
+        const res = await service.users.githubLogin(userInfo.data);
+        switch (res.__code_wrong) {
+          case undefined:
+            ctx.helper.body.SUCCESS({ ctx, res });
+            break;
+          case 40000:
+            ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: '用户创建失败' });
+            break;
+          case 40002:
+            ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: '用户已存在' });
+            break;
+          case 40005:
+            ctx.helper.body.INVALID_REQUEST({
+              ctx,
+              code: res.__code_wrong,
+              msg: '账号已停用',
+            });
+            break;
+          default:
+            ctx.helper.body.UNAUTHORIZED({ ctx });
+            break;
+        }
+      }
+    } catch (e) {
+      ctx.helper.body.UNAUTHORIZED({ ctx });
+      ctx.logger.error(e);
+    }
+  }
 }
 
 module.exports = RoleController;

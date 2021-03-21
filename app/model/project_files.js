@@ -19,22 +19,25 @@ module.exports = app => {
       is_recycle: Sequelize.TINYINT(1),
     },
     {
-
+      paranoid: true,
     }
   );
 
   project_file.addHook('afterCreate', async (project_file, options) => {
     const ctx = await app.createAnonymousContext();
-    const newProjectFile = Object.assign({
-      task_id: null,
-      filename: '',
-      path: '',
-      extension: '',
-      file_type: '',
-      size: 0,
-      downloads: 0,
-      is_recycle: 0,
-    }, project_file.dataValues);
+    const newProjectFile = Object.assign(
+      {
+        task_id: null,
+        filename: '',
+        path: '',
+        extension: '',
+        file_type: '',
+        size: 0,
+        downloads: 0,
+        is_recycle: 0,
+      },
+      project_file.dataValues
+    );
     ctx.helper.sendSocketToClientOfRoom(newProjectFile, 'create:project_file');
   });
   project_file.addHook('afterUpdate', async (project_file, options) => {

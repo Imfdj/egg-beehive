@@ -10,7 +10,7 @@ class _objectName_Service extends Service {
     const where = {};
     const Order = [
       ['sort', 'asc'],
-      [ctx.model.Tasks, 'sort', 'asc'],
+      // [ctx.model.Tasks, 'sort', 'asc'],
     ];
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     !ctx.helper.tools.isParam(project_id) ? (where.project_id = project_id) : null;
@@ -20,25 +20,25 @@ class _objectName_Service extends Service {
       offset,
       where,
       order: Order,
-      include: [
-        {
-          model: ctx.model.Tasks,
-          attributes: {
-            exclude: ['created_at', 'updated_at'],
-          },
-          include: [
-            {
-              model: ctx.model.TaskTags,
-              // attributes: ['username', 'id', 'avatar'],
-            },
-            {
-              model: ctx.model.Users,
-              attributes: ['username', 'id', 'avatar'],
-              as: 'executor',
-            },
-          ],
-        },
-      ],
+      // include: [
+      //   {
+      //     model: ctx.model.Tasks,
+      //     attributes: {
+      //       exclude: ['created_at', 'updated_at'],
+      //     },
+      //     include: [
+      //       {
+      //         model: ctx.model.TaskTags,
+      //         // attributes: ['username', 'id', 'avatar'],
+      //       },
+      //       {
+      //         model: ctx.model.Users,
+      //         attributes: ['username', 'id', 'avatar'],
+      //         as: 'executor',
+      //       },
+      //     ],
+      //   },
+      // ],
     });
   }
 

@@ -205,6 +205,7 @@ module.exports = app => {
   router.get('/api/v1/tasks', controller.v1.tasks.findOne);
   router.delete('/api/v1/tasks', controller.v1.tasks.destroy);
   router.put('/api/v1/tasks/sort', controller.v1.tasks.sort);
+  router.put('/api/v1/tasks/recycle_all_task_of_taskList', controller.v1.tasks.recycleAllTaskOfTaskList);
 
   /**
    * 任务标签

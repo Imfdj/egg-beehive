@@ -138,6 +138,20 @@ class RoleController extends Controller {
     const res = await service.tasks.sort(ctx.request.body);
     res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
+
+  /**
+   * @apikey
+   * @summary 将任务列表中的所有任务移到回收站
+   * @description 将任务列表中的所有任务移到回收站
+   * @router put /api/v1/tasks/recycle_all_task_of_taskList
+   * @request body taskRecycleAllTaskOfTaskListBodyReq
+   */
+  async recycleAllTaskOfTaskList() {
+    const { ctx, service } = this;
+    ctx.validate(ctx.rule.taskRecycleAllTaskOfTaskListBodyReq, ctx.request.body);
+    const res = await service.tasks.recycleAllTaskOfTaskList(ctx.request.body);
+    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
 }
 
 module.exports = RoleController;

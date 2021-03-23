@@ -6,12 +6,10 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const {
-      limit, offset, prop_order, order, name,
-    } = payload;
+    const { limit, offset, prop_order, order, name } = payload;
     const where = payload.where;
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${ name }%` }) : null;
+    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Tasks.findAndCountAll({
       limit,
@@ -53,10 +51,13 @@ class _objectName_Service extends Service {
         order: [['sort', 'desc']],
       });
       payload.sort = tasks[0] ? tasks[0].sort + 65536 : 65536;
-      const res = await ctx.model.Tasks.create({
-        ...payload,
-        creator_id: userId,
-      }, { transaction });
+      const res = await ctx.model.Tasks.create(
+        {
+          ...payload,
+          creator_id: userId,
+        },
+        { transaction }
+      );
       // 创建任务，默认创建日志：“创建了任务”
       const taskLog = {
         remark: '创建了任务',
@@ -69,11 +70,14 @@ class _objectName_Service extends Service {
       };
       await ctx.model.TaskLogs.create(taskLog, { transaction });
       // 创建任务，默认将创建者加入参与此任务
-      await ctx.model.UserTasks.create({
-        user_id: userId,
-        task_id: res.id,
-        project_id: payload.project_id,
-      }, { transaction });
+      await ctx.model.UserTasks.create(
+        {
+          user_id: userId,
+          task_id: res.id,
+          project_id: payload.project_id,
+        },
+        { transaction }
+      );
       await transaction.commit();
       return res;
     } catch (e) {
@@ -87,7 +91,7 @@ class _objectName_Service extends Service {
     const task = await ctx.model.Tasks.findOne({
       where: { id: payload.id },
     });
-    const taskNameSpan = `<span class="name">${ task.name }</span>`;
+    const taskNameSpan = `<span class="name">${task.name}</span>`;
     const taskLog = {
       remark: '',
       task_id: payload.id,
@@ -102,7 +106,7 @@ class _objectName_Service extends Service {
       receiver_id: '',
       content: '',
       type: 'inform',
-      url: `/pojectManagement/Project/${ task.project_id }?taskId=${ payload.id }`,
+      url: `/pojectManagement/Project/${task.project_id}?taskId=${payload.id}`,
     };
     const transaction = await ctx.model.transaction();
     try {
@@ -116,16 +120,16 @@ class _objectName_Service extends Service {
         const state = await ctx.model.TaskStates.findOne({
           where: { id: payload.task_state_id },
         });
-        taskLog.remark = `修改执行状态为 ${ state.name }`;
+        taskLog.remark = `修改执行状态为 ${state.name}`;
         taskLog.icon = 'el-icon-pie-chart';
         taskLog.type = 'state';
-        message.content = `更改了任务 ${taskNameSpan} 的执行状态为 ${ state.name }`;
+        message.content = `更改了任务 ${taskNameSpan} 的执行状态为 ${state.name}`;
       }
       if (app.lodash.has(payload, 'task_type_id')) {
         const type = await ctx.model.TaskTypes.findOne({
           where: { id: payload.task_type_id },
         });
-        taskLog.remark = `修改任务类型为 ${ type.name }`;
+        taskLog.remark = `修改任务类型为 ${type.name}`;
         taskLog.type = 'type';
         taskLog.icon = 'el-icon-edit';
       }
@@ -133,7 +137,7 @@ class _objectName_Service extends Service {
         const priority = await ctx.model.TaskPrioritys.findOne({
           where: { id: payload.task_priority_id },
         });
-        taskLog.remark = `修改任务优先级为 ${ priority.name }`;
+        taskLog.remark = `修改任务优先级为 ${priority.name}`;
         taskLog.type = 'priority';
         taskLog.icon = 'el-icon-edit';
       }
@@ -170,14 +174,14 @@ class _objectName_Service extends Service {
             transaction,
           });
           taskLog.type = 'executor_assign';
-          taskLog.remark = `指派给了 ${ executor.username }`;
-          message.content = `将任务 ${taskNameSpan} 指派给了 ${ executor.username }`;
+          taskLog.remark = `指派给了 ${executor.username}`;
+          message.content = `将任务 ${taskNameSpan} 指派给了 ${executor.username}`;
         }
         taskLog.icon = 'el-icon-user';
       }
       if (app.lodash.has(payload, 'start_date')) {
         if (payload.start_date) {
-          taskLog.remark = `更新开始时间为 ${ payload.start_date }`;
+          taskLog.remark = `更新开始时间为 ${payload.start_date}`;
         } else {
           taskLog.remark = '清除了开始时间';
         }
@@ -186,7 +190,7 @@ class _objectName_Service extends Service {
       }
       if (app.lodash.has(payload, 'end_date')) {
         if (payload.end_date) {
-          taskLog.remark = `更新截止时间为 ${ payload.end_date }`;
+          taskLog.remark = `更新截止时间为 ${payload.end_date}`;
         } else {
           taskLog.remark = '清除了截止时间';
         }
@@ -209,7 +213,7 @@ class _objectName_Service extends Service {
         taskLog.remark = is_done === 1 ? '完成了任务' : '重做了任务';
         taskLog.type = 'is_done';
         taskLog.icon = 'el-icon-check';
-        message.content = `更改了任务 ${taskNameSpan} 的完成状态为 ${ is_done === 1 ? '已完成' : '未完成' }`;
+        message.content = `更改了任务 ${taskNameSpan} 的完成状态为 ${is_done === 1 ? '已完成' : '未完成'}`;
       }
       await ctx.model.TaskLogs.create(taskLog, { transaction });
       const res = await ctx.model.Tasks.update(payload, {
@@ -223,12 +227,12 @@ class _objectName_Service extends Service {
         ctx.model.UserTasks.findAll({ where: { task_id: payload.id } })
           .then(userTasks => {
             userTasks.forEach(userTask => {
-              // 除去操作者
+            // 除去操作者
               if (userTask.user_id.toString() === ctx.currentRequestData.userInfo.id.toString()) return;
               message.receiver_id = userTask.user_id;
               // 如果是执行者更改的指派情况，message的接收者和执行者的id相同
               if (taskLog.type === 'executor_assign' && payload.executor_id === message.receiver_id) {
-                message.content = `指派给你一个任务 <span class="name">${ task.name }</span>`;
+                message.content = `指派给你一个任务 <span class="name">${task.name}</span>`;
               }
               ctx.model.Messages.create(message);
             });
@@ -299,6 +303,18 @@ class _objectName_Service extends Service {
         }
       );
     }
+  }
+
+  async recycleAllTaskOfTaskList(payload) {
+    const { ctx } = this;
+    const { task_list_id } = payload;
+    return await ctx.model.Tasks.update(
+      { is_recycle: 1 },
+      {
+        where: { task_list_id },
+        individualHooks: true,
+      }
+    );
   }
 }
 

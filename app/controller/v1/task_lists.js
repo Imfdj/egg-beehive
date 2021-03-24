@@ -107,6 +107,51 @@ class RoleController extends Controller {
     const res = await service.taskLists.destroy(ctx.request.body);
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
+
+  /**
+   * @apikey
+   * @summary 更新任务列表排序
+   * @description 更新任务列表排序
+   * @router put /api/v1/task_lists/sort
+   * @request body taskPutBodyReq
+   */
+  async sort() {
+    const { ctx, service } = this;
+    const params = {
+      id: {
+        type: 'number',
+        required: true,
+      },
+      preId: {
+        type: 'number',
+        required: false,
+      },
+      nextId: {
+        type: 'number',
+        required: false,
+      },
+    };
+    ctx.validate(params, ctx.request.body);
+    const { preId, nextId } = ctx.request.body;
+    if (!(preId || nextId)) {
+      ctx.helper.body.VALIDATION_FAILED({
+        ctx,
+        res: {
+          error: 'Validation Failed',
+          detail: [
+            {
+              message: 'required',
+              field: 'preId or nextId',
+              code: 'missing_field, nextId.Preid or preId must have one',
+            },
+          ],
+        },
+      });
+      return;
+    }
+    const res = await service.taskLists.sort(ctx.request.body);
+    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
 }
 
 module.exports = RoleController;

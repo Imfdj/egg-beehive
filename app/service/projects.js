@@ -15,8 +15,8 @@ class _objectName_Service extends Service {
       },
     ];
     const Order = [];
-    const collectorRequired = collection ? (parseInt(collection) === 1) : false;
-    name ? (where.name = { [Op.like]: `%${ name }%` }) : null;
+    const collectorRequired = collection ? parseInt(collection) === 1 : false;
+    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Projects.findAndCountAll({
       // limit,
@@ -66,16 +66,19 @@ class _objectName_Service extends Service {
         return {
           name: item.name,
           project_id: project.id,
-          sort: index,
+          sort: (index + 1) * 65536,
         };
       });
       // 根据project_template_id获取对应的templateTask生成TaskList
       await ctx.model.TaskLists.bulkCreate(project_template_tasks, { transaction });
       // 创建项目同时将创建者加入此项目
-      await ctx.service.userProjects.create({
-        user_id: ctx.currentRequestData.userInfo.id,
-        project_id: project.id,
-      }, { transaction });
+      await ctx.service.userProjects.create(
+        {
+          user_id: ctx.currentRequestData.userInfo.id,
+          project_id: project.id,
+        },
+        { transaction }
+      );
       await transaction.commit();
       return project;
     } catch (e) {

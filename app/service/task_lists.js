@@ -8,10 +8,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     const { limit, offset, prop_order, order, name, project_id } = payload;
     const where = {};
-    const Order = [
-      ['sort', 'asc'],
-      // [ctx.model.Tasks, 'sort', 'asc'],
-    ];
+    const Order = [['sort', 'asc']];
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     !ctx.helper.tools.isParam(project_id) ? (where.project_id = project_id) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
@@ -20,25 +17,6 @@ class _objectName_Service extends Service {
       offset,
       where,
       order: Order,
-      // include: [
-      //   {
-      //     model: ctx.model.Tasks,
-      //     attributes: {
-      //       exclude: ['created_at', 'updated_at'],
-      //     },
-      //     include: [
-      //       {
-      //         model: ctx.model.TaskTags,
-      //         // attributes: ['username', 'id', 'avatar'],
-      //       },
-      //       {
-      //         model: ctx.model.Users,
-      //         attributes: ['username', 'id', 'avatar'],
-      //         as: 'executor',
-      //       },
-      //     ],
-      //   },
-      // ],
     });
   }
 
@@ -49,6 +27,14 @@ class _objectName_Service extends Service {
 
   async create(payload) {
     const { ctx } = this;
+    const { project_id } = payload;
+    const taskList = await ctx.model.TaskLists.findAll({
+      where: {
+        project_id,
+      },
+      order: [['sort', 'desc']],
+    });
+    payload.sort = taskList[0] ? taskList[0].sort + 65536 : 65536;
     return await ctx.model.TaskLists.create(payload);
   }
 
@@ -66,6 +52,49 @@ class _objectName_Service extends Service {
       where: { id: payload.ids },
       individualHooks: true,
     });
+  }
+
+  async sort(payload) {
+    const { ctx } = this;
+    const { preId, nextId } = payload;
+    let sort = 0;
+    if (nextId !== undefined && preId !== undefined) {
+      const pre = await ctx.model.TaskLists.findOne({ where: { id: preId } });
+      const next = await ctx.model.TaskLists.findOne({ where: { id: nextId } });
+      if (pre && next) {
+        sort = (pre.sort + next.sort) / 2;
+        return await ctx.model.TaskLists.update(
+          { sort },
+          {
+            where: { id: payload.id },
+            individualHooks: true,
+          }
+        );
+      }
+      return false;
+    }
+    if (preId !== undefined) {
+      const pre = await ctx.model.TaskLists.findOne({ where: { id: preId } });
+      sort = pre.sort + 1000;
+      return await ctx.model.TaskLists.update(
+        { sort },
+        {
+          where: { id: payload.id },
+          individualHooks: true,
+        }
+      );
+    }
+    if (nextId !== undefined) {
+      const next = await ctx.model.TaskLists.findOne({ where: { id: nextId } });
+      sort = next.sort / 1.1;
+      return await ctx.model.TaskLists.update(
+        { sort },
+        {
+          where: { id: payload.id },
+          individualHooks: true,
+        }
+      );
+    }
   }
 }
 

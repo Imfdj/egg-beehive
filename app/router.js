@@ -168,6 +168,7 @@ module.exports = app => {
   router.get('/api/v1/task_lists/list', controller.v1.taskLists.findAll);
   router.get('/api/v1/task_lists', controller.v1.taskLists.findOne);
   router.delete('/api/v1/task_lists', controller.v1.taskLists.destroy);
+  router.put('/api/v1/task_lists/sort', controller.v1.taskLists.sort);
 
   /**
    * 任务优先级

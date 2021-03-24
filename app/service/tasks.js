@@ -305,7 +305,7 @@ class _objectName_Service extends Service {
         }
       );
     }
-    if (nextId === undefined && nextId === undefined) {
+    if (preId === undefined && nextId === undefined) {
       return await ctx.model.Tasks.update(
         { task_list_id },
         {

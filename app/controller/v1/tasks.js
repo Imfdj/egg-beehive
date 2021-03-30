@@ -17,8 +17,49 @@ class RoleController extends Controller {
    * @router get /api/v1/tasks/list
    */
   async findAll() {
-    const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskBodyReq, ctx.query);
+    const {
+      ctx,
+      service,
+      app: { lodash },
+    } = this;
+    const rules = {
+      executor_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '执行者IDs',
+        example: [1, 2],
+      },
+      creator_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '创建者IDs',
+        example: [1, 2],
+      },
+      task_priority_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '优先级IDs',
+        example: [1, 2],
+      },
+      task_state_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '执行状态IDs',
+        example: [1, 2],
+      },
+    };
+    const queries = Object.assign({}, ctx.query);
+    for (const key in rules) {
+      const data = ctx.queries[key];
+      if (data) {
+        queries[key] = lodash.isArray(data) ? lodash.map(data, lodash.parseInt) : data;
+      }
+    }
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskBodyReq, queries, rules);
     ctx.validate(allRule, query);
     const res = await service.tasks.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });

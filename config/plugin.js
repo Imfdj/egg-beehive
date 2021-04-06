@@ -47,4 +47,8 @@ module.exports = {
     enable: true,
     package: 'egg-socket.io',
   },
+  oss: {
+    enable: true,
+    package: 'egg-oss',
+  },
 };

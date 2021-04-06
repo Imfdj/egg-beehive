@@ -77,3 +77,13 @@ exports.github = {
   client_id: 'The client ID you received from GitHub for your app.',
   client_secret: 'The client secret you received from GitHub for your OAuth App.',
 };
+
+exports.oss = {
+  client: {
+    accessKeyId: 'xxx',
+    accessKeySecret: 'xxx',
+    bucket: 'xxx',
+    endpoint: 'oss-cn-guangzhou.aliyuncs.com',
+    timeout: '60s',
+  },
+};

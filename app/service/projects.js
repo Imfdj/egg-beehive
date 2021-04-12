@@ -19,6 +19,7 @@ class _objectName_Service extends Service {
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Projects.findAndCountAll({
+      distinct: true,
       // limit,
       offset,
       where,

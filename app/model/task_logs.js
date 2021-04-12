@@ -15,19 +15,20 @@ module.exports = app => {
       is_comment: Sequelize.TINYINT(1),
       type: Sequelize.STRING(40),
     },
-    {
-
-    }
+    {}
   );
 
   task_log.addHook('afterCreate', async (task_log, options) => {
     const ctx = await app.createAnonymousContext();
-    const newProjectFile = Object.assign({
-      remark: '',
-      icon: '',
-      content: '',
-      is_comment: 0,
-    }, task_log.dataValues);
+    const newProjectFile = Object.assign(
+      {
+        remark: '',
+        icon: '',
+        content: '',
+        is_comment: 0,
+      },
+      task_log.dataValues
+    );
     ctx.helper.sendSocketToClientOfRoom(newProjectFile, 'create:task_log');
   });
   task_log.addHook('afterUpdate', async (task_log, options) => {
@@ -41,6 +42,7 @@ module.exports = app => {
 
   task_log.associate = function(models) {
     task_log.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'operator_id', as: 'operator' });
+    task_log.hasOne(app.model.Tasks, { foreignKey: 'id', sourceKey: 'task_id', as: 'task' });
     // associations can be defined here
   };
   return task_log;

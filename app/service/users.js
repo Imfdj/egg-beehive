@@ -136,21 +136,31 @@ class UserService extends Service {
    * @return {Promise<*>}
    */
   async userInfo() {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const res = await ctx.model.Users.findOne({
       include: [
         {
           model: ctx.model.Roles,
+          include: [
+            {
+              model: ctx.model.Permissions,
+              attributes: ['id', 'url', 'action'],
+            },
+          ],
         },
       ],
       where: { id: ctx.currentRequestData.userInfo.id },
       attributes: { exclude: ['password', 'deleted_at'] },
     });
-    res.dataValues.permissions = [];
+    let arr = [];
     res.roles.forEach(e => {
-      res.dataValues.permissions.push(e.name);
+      e.permissions.forEach(ee => {
+        arr.push(ee);
+      });
     });
-    delete res.dataValues.roles;
+    arr = app.lodash.uniqWith(arr, (a, b) => a.id === b.id);
+    arr = arr.map(permission => `${permission.action}:${permission.url}`);
+    res.dataValues.permissions = arr || [];
     return res;
   }
 

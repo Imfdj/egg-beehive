@@ -16,6 +16,13 @@ class _objectName_Service extends Service {
       offset,
       where,
       order: Order,
+      include: [
+        {
+          model: ctx.model.Users,
+          attributes: ['username', 'id', 'avatar'],
+          as: 'actor',
+        },
+      ],
     });
   }
 

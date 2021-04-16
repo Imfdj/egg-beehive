@@ -40,6 +40,7 @@ module.exports = app => {
 
   message.associate = function(models) {
     // associations can be defined here
+    message.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'actor_id', as: 'actor' });
   };
   return message;
 };

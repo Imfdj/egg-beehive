@@ -52,6 +52,20 @@ class RoleController extends Controller {
         example: [1, 2],
       },
     };
+    const roles2 = {
+      date_start_created: {
+        type: 'dateTime',
+        required: false,
+        description: '创建的开始时间',
+        example: 'YYYY-MM-DD HH:mm:ss',
+      },
+      date_end_created: {
+        type: 'dateTime',
+        required: false,
+        description: '创建的结束时间',
+        example: 'YYYY-MM-DD HH:mm:ss',
+      },
+    };
     const queries = Object.assign({}, ctx.query);
     for (const key in rules) {
       const data = ctx.queries[key];
@@ -59,7 +73,7 @@ class RoleController extends Controller {
         queries[key] = lodash.isArray(data) ? lodash.map(data, lodash.parseInt) : data;
       }
     }
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskBodyReq, queries, rules);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskBodyReq, queries, { ...rules, ...roles2 });
     ctx.validate(allRule, query);
     const res = await service.tasks.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });

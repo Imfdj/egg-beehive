@@ -6,7 +6,19 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name, executor_ids, creator_ids, task_priority_ids, task_state_ids } = payload;
+    const {
+      limit,
+      offset,
+      prop_order,
+      order,
+      name,
+      executor_ids,
+      creator_ids,
+      task_priority_ids,
+      task_state_ids,
+      date_start_created,
+      date_end_created,
+    } = payload;
     const where = payload.where;
     const Order = [];
     where[Op.or] = [];
@@ -14,6 +26,16 @@ class _objectName_Service extends Service {
     creator_ids ? where[Op.or].push({ creator_id: creator_ids }) : null;
     task_priority_ids ? where[Op.or].push({ task_priority_id: task_priority_ids }) : null;
     task_state_ids ? where[Op.or].push({ task_state_id: task_state_ids }) : null;
+    date_start_created || date_end_created
+      ? (where[Op.and] = [
+        {
+          created_at: {
+            [Op.gte]: date_start_created || '0001-01-01 00:00:01',
+            [Op.lte]: date_end_created || '9001-01-01 00:00:01',
+          },
+        },
+      ])
+      : null;
     if (!where[Op.or].length) {
       delete where[Op.or];
     }
@@ -110,7 +132,7 @@ class _objectName_Service extends Service {
     const task = await ctx.model.Tasks.findOne({
       where: { id: payload.id },
     });
-    const taskNameSpan = `<span class="name">${task.name}</span>`;
+    const taskNameSpan = `<span class="task-name">${task.name}</span>`;
     const taskLog = {
       remark: '',
       task_id: payload.id,
@@ -142,7 +164,7 @@ class _objectName_Service extends Service {
         taskLog.remark = `修改执行状态为 ${state.name}`;
         taskLog.icon = 'el-icon-pie-chart';
         taskLog.type = 'state';
-        message.content = `更改了任务 ${taskNameSpan} 的执行状态为 ${state.name}`;
+        message.content = `更改了任务 ${taskNameSpan} 的执行状态为 <span class="state" style="color: ${state.color};">${state.name}</span>`;
       }
       if (app.lodash.has(payload, 'task_type_id')) {
         const type = await ctx.model.TaskTypes.findOne({
@@ -194,7 +216,7 @@ class _objectName_Service extends Service {
           });
           taskLog.type = 'executor_assign';
           taskLog.remark = `指派给了 ${executor.username}`;
-          message.content = `将任务 ${taskNameSpan} 指派给了 ${executor.username}`;
+          message.content = `将任务 ${taskNameSpan} 指派给了 <span class="executor">${executor.username}</span>`;
         }
         taskLog.icon = 'el-icon-user';
       }
@@ -232,7 +254,7 @@ class _objectName_Service extends Service {
         taskLog.remark = is_done === 1 ? '完成了任务' : '重做了任务';
         taskLog.type = 'is_done';
         taskLog.icon = 'el-icon-check';
-        message.content = `更改了任务 ${taskNameSpan} 的完成状态为 ${is_done === 1 ? '已完成' : '未完成'}`;
+        message.content = `更改了任务 ${taskNameSpan} 的完成状态为 ${is_done === 1 ? '<span class="done">已完成</span>' : '<span class="redo">未完成</span>'}`;
       }
       await ctx.model.TaskLogs.create(taskLog, { transaction });
       const res = await ctx.model.Tasks.update(payload, {
@@ -251,7 +273,7 @@ class _objectName_Service extends Service {
               message.receiver_id = userTask.user_id;
               // 如果是执行者更改的指派情况，message的接收者和执行者的id相同
               if (taskLog.type === 'executor_assign' && payload.executor_id === message.receiver_id) {
-                message.content = `指派给你一个任务 <span class="name">${task.name}</span>`;
+                message.content = `指派给你一个任务 ${taskNameSpan}`;
               }
               ctx.model.Messages.create(message);
             });

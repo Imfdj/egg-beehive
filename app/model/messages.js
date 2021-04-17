@@ -26,14 +26,33 @@ module.exports = app => {
       },
       message.dataValues
     );
+    newMessage.actor = await ctx.model.Users.findOne({
+      where: {
+        id: message.actor_id,
+      },
+    });
     const nsp = app.io.of('/');
-    const { receiver_id, type } = message;
+    const { receiver_id } = message;
     nsp.clients((error, clients) => {
       if (error) throw error;
       // 当此用户在线，则发送消息
       if (clients.includes(receiver_id.toString())) {
         const socket = nsp.sockets[receiver_id];
-        ctx.helper.sendMessageToSocket(socket, newMessage, type, 'message');
+        ctx.helper.sendMessageToSocket(socket, newMessage, 'create:message');
+      }
+    });
+  });
+
+  message.addHook('afterUpdate', async (message, options) => {
+    const ctx = await app.createAnonymousContext();
+    const nsp = app.io.of('/');
+    const { receiver_id } = message;
+    nsp.clients((error, clients) => {
+      if (error) throw error;
+      // 当此用户在线，则发送消息
+      if (clients.includes(receiver_id.toString())) {
+        const socket = nsp.sockets[receiver_id];
+        ctx.helper.sendMessageToSocket(socket, message, 'update:message');
       }
     });
   });

@@ -40,6 +40,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.Messages.update(payload, {
       where: { id: payload.id },
+      individualHooks: true,
     });
   }
 
@@ -47,6 +48,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.Messages.destroy({
       where: { id: payload.ids },
+      individualHooks: true,
     });
   }
 }

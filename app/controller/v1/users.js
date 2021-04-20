@@ -442,7 +442,7 @@ class RoleController extends Controller {
           code,
         },
         dataType: 'json',
-        timeout: 3000,
+        timeout: 10000,
       });
       if (result.data.error) {
         ctx.helper.body.UNAUTHORIZED({ ctx, res: result.data });
@@ -454,7 +454,7 @@ class RoleController extends Controller {
           },
           contentType: 'application/json',
           dataType: 'json',
-          timeout: 3000,
+          timeout: 10000,
         });
         if (userInfo.data.error) {
           ctx.helper.body.UNAUTHORIZED({ ctx, res: result.data });
@@ -483,7 +483,7 @@ class RoleController extends Controller {
         }
       }
     } catch (e) {
-      ctx.helper.body.UNAUTHORIZED({ ctx });
+      ctx.helper.body.UNAUTHORIZED({ ctx, res: e.res });
       ctx.logger.error(e);
     }
   }

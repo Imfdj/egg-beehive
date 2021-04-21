@@ -87,7 +87,7 @@ class UserService extends Service {
         return res_user;
       } catch (e) {
         await transaction.rollback();
-        ctx.logger.error(e);
+        app.logger.errorAndSentry(e);
       }
     }
     return false;
@@ -299,7 +299,7 @@ class UserService extends Service {
   }
 
   async githubLogin(payload) {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const { login, id, avatar_url, name, company, location, email } = payload;
     let user = await ctx.model.Users.findOne({
       where: {
@@ -353,7 +353,7 @@ class UserService extends Service {
         });
       } catch (e) {
         await transaction.rollback();
-        ctx.logger.error(e);
+        app.logger.errorAndSentry(e);
         return {
           __code_wrong: 40000,
         };

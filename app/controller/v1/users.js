@@ -214,7 +214,7 @@ class RoleController extends Controller {
         ctx.request.body.password = key.decrypt(ctx.request.body.password, 'utf8');
       } catch (e) {
         ctx.helper.body.UNAUTHORIZED({ ctx });
-        return ctx.logger.error(e);
+        return app.logger.errorAndSentry(e);
       }
     }
 
@@ -257,7 +257,7 @@ class RoleController extends Controller {
     // 如果验证方式是jwt，否则为session
     if (app.config.verification_mode === 'jwt') {
       const res = await service.users.logout();
-      if (res !== 'OK') ctx.logger.error(res);
+      if (res !== 'OK') app.logger.error(res);
       ctx.helper.body.SUCCESS({ ctx });
     } else {
       ctx.session = null;
@@ -427,6 +427,7 @@ class RoleController extends Controller {
     const {
       ctx,
       service,
+      app,
       app: {
         config: { github },
       },
@@ -484,7 +485,7 @@ class RoleController extends Controller {
       }
     } catch (e) {
       ctx.helper.body.UNAUTHORIZED({ ctx, res: e.res });
-      ctx.logger.error(e);
+      app.logger.errorAndSentry(e);
     }
   }
 }

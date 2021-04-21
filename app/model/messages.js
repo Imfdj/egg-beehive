@@ -38,6 +38,10 @@ module.exports = app => {
       // 当此用户在线，则发送消息
       if (clients.includes(receiver_id.toString())) {
         const socket = nsp.sockets[receiver_id];
+        if (!socket) {
+          app.logger.error(nsp.sockets);
+          app.logger.error(receiver_id);
+        }
         ctx.helper.sendMessageToSocket(socket, newMessage, 'create:message');
       }
     });

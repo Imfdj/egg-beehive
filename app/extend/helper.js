@@ -36,7 +36,7 @@ module.exports = {
         });
       });
     } catch (e) {
-      app.logger.error(e);
+      app.logger.errorAndSentry(e);
     }
   },
   /**
@@ -51,7 +51,7 @@ module.exports = {
       // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
       app.redis.setex(redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
     } catch (e) {
-      app.logger.error(e);
+      app.logger.errorAndSentry(e);
     }
   },
 };

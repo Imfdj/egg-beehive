@@ -25,7 +25,7 @@ module.exports = app => {
         attributes: ['project_id'],
       });
       userProjects.forEach(item => {
-        const roomName = `${ app.config.socketProjectRoomNamePrefix }${ item.project_id }`;
+        const roomName = `${app.config.socketProjectRoomNamePrefix}${item.project_id}`;
         socket.join(roomName, () => {
           // setTimeout(() => {
           //   nsp.to(roomName).emit(`a new user has joined the room: ${ socket.id }`);
@@ -45,7 +45,7 @@ module.exports = app => {
         });
       });
     } catch (err) {
-      logger.error(err);
+      app.logger.errorAndSentry(err);
       socket.emit('disconnect', 'disconnect!');
       socket.disconnect();
     }

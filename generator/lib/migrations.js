@@ -23,6 +23,7 @@ config_fields.forEach((v, i) => {
   const item = {
     [v.name]: {
       type: `Sequelize.${v.type.toUpperCase()}${length}${v.UNSIGNED ? '.UNSIGNED' : ''}`,
+      primaryKey: v.primaryKey,
       allowNull: v.allowNull,
       defaultValue: v.defaultValue !== undefined ? `'${v.defaultValue}'` : undefined,
       unique: v.unique,

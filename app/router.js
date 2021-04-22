@@ -277,4 +277,12 @@ module.exports = app => {
   router.get('/api/v1/messages/list', controller.v1.messages.findAll);
   router.get('/api/v1/messages', controller.v1.messages.findOne);
   router.delete('/api/v1/messages', controller.v1.messages.destroy);
+
+  router.post('/api/v1/invites', controller.v1.invites.create);
+  router.put('/api/v1/invites', controller.v1.invites.update);
+  router.get('/api/v1/invites/list', controller.v1.invites.findAll);
+  router.get('/api/v1/invites', controller.v1.invites.findOne);
+  router.delete('/api/v1/invites', controller.v1.invites.destroy);
+  router.get('/api/v1/invites/valid', controller.v1.invites.findValidOne);
+  router.get('/api/v1/invites/uuid', controller.v1.invites.findOneByUUID);
 };

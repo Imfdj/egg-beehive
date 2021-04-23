@@ -42,14 +42,19 @@ module.exports = {
   /**
    * 给单个socket发送消息,并录入redis
    */
-  sendMessageToSocket(socket, params, action, messageType = 'sync', method = 'publish') {
+  sendMessageToSocket(socketId, params, action, messageType = 'sync', method = 'publish') {
     const { ctx, app, redisKeys } = this;
     try {
-      const _message = ctx.helper.parseSocketMsg(params, socket.id, action, method);
-      const emitData = [messageType, _message];
-      socket.emit(...emitData);
-      // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
-      app.redis.setex(redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+      const nsp = app.io.of('/');
+      const socket = nsp.sockets[socketId];
+      // 当此用户在线，则发送消息
+      if (socket) {
+        const _message = ctx.helper.parseSocketMsg(params, socketId, action, method);
+        const emitData = [messageType, _message];
+        socket.emit(...emitData);
+        // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+        app.redis.setex(redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+      }
     } catch (e) {
       app.logger.errorAndSentry(e);
     }

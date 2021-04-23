@@ -28,7 +28,7 @@ describe('test/app/controller/invites.test.js', () => {
       const res = await app
         .httpRequest()
         .get('/api/v1/invites/list')
-        .query({ limit: 2, group: 'Projects', group_id: 999999 })
+        .query({ limit: 2, group: 'Projects', group_id: 999999, prop_order: 'id', order: 'desc' })
         .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);

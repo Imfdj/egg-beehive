@@ -49,7 +49,7 @@ module.exports = app => {
     // 将创建者加入新创建的项目room
     socket &&
       socket.join(roomName, () => {
-        ctx.helper.sendMessageToSocket(socket, newProject, 'create:project');
+        ctx.helper.sendMessageToSocket(manager_id, newProject, 'create:project');
       });
   });
 

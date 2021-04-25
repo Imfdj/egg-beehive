@@ -73,7 +73,7 @@ class RoleController extends Controller {
         queries[key] = lodash.isArray(data) ? lodash.map(data, lodash.parseInt) : data;
       }
     }
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskBodyReq, queries, { ...rules, ...roles2 });
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskPutBodyReq, queries, { ...rules, ...roles2 });
     ctx.validate(allRule, query);
     const res = await service.tasks.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });

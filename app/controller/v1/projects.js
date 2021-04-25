@@ -19,7 +19,7 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.projectBodyReq, ctx.query, {
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.projectPutBodyReq, ctx.query, {
       state: {
         ...ctx.rule.projectBodyReq.state,
         required: false,

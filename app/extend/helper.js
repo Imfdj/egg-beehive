@@ -46,7 +46,7 @@ module.exports = {
     const { ctx, app, redisKeys } = this;
     try {
       const nsp = app.io.of('/');
-      const socket = nsp.sockets[socketId];
+      const socket = nsp.to(socketId);
       // 当此用户在线，则发送消息
       if (socket) {
         const _message = ctx.helper.parseSocketMsg(params, socketId, action, method);

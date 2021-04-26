@@ -1,4 +1,5 @@
 'use strict';
+const { v4: uuidv4 } = require('uuid');
 
 exports.security = {
   csrf: {
@@ -63,10 +64,16 @@ exports.io = {
       packetMiddleware: ['packet'],
     },
   },
+  redis: {
+    host: '127.0.0.1',
+    port: 6379,
+    password: '123123',
+    db: 3,
+  },
   generateId: req => {
     // 自定义 socket.id 生成函数
     // const data = qs.parse(req.url.split('?')[1]);
-    return req._query.userId; // custom id must be unique
+    return `${req._query.userId}_${uuidv4()}`; // custom id must be unique
   },
 };
 

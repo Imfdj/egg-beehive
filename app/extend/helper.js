@@ -32,7 +32,7 @@ module.exports = {
           const emitData = [messageType, data];
           socket.emit(...emitData);
           // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
-          app.redis.setex(redisKeys.socketBaseSocketId(data.id), this.app.config.socketRedisExp, JSON.stringify(emitData));
+          app.redis.setex(redisKeys.socketBaseSocketId(data.id), app.config.socketRedisExp, JSON.stringify(emitData));
         });
       });
     } catch (e) {
@@ -42,22 +42,34 @@ module.exports = {
   /**
    * 给单个socket发送消息,并录入redis
    */
-  sendMessageToSocket(socketId, params, action, messageType = 'sync', method = 'publish') {
+  sendMessageToSocket(userId, params, action, messageType = 'sync', method = 'publish') {
     const { ctx, app, redisKeys } = this;
-    try {
-      const nsp = app.io.of('/');
-      const socket = nsp.to(socketId);
-      // 当此用户在线，则发送消息
-      if (socket) {
-        const _message = ctx.helper.parseSocketMsg(params, socketId, action, method);
-        const emitData = [messageType, _message];
-        socket.emit(...emitData);
-        // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
-        app.redis.setex(redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+    const nsp = app.io.of('/');
+    nsp.adapter.clients((err, clients) => {
+      if (err) {
+        app.logger.errorAndSentry(err);
+        return;
       }
-    } catch (e) {
-      app.logger.errorAndSentry(e);
-    }
+      clients.forEach(clientId => {
+        // 正则userID_uuid，给同一个用户多个socket分别发送消息
+        const rex = new RegExp(`^${userId}_.*`);
+        if (rex.test(clientId)) {
+          try {
+            const socket = nsp.to(clientId);
+            // 当此用户在线，则发送消息
+            if (socket) {
+              const _message = ctx.helper.parseSocketMsg(params, clientId, action, method);
+              const emitData = [messageType, _message];
+              socket.emit(...emitData);
+              // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+              app.redis.setex(redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+            }
+          } catch (e) {
+            app.logger.errorAndSentry(e);
+          }
+        }
+      });
+    });
   },
 };
 

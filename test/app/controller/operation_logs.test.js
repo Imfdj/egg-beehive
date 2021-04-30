@@ -2,34 +2,36 @@
 
 const { assert, app } = require('egg-mock/bootstrap');
 
-describe('test/app/controller/messages.test.js', () => {
-  const createName = 'messageName' + parseInt(Math.random() * 100000);
+describe('test/app/controller/operation_logs.test.js', () => {
+  const createName = 'operation_logName' + Math.random();
   let createMenuData = {};
   before(async () => {
     app.mockCsrf();
   });
 
-  describe('POST /api/v1/messages', () => {
+  describe('POST /api/v1/operation_logs', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
-        .post('/api/v1/messages')
+        .post('/api/v1/operation_logs')
         .set('authorization', app.__authorization)
         .send({
-          actor_id: 1,
-          receiver_id: 1,
-          content: createName,
-          type: createName,
+          operator_id: 1,
+          method: 'GET',
+          url: 'v1/app/xxx',
+          ip: '127.0.0.1',
+          status: 200,
+          params: 'xxx',
         });
       assert(res.status === 201);
       assert(res.body.code === 0);
     });
   });
-  describe('GET /api/v1/messages/list', () => {
+  describe('GET /api/v1/operation_logs/list', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
-        .get('/api/v1/messages/list')
+        .get('/api/v1/operation_logs/list')
         .query({ limit: 2, name: createName })
         .set('authorization', app.__authorization);
       assert(res.status === 200);
@@ -39,11 +41,11 @@ describe('test/app/controller/messages.test.js', () => {
     });
   });
 
-  describe('GET /api/v1/messages', () => {
+  describe('GET /api/v1/operation_logs', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
-        .get('/api/v1/messages')
+        .get('/api/v1/operation_logs')
         .query({ id: createMenuData.id })
         .set('authorization', app.__authorization);
       assert(res.status === 200);
@@ -53,31 +55,33 @@ describe('test/app/controller/messages.test.js', () => {
     });
   });
 
-  describe('PUT /api/v1/messages', () => {
+  describe('PUT /api/v1/operation_logs', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
-        .put('/api/v1/messages')
+        .put('/api/v1/operation_logs')
         .set('authorization', app.__authorization)
         .send({
           id: createMenuData.id,
-          actor_id: 1,
-          receiver_id: 1,
-          content: createMenuData.content + 1,
-          type: createName,
+          operator_id: 1,
+          method: 'GET',
+          url: 'v1/app/xxx',
+          ip: '127.0.0.1',
+          status: 200,
+          params: 'xxx' + 1,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);
     });
   });
 
-  describe('DELETE /api/v1/messages', () => {
+  describe('DELETE /api/v1/operation_logs', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app
         .httpRequest()
-        .delete('/api/v1/messages')
+        .delete('/api/v1/operation_logs')
         .set('authorization', app.__authorization)
         .send({
           ids: [createMenuData.id],

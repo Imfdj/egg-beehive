@@ -278,6 +278,9 @@ module.exports = app => {
   router.get('/api/v1/messages', controller.v1.messages.findOne);
   router.delete('/api/v1/messages', controller.v1.messages.destroy);
 
+  /**
+   * 邀请
+   */
   router.post('/api/v1/invites', controller.v1.invites.create);
   router.put('/api/v1/invites', controller.v1.invites.update);
   router.get('/api/v1/invites/list', controller.v1.invites.findAll);
@@ -285,4 +288,13 @@ module.exports = app => {
   router.delete('/api/v1/invites', controller.v1.invites.destroy);
   router.get('/api/v1/invites/valid', controller.v1.invites.findValidOne);
   router.get('/api/v1/invites/uuid', controller.v1.invites.findOneByUUID);
+
+  /**
+   * 操作日志
+   */
+  router.post('/api/v1/operation_logs', controller.v1.operationLogs.create);
+  router.put('/api/v1/operation_logs', controller.v1.operationLogs.update);
+  router.get('/api/v1/operation_logs/list', controller.v1.operationLogs.findAll);
+  router.get('/api/v1/operation_logs', controller.v1.operationLogs.findOne);
+  router.delete('/api/v1/operation_logs', controller.v1.operationLogs.destroy);
 };

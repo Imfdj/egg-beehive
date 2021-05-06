@@ -1,15 +1,13 @@
 'use strict';
 
 const Service = require('egg').Service;
-const { Op } = require('sequelize');
 
 class RoleService extends Service {
   async index(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name } = payload;
-    const where = {};
+    const { limit, offset, prop_order, order } = payload;
+    const where = payload.where;
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Roles.findAndCountAll({
       limit,

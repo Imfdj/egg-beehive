@@ -2,6 +2,7 @@
 const crypto = require('crypto');
 const lodash = require('lodash');
 const { v4: uuidv4 } = require('uuid');
+const { Op } = require('sequelize');
 
 module.exports = {
   /**
@@ -113,13 +114,15 @@ module.exports.tools = {
 
   /**
    * findAll请求根据rule处理query值
-   * @param rule
-   * @param queryOrigin
-   * @param ruleOther
-   * @param findAllParamsOther
+   * @param rule 规则
+   * @param queryOrigin 原请求参数
+   * @param ruleOther 追加规则
+   * @param findAllParamsOther 追加搜索字段
+   * @param keywordLikeExcludeParams 关键字keyword模糊搜索排除字段
    * @return {{query: {where: {}}, allRule: {offset: {default: number, type: string, required: boolean}, prop_order: {values, type: string, required: boolean}, limit: {type: string, required: boolean}, order: {values: [string, string, string], type: string, required: boolean}}}}
    */
-  findAllParamsDeal(rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}) {
+  findAllParamsDeal(options) {
+    const { rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}, keywordLikeExcludeParams = [] } = options;
     const _rule = lodash.cloneDeep(rule);
     const query = {
       where: {},
@@ -128,6 +131,12 @@ module.exports.tools = {
       _rule[ruleKey].required = false;
     }
     const findAllParams = {
+      keyword: {
+        type: 'string',
+        trim: true,
+        required: false,
+        max: 36,
+      },
       prop_order: {
         type: 'enum',
         required: false,
@@ -163,6 +172,17 @@ module.exports.tools = {
         query[queryKey] = queryOrigin[queryKey];
       }
     }
+    // 如果搜索参数queryOrigin中带有keyword，且不为空字符串，则视keyword为模糊搜索
+    if (queryOrigin.hasOwnProperty('keyword') && queryOrigin.keyword.trim() !== '') {
+      query.where[Op.or] = [];
+      for (const queryKey in _rule) {
+        // 非模糊搜索排除字段的所有rule中的字段, 且数据类型为string，做模糊查询
+        if (!keywordLikeExcludeParams.includes(queryKey) && _rule[queryKey].type === 'string') {
+          query.where[Op.or].push({ [queryKey]: { [Op.like]: `%${queryOrigin.keyword.trim()}%` } });
+        }
+      }
+    }
+
     return {
       allRule,
       query,

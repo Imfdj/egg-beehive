@@ -45,13 +45,34 @@ module.exports = {
       onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
     },
     {
+      name: 'operator_username',
+      type: 'string',
+      length: 60,
+      min: 2,
+      max: 60,
+      required: true,
+      trim: true,
+      description: '发起者用户名 ', // 供swagger使用
+      example: 'Imfdj', // 供swagger使用
+      allowNull: false, // 是否允许为空
+      comment: '发起者用户名', // 数据库表中字段的描述
+      // 外键设置
+      references: {
+        model: 'users', // 外键关联表
+        key: 'username', // 外键字段名
+      },
+      onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+    },
+    {
       name: 'status',
-      type: 'INTEGER',
-      length: 11,
+      type: 'string',
+      length: 15,
       min: 1,
       required: true,
+      trim: true,
       description: '请求返回状态 ', // 供swagger使用
-      example: 200, // 供swagger使用
+      example: '200', // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '请求返回状态', // 数据库表中字段的描述
     },
@@ -98,7 +119,7 @@ module.exports = {
       name: 'params',
       type: 'TEXT',
       length: '',
-      max: 600,
+      max: 3000,
       min: 1,
       trim: true,
       required: true,

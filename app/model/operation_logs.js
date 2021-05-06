@@ -7,7 +7,8 @@ module.exports = app => {
     {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       operator_id: Sequelize.INTEGER(11),
-      status: Sequelize.INTEGER(11),
+      operator_username: Sequelize.STRING(60),
+      status: Sequelize.STRING(15),
       ip: Sequelize.STRING(100),
       method: Sequelize.STRING(15),
       url: Sequelize.STRING(255),

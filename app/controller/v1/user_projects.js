@@ -18,41 +18,12 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const params = {
-      name: {
-        ...ctx.rule.user_projectBodyReq.name,
-        required: false,
-      },
-      user_id: {
-        ...ctx.rule.user_projectBodyReq.user_id,
-        required: false,
-      },
-      project_id: {
-        ...ctx.rule.user_projectBodyReq.project_id,
-        required: false,
-      },
-      prop_order: {
-        type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.user_projectPutBodyReq), ''],
-      },
-      order: {
-        type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
-      },
-      limit: {
-        type: 'number',
-        required: false,
-      },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.userProjects.findAll(ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.user_projectPutBodyReq,
+      queryOrigin: ctx.query,
+    });
+    ctx.validate(allRule, query);
+    const res = await service.userProjects.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 

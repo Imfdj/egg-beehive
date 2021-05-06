@@ -3,7 +3,6 @@
 const { assert, app } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/operation_logs.test.js', () => {
-  const createName = 'operation_logName' + Math.random();
   let createMenuData = {};
   before(async () => {
     app.mockCsrf();
@@ -17,6 +16,7 @@ describe('test/app/controller/operation_logs.test.js', () => {
         .set('authorization', app.__authorization)
         .send({
           operator_id: 1,
+          operator_username: 'admin',
           method: 'GET',
           url: 'v1/app/xxx',
           ip: '127.0.0.1',
@@ -32,7 +32,7 @@ describe('test/app/controller/operation_logs.test.js', () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .get('/api/v1/operation_logs/list')
-        .query({ limit: 2, name: createName })
+        .query({ limit: 2 })
         .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
@@ -65,6 +65,7 @@ describe('test/app/controller/operation_logs.test.js', () => {
         .send({
           id: createMenuData.id,
           operator_id: 1,
+          operator_username: 'admin',
           method: 'GET',
           url: 'v1/app/xxx',
           ip: '127.0.0.1',

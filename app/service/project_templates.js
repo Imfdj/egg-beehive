@@ -1,16 +1,13 @@
 'use strict';
 
 const Service = require('egg').Service;
-const { Op } = require('sequelize');
 
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name, is_custom } = payload;
-    const where = {};
+    const { limit, offset, prop_order, order } = payload;
+    const where = payload.where;
     const Order = [[ctx.model.ProjectTemplateTasks, 'sort', 'desc']];
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
-    !ctx.helper.tools.isParam(is_custom) ? (where.is_custom = is_custom) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.ProjectTemplates.findAndCountAll({
       limit,

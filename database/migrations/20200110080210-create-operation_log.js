@@ -21,8 +21,19 @@ module.exports = {
           onUpdate: 'CASCADE',
           onDelete: 'CASCADE',
         },
+        operator_username: {
+          type: Sequelize.STRING(60),
+          allowNull: false,
+          comment: '发起者用户名',
+          references: {
+            model: 'users',
+            key: 'username',
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        },
         status: {
-          type: Sequelize.INTEGER(11),
+          type: Sequelize.STRING(15),
           allowNull: false,
           comment: '请求返回状态',
         },

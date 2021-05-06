@@ -18,7 +18,10 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.messagePutBodyReq, ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.messagePutBodyReq,
+      queryOrigin: ctx.query,
+    });
     ctx.validate(allRule, query);
     const res = await service.messages.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });

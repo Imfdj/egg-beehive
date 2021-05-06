@@ -21,7 +21,7 @@ class _objectName_Service extends Service {
     } = payload;
     const where = payload.where;
     const Order = [];
-    where[Op.or] = [];
+    !where[Op.or] ? (where[Op.or] = []) : null;
     executor_ids ? where[Op.or].push({ executor_id: executor_ids }) : null;
     creator_ids ? where[Op.or].push({ creator_id: creator_ids }) : null;
     task_priority_ids ? where[Op.or].push({ task_priority_id: task_priority_ids }) : null;

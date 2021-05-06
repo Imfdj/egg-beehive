@@ -19,28 +19,33 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.projectPutBodyReq, ctx.query, {
-      state: {
-        ...ctx.rule.projectBodyReq.state,
-        required: false,
-        type: 'enum',
-        values: [1, '1'],
-      },
-      is_recycle: {
-        ...ctx.rule.projectBodyReq.is_recycle,
-        type: 'enum',
-        values: [0, '0', 1, '1'],
-      },
-      is_archived: {
-        ...ctx.rule.projectBodyReq.is_recycle,
-        type: 'enum',
-        values: [0, '0', 1, '1'],
-      },
-      collection: {
-        type: 'enum',
-        values: [0, '0', 1, '1'],
-        required: false,
-        description: '是否只显示收藏.1为true,0为false',
+
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.projectPutBodyReq,
+      queryOrigin: ctx.query,
+      ruleOther: {
+        state: {
+          ...ctx.rule.projectBodyReq.state,
+          required: false,
+          type: 'enum',
+          values: [1, '1'],
+        },
+        is_recycle: {
+          ...ctx.rule.projectBodyReq.is_recycle,
+          type: 'enum',
+          values: [0, '0', 1, '1'],
+        },
+        is_archived: {
+          ...ctx.rule.projectBodyReq.is_recycle,
+          type: 'enum',
+          values: [0, '0', 1, '1'],
+        },
+        collection: {
+          type: 'enum',
+          values: [0, '0', 1, '1'],
+          required: false,
+          description: '是否只显示收藏.1为true,0为false',
+        },
       },
     });
     ctx.validate(allRule, query);

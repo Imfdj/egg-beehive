@@ -1,15 +1,13 @@
 'use strict';
 
 const Service = require('egg').Service;
-const { Op } = require('sequelize');
 
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name } = payload;
-    const where = {};
+    const { limit, offset, prop_order, order } = payload;
+    const where = payload.where;
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${ name }%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.UserTasks.findAndCountAll({
       limit,
@@ -62,14 +60,17 @@ class _objectName_Service extends Service {
           individualHooks: true,
         });
         // 如果当前用户退出的任务中，是执行者，则将执行者置为待认领
-        await ctx.model.Tasks.update({ executor_id: 0 }, {
-          where: {
-            id: task_id,
-            executor_id: user_id,
-          },
-          transaction,
-          individualHooks: true,
-        });
+        await ctx.model.Tasks.update(
+          { executor_id: 0 },
+          {
+            where: {
+              id: task_id,
+              executor_id: user_id,
+            },
+            transaction,
+            individualHooks: true,
+          }
+        );
         await transaction.commit();
         return res;
       } catch (e) {

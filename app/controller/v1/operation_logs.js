@@ -18,7 +18,11 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.operation_logPutBodyReq, ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.operation_logPutBodyReq,
+      queryOrigin: ctx.query,
+      keywordLikeExcludeParams: ['params'],
+    });
     ctx.validate(allRule, query);
     const res = await service.operationLogs.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });

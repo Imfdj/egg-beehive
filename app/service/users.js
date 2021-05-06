@@ -376,7 +376,7 @@ class UserService extends Service {
       last_login: app.dayjs()
         .format('YYYY-MM-DD HH:mm:ss'),
     });
-    const currentRequestData = { userInfo: { id: user.id } };
+    const currentRequestData = { userInfo: { id: user.id, username: user.username } };
     // 如果验证方式是jwt，否则为session
     if (app.config.verification_mode === 'jwt') {
       return user

@@ -103,10 +103,13 @@ class _objectName_Service extends Service {
         },
       ],
     });
-    // 有效时间expires是否大于当前时间，是则是可用的
-    res.dataValues.valid = app.dayjs(res.expires)
-      .isAfter(app.dayjs());
-    return res;
+    if (res) {
+      // 有效时间expires是否大于当前时间，是则是可用的
+      res.dataValues.valid = app.dayjs(res.expires)
+        .isAfter(app.dayjs());
+      return res;
+    }
+    return false;
   }
 }
 

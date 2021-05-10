@@ -18,7 +18,7 @@ describe('test/app/controller/tasks.test.js', () => {
         .send({
           name: createName,
           project_id: 999999,
-          task_list_id: 98,
+          task_list_id: 999999,
           task_state_id: 2,
           task_type_id: 2,
           task_priority_id: 2,
@@ -70,6 +70,35 @@ describe('test/app/controller/tasks.test.js', () => {
           task_state_id: 2,
           task_type_id: 2,
           task_priority_id: 2,
+        });
+      assert(res.status === 201);
+      assert(res.body.code === 0);
+    });
+  });
+
+  describe('PUT /api/v1/tasks/sort', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const res = await app.httpRequest()
+        .put('/api/v1/tasks/sort')
+        .set('authorization', app.__authorization)
+        .send({
+          id: createMenuData.id,
+          task_list_id: 999999,
+        });
+      assert(res.status === 201);
+      assert(res.body.code === 0);
+    });
+  });
+
+  describe('PUT /api/v1/tasks/recycle_all_task_of_taskList', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const res = await app.httpRequest()
+        .put('/api/v1/tasks/recycle_all_task_of_taskList')
+        .set('authorization', app.__authorization)
+        .send({
+          task_list_id: 999999,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);

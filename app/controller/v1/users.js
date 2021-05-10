@@ -205,7 +205,7 @@ class RoleController extends Controller {
     ctx.validate(beforeParams, ctx.request.body);
 
     // 如果不是开发环境 获取配置中的rsa私钥对密码解密
-    if (app.config.env !== 'local') {
+    if (app.config.env === 'prod') {
       try {
         const { rsa_private_key } = await ctx.model.Configurations.findOne({
           where: { id: 1 },
@@ -397,22 +397,6 @@ class RoleController extends Controller {
           ctx.helper.body.INVALID_REQUEST({ ctx });
           break;
       }
-    } else {
-      ctx.helper.body.INVALID_REQUEST({ ctx });
-    }
-  }
-
-  /**
-   * @summary 创建 用户
-   * @description 创建 用户
-   * @router put /api/v1/users/minus
-   * @request body userBodyReq
-   */
-  async minus() {
-    const ctx = this.ctx;
-    const state = await this.app.redis.decr('goodsCount');
-    if (state > 0) {
-      ctx.helper.body.SUCCESS({ ctx, res: { state } });
     } else {
       ctx.helper.body.INVALID_REQUEST({ ctx });
     }

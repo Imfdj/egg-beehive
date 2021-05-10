@@ -1,7 +1,6 @@
 'use strict';
 
 const Service = require('egg').Service;
-const { Op } = require('sequelize');
 
 class _objectName_Service extends Service {
   async update(payload) {

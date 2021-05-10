@@ -1,20 +1,14 @@
 'use strict';
-const NodeRSA = require('node-rsa');
 const { app } = require('egg-mock/bootstrap');
 const factories = require('./factories');
 
 before(async () => {
-  const { rsa_public_key } = await app.model.models.configurations.findOne({
-    where: { id: 1 },
-  });
-  const key = new NodeRSA(rsa_public_key);
-  const password = key.encrypt('123123', 'base64');
   const res = await app
     .httpRequest()
     .post('/api/v1/users/login')
     .send({
       username: 'admin',
-      password,
+      password: '123123',
     })
     .expect(200);
   if (app.config.verification_mode === 'jwt') {

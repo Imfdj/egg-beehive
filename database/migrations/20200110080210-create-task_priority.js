@@ -28,7 +28,6 @@ module.exports = {
           type: Sequelize.INTEGER(11),
           allowNull: false,
           defaultValue: '0',
-          unique: true,
           comment: '排序，越大越靠前',
         },
         created_at: {

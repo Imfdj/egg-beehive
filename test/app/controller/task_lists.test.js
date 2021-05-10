@@ -68,6 +68,28 @@ describe('test/app/controller/task_lists.test.js', () => {
     });
   });
 
+  describe('PUT /api/v1/task_lists/sort', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const next = await app.httpRequest()
+        .get('/api/v1/task_lists/list')
+        .query({ limit: 1 })
+        .set('authorization', app.__authorization);
+      assert(next.status === 200);
+      assert(next.body.data);
+      const nextData = next.body.data.rows[0];
+      const res = await app.httpRequest()
+        .put('/api/v1/task_lists/sort')
+        .set('authorization', app.__authorization)
+        .send({
+          id: createMenuData.id,
+          nextId: nextData.id,
+        });
+      assert(res.status === 201);
+      assert(res.body.code === 0);
+    });
+  });
+
   describe('DELETE /api/v1/task_lists', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });

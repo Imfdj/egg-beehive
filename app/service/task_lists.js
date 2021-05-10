@@ -72,25 +72,31 @@ class _objectName_Service extends Service {
     }
     if (preId !== undefined) {
       const pre = await ctx.model.TaskLists.findOne({ where: { id: preId } });
-      sort = pre.sort + 1000;
-      return await ctx.model.TaskLists.update(
-        { sort },
-        {
-          where: { id: payload.id },
-          individualHooks: true,
-        }
-      );
+      if (pre) {
+        sort = pre.sort + 1000;
+        return await ctx.model.TaskLists.update(
+          { sort },
+          {
+            where: { id: payload.id },
+            individualHooks: true,
+          }
+        );
+      }
+      return false;
     }
     if (nextId !== undefined) {
       const next = await ctx.model.TaskLists.findOne({ where: { id: nextId } });
-      sort = next.sort / 1.1;
-      return await ctx.model.TaskLists.update(
-        { sort },
-        {
-          where: { id: payload.id },
-          individualHooks: true,
-        }
-      );
+      if (next) {
+        sort = next.sort / 1.1;
+        return await ctx.model.TaskLists.update(
+          { sort },
+          {
+            where: { id: payload.id },
+            individualHooks: true,
+          }
+        );
+      }
+      return false;
     }
   }
 }

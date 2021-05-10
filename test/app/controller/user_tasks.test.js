@@ -9,6 +9,21 @@ describe('test/app/controller/user_tasks.test.js', () => {
     app.mockCsrf();
   });
 
+  describe('POST /api/v1/user_tasks/change', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const res = await app.httpRequest()
+        .post('/api/v1/user_tasks/change')
+        .set('authorization', app.__authorization)
+        .send({
+          user_id: 1,
+          task_id: 999999,
+        });
+      assert(res.status === 201);
+      assert(res.body.code === 0);
+    });
+  });
+
   // describe('POST /api/v1/user_tasks', () => {
   //   it('should work', async () => {
   //     app.mockCookies({ EGG_SESS: app.__cookies });

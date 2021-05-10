@@ -113,10 +113,10 @@ class RoleController extends Controller {
 
   /**
    * @apikey
-   * @summary 获取某个 邀请
-   * @description 获取某个 邀请
-   * @router get /api/v1/invites
-   * @request query number *id eg:1 inviteID
+   * @summary 获取某个 邀请 by UUID
+   * @description 获取某个 邀请 by UUID
+   * @router get /api/v1/invites/uuid
+   * @request query number *uuid eg:1 uuid
    */
   async findOneByUUID() {
     const { ctx, service } = this;

@@ -68,7 +68,6 @@ module.exports = {
       allowNull: false, // 是否允许为空
       defaultValue: 0, // 数据库表中字段的默认值
       comment: '排序，越大越靠前', // 数据库表中字段的描述
-      unique: true, // 是否唯一
     },
   ],
   fields_option: {},

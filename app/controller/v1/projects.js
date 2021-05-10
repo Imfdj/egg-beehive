@@ -145,6 +145,20 @@ class RoleController extends Controller {
     const res = await service.projects.destroy(ctx.request.body);
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
+
+  /**
+   * @apikey
+   * @summary 获取某个 项目统计
+   * @description 获取某个 项目统计
+   * @router get /api/v1/projects/statistics
+   * @request query number *id eg:1 projectID
+   */
+  async projectStatistics() {
+    const { ctx, service } = this;
+    ctx.validate(ctx.rule.projectId, ctx.query);
+    const res = await service.projects.projectStatistics(ctx.query.id);
+    res ? ctx.helper.body.SUCCESS({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
 }
 
 module.exports = RoleController;

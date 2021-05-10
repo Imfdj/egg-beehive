@@ -149,6 +149,7 @@ module.exports = app => {
   router.get('/api/v1/projects/list', controller.v1.projects.findAll);
   router.get('/api/v1/projects', controller.v1.projects.findOne);
   router.delete('/api/v1/projects', controller.v1.projects.destroy);
+  router.get('/api/v1/projects/statistics', controller.v1.projects.projectStatistics);
 
   /**
    * 用户-项目关系

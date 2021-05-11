@@ -65,6 +65,12 @@ class RoleController extends Controller {
         description: '创建的结束时间',
         example: 'YYYY-MM-DD HH:mm:ss',
       },
+      participator_id: {
+        type: 'number',
+        required: false,
+        description: '参与者ID',
+        example: 1,
+      },
     };
     const queries = Object.assign({}, ctx.query);
     for (const key in rules) {

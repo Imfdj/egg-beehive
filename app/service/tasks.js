@@ -18,6 +18,7 @@ class _objectName_Service extends Service {
       task_state_ids,
       date_start_created,
       date_end_created,
+      participator_id,
     } = payload;
     const where = payload.where;
     const Order = [];
@@ -40,6 +41,7 @@ class _objectName_Service extends Service {
       delete where[Op.or];
     }
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
+    const participatorsWhere = participator_id ? { id: participator_id } : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Tasks.findAndCountAll({
       limit,
@@ -55,6 +57,12 @@ class _objectName_Service extends Service {
           model: ctx.model.Users,
           attributes: ['username', 'id', 'avatar'],
           as: 'executor',
+        },
+        {
+          model: ctx.model.Users,
+          as: 'participators',
+          attributes: ['id', 'username', 'avatar'],
+          where: participatorsWhere,
         },
       ],
     });

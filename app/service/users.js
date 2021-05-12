@@ -29,11 +29,17 @@ class UserService extends Service {
       where,
       order: Order,
       attributes: { exclude: ['password', 'deleted_at'] },
-      include: {
-        model: ctx.model.Projects,
-        attributes: ['id'],
-        where: project_where,
-      },
+      include: [
+        {
+          model: ctx.model.Projects,
+          attributes: ['id'],
+          where: project_where,
+        },
+        {
+          model: ctx.model.Roles,
+          attributes: ['id', 'name'],
+        },
+      ],
       distinct: true,
     });
   }

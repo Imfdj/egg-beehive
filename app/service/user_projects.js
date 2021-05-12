@@ -40,6 +40,24 @@ class _objectName_Service extends Service {
       where: { id: payload.ids },
     });
   }
+
+  async quit(payload) {
+    const { ctx } = this;
+    const project = await ctx.model.Projects.findOne({
+      where: {
+        id: payload.project_id,
+        manager_id: payload.user_id,
+      },
+    });
+    // 如果此用户不是此项目的拥有者
+    if (!project) {
+      return await ctx.model.UserProjects.destroy({
+        where: payload,
+      });
+    }
+    ctx.helper.body.INVALID_REQUEST({ ctx, msg: '项目拥有者无法退出自己的项目' });
+    return false;
+  }
 }
 
 module.exports = _objectName_Service;

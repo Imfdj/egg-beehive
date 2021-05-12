@@ -82,6 +82,21 @@ class RoleController extends Controller {
     const res = await service.userProjects.destroy(ctx.request.body);
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
+
+  /**
+   * @apikey
+   * @summary 删除 用户-项目关系 用户退出项目
+   * @description 删除 用户-项目关系 用户退出项目
+   * @router delete /api/v1/user_projects/quit
+   * @request body user_projectBodyReq
+   */
+  async quit() {
+    const { ctx, service } = this;
+    ctx.validate(ctx.rule.user_projectBodyReq, ctx.request.body);
+    const res = await service.userProjects.quit(ctx.request.body);
+    if (res === false) return;
+    res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
 }
 
 module.exports = RoleController;

@@ -79,4 +79,27 @@ describe('test/app/controller/user_projects.test.js', () => {
       assert(res.status === 204);
     });
   });
+
+  describe('DELETE /api/v1/user_projects/quit', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const res = await app.httpRequest()
+        .post('/api/v1/user_projects')
+        .set('authorization', app.__authorization)
+        .send({
+          user_id: 2,
+          project_id: 999999,
+        });
+      assert(res.status === 201);
+      assert(res.body.code === 0);
+      const res2 = await app.httpRequest()
+        .delete('/api/v1/user_projects/quit')
+        .set('authorization', app.__authorization)
+        .send({
+          user_id: 2,
+          project_id: 999999,
+        });
+      assert(res2.status === 204);
+    });
+  });
 });

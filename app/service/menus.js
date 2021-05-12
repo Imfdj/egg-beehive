@@ -52,7 +52,7 @@ class _objectName_Service extends Service {
    * @return {Promise<*[]|*>}
    */
   async userMenus() {
-    const { ctx, service, app } = this;
+    const { ctx, app } = this;
     let data = await ctx.model.Users.findAll({
       include: [
         {
@@ -60,17 +60,11 @@ class _objectName_Service extends Service {
           // attributes: {
           //   exclude: [ 'user_roles', 'updated_at' ],
           // },
-          where: {
-            // name: { [ Op.like ]: '%stri%' },
-          },
           include: [
             {
               model: ctx.model.Menus,
               attributes: {
                 exclude: ['created_at', 'updated_at'],
-              },
-              where: {
-                // name: { [ Op.like ]: '%stri%' },
               },
             },
           ],
@@ -98,6 +92,7 @@ class _objectName_Service extends Service {
       });
     });
     data = app.lodash.uniqWith(arr, (a, b) => a.id === b.id);
+    data = data.sort((a, b) => b.sort - a.sort);
     return data;
   }
 }

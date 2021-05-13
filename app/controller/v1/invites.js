@@ -60,6 +60,7 @@ class RoleController extends Controller {
     };
     ctx.validate(rule, ctx.request.body);
     const res = await ctx.service.invites.create(ctx.request.body);
+    if (res === false) return;
     ctx.helper.body.CREATED_UPDATE({ ctx, res });
   }
 
@@ -75,7 +76,7 @@ class RoleController extends Controller {
     delete ctx.request.body.expires;
     ctx.validate(ctx.rule.invitePutBodyReq, ctx.request.body);
     const res = await service.invites.update(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**
@@ -103,7 +104,11 @@ class RoleController extends Controller {
   async findValidOne() {
     const { ctx, service } = this;
     const rule = {
-      group: ctx.rule.inviteBodyReq.group,
+      group: {
+        type: 'enum',
+        required: true,
+        values: ['Projects'],
+      },
       group_id: ctx.rule.inviteBodyReq.group_id,
     };
     ctx.validate(rule, ctx.query);
@@ -129,6 +134,22 @@ class RoleController extends Controller {
     ctx.validate(rule, ctx.query);
     const res = await service.invites.findOneByUUID(ctx.query.uuid);
     res ? ctx.helper.body.SUCCESS({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
+
+  /**
+   * @apikey
+   * @summary 接受 邀请
+   * @description 接受 邀请
+   * @router put /api/v1/invites/accept
+   * @request body inviteUUID
+   */
+  async acceptInvite() {
+    const { ctx, service } = this;
+    delete ctx.request.body.expires;
+    ctx.validate(ctx.rule.inviteUUID, ctx.request.body);
+    const res = await service.invites.acceptInvite(ctx.request.body);
+    if (res === false) return;
+    ctx.helper.body.CREATED_UPDATE({ ctx });
   }
 }
 

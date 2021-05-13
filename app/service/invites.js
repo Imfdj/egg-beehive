@@ -34,21 +34,37 @@ class _objectName_Service extends Service {
         .add(app.config.inviteExpiresRange, 'minute')
         .format('YYYY-MM-DD HH:mm:ss');
     }
-    const transaction = await ctx.model.transaction();
-    try {
-      await ctx.model.Invites.create(payload, { transaction });
-      if (payload.receiver_id && payload.group === 'Projects') {
-        const project = await ctx.model.Projects.findOne({ where: { id: payload.group_id } });
-        payload.content = `邀请你加入项目 <span class="project-name">${project.name}</span>`;
-        payload.type = 'personal';
-        payload.url = `/invite/project/${payload.uuid}`;
-        await ctx.model.Messages.create(payload, { transaction });
+
+    // 如果指定邀请某人，加入项目
+    if (payload.group === 'Projects') {
+      // 邀请发起者必须是项目的拥有者
+      const project = await ctx.model.Projects.findOne({
+        where: {
+          id: payload.group_id,
+          manager_id: ctx.currentRequestData.userInfo.id,
+        },
+      });
+      if (!project) {
+        ctx.helper.body.UNAUTHORIZED({ ctx, msg: '如果是项目成员邀请，则邀请发起者必须是项目的拥有者' });
+        return false;
       }
-      await transaction.commit();
-      return true;
-    } catch (e) {
-      await transaction.rollback();
-      app.logger.errorAndSentry(e);
+      const transaction = await ctx.model.transaction();
+      try {
+        await ctx.model.Invites.create(payload, { transaction });
+        // 如果指定了邀请接受者, 则创建站内消息
+        if (payload.receiver_id) {
+          payload.content = `邀请你加入项目 <span class="project-name">${project.name}</span>`;
+          payload.type = 'personal';
+          payload.url = `/invite/project/${payload.uuid}`;
+          await ctx.model.Messages.create(payload, { transaction });
+        }
+        await transaction.commit();
+        return true;
+      } catch (e) {
+        await transaction.rollback();
+        app.logger.errorAndSentry(e);
+        throw e;
+      }
     }
   }
 
@@ -110,6 +126,64 @@ class _objectName_Service extends Service {
       return res;
     }
     return false;
+  }
+
+  async acceptInvite(payload) {
+    const { ctx, app } = this;
+    const invite = await ctx.model.Invites.findOne({
+      where: payload,
+    });
+    if (invite) {
+      // 有效时间expires是否大于当前时间，是则是可用的
+      const valid = app.dayjs(invite.expires)
+        .isAfter(app.dayjs());
+      if (!valid) {
+        ctx.helper.body.INVALID_REQUEST({ ctx, msg: '邀请已过期' });
+        return false;
+      }
+      if (invite.is_accept === 1) {
+        ctx.helper.body.INVALID_REQUEST({ ctx, msg: '邀请已使用过了' });
+        return false;
+      }
+    } else {
+      ctx.helper.body.INVALID_REQUEST({ ctx, msg: '邀请不存在' });
+      return false;
+    }
+    const transaction = await ctx.model.transaction();
+    try {
+      // 如果有接受者，则是单独邀请
+      if (invite.receiver_id) {
+        if (invite.receiver_id !== ctx.currentRequestData.userInfo.id) {
+          ctx.helper.body.INVALID_REQUEST({ ctx, msg: '调用者不是邀请指定者，无法接受此邀请' });
+          return false;
+        }
+        // 调用者是邀请指定者，则置为已接受
+        await ctx.model.Invites.update(
+          { is_accept: 1 },
+          {
+            where: payload,
+            individualHooks: true,
+            transaction,
+          }
+        );
+      }
+      // 如果邀请团体类型为Projects，项目成员邀请
+      if (invite.group === 'Projects') {
+        await ctx.model.UserProjects.create(
+          {
+            user_id: ctx.currentRequestData.userInfo.id,
+            project_id: invite.group_id,
+          },
+          { transaction }
+        );
+      }
+      await transaction.commit();
+      return true;
+    } catch (e) {
+      await transaction.rollback();
+      app.logger.errorAndSentry(e);
+      throw e;
+    }
   }
 }
 

@@ -289,6 +289,7 @@ module.exports = app => {
   router.delete('/api/v1/invites', controller.v1.invites.destroy);
   router.get('/api/v1/invites/valid', controller.v1.invites.findValidOne);
   router.get('/api/v1/invites/uuid', controller.v1.invites.findOneByUUID);
+  router.put('/api/v1/invites/accept', controller.v1.invites.acceptInvite);
 
   /**
    * 操作日志

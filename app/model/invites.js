@@ -18,8 +18,8 @@ module.exports = app => {
   );
   invite.addHook('afterUpdate', async (invite, options) => {
     const ctx = await app.createAnonymousContext();
-    // 如果此次将is_accept从0修改为1，则视为一次接受修改，则为发起者创建一次站内信,说明邀请已被接受
-    if (invite.dataValues.is_accept === 1 && invite._previousDataValues.is_accept === 0) {
+    // 如果此次将is_accept从0修改为1，则视为一次接受修改，且存在接受者id， 则为发起者创建一次站内信,说明邀请已被接受
+    if (invite.dataValues.is_accept === 1 && invite._previousDataValues.is_accept === 0 && invite.receiver_id) {
       if (invite.group === 'Projects') {
         const project = await ctx.model.Projects.findOne({ where: { id: invite.group_id } });
         ctx.model.Messages.create({

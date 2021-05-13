@@ -73,4 +73,7 @@ module.exports = {
       example: [1, 2],
     },
   },
+  inviteUUID: {
+    uuid: body.inviteBodyReq.uuid,
+  },
 };

@@ -17,7 +17,7 @@ describe('test/app/controller/invites.test.js', () => {
         .send({
           group: 'Projects',
           group_id: 999999,
-          receiver_id: 1,
+          receiver_id: 2,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);
@@ -62,7 +62,6 @@ describe('test/app/controller/invites.test.js', () => {
           id: createMenuData.id,
           group: 'Projects',
           group_id: 999999,
-          is_accept: 1,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);
@@ -91,6 +90,28 @@ describe('test/app/controller/invites.test.js', () => {
         .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
+      assert(res.body.code === 0);
+    });
+  });
+
+  describe('PUT /api/v1/invites/accept', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const data = await app
+        .httpRequest()
+        .post('/api/v1/users/login')
+        .send({
+          username: 'root',
+          password: '123123',
+        })
+        .expect(200);
+      const res = await app.httpRequest()
+        .put('/api/v1/invites/accept')
+        .set('authorization', `Bearer ${data.body.data.accessToken}`)
+        .send({
+          uuid: createMenuData.uuid,
+        });
+      assert(res.status === 201);
       assert(res.body.code === 0);
     });
   });

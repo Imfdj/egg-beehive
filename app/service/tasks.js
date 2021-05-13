@@ -43,6 +43,17 @@ class _objectName_Service extends Service {
     name ? (where.name = { [Op.like]: `%${name}%` }) : null;
     const participatorsWhere = participator_id ? { id: participator_id } : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
+    let whereProject = null;
+    if (!limit) {
+      whereProject = {};
+      // 只有项目成员才能查看项目任务，除非是公开项目
+      whereProject[Op.or] = [
+        { id: ctx.currentRequestData.userInfo.id },
+        {
+          '$project.is_private$': 0,
+        },
+      ];
+    }
     return await ctx.model.Tasks.findAndCountAll({
       limit,
       offset,
@@ -63,6 +74,21 @@ class _objectName_Service extends Service {
           as: 'participators',
           attributes: ['id', 'username', 'avatar'],
           where: participatorsWhere,
+        },
+        {
+          model: ctx.model.Projects,
+          as: 'project',
+          required: true,
+          attributes: ['id', 'name'],
+          include: [
+            {
+              model: ctx.model.Users,
+              as: 'member',
+              attributes: ['id', 'username'],
+              where: whereProject,
+              required: true,
+            },
+          ],
         },
       ],
     });

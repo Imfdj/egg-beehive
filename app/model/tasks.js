@@ -32,18 +32,21 @@ module.exports = app => {
     // const newTask = await app.model.Tasks.findOne({
     //   where: { id: task.id },
     // });
-    const newTask = Object.assign({
-      parent_id: 0,
-      executor_id: 0,
-      start_date: '',
-      end_date: '',
-      remark: '',
-      is_done: 0,
-      is_privacy: 0,
-      is_recycle: 0,
-      likes: 0,
-      plan_work_hours: 0,
-    }, task.dataValues);
+    const newTask = Object.assign(
+      {
+        parent_id: 0,
+        executor_id: 0,
+        start_date: '',
+        end_date: '',
+        remark: '',
+        is_done: 0,
+        is_privacy: 0,
+        is_recycle: 0,
+        likes: 0,
+        plan_work_hours: 0,
+      },
+      task.dataValues
+    );
     ctx.helper.sendSocketToClientOfRoom(newTask, 'create:task');
   });
   task.addHook('afterUpdate', async (task, options) => {
@@ -62,6 +65,7 @@ module.exports = app => {
     // associations can be defined here
     task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id', as: 'executor' });
     task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'creator_id', as: 'creator' });
+    task.hasOne(app.model.Projects, { foreignKey: 'id', sourceKey: 'project_id', as: 'project' });
     app.model.Tasks.belongsToMany(app.model.Users, {
       through: app.model.UserTasks,
       foreignKey: 'task_id',

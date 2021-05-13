@@ -166,6 +166,10 @@ class _objectName_Service extends Service {
     const task = await ctx.model.Tasks.findOne({
       where: { id: payload.id },
     });
+    if (!task) {
+      ctx.helper.body.NOT_FOUND({ ctx });
+      return false;
+    }
     const taskNameSpan = `<span class="task-name">${task.name}</span>`;
     const taskLog = {
       remark: '',

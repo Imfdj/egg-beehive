@@ -155,6 +155,7 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await service.tasks.update(ctx.request.body);
+    if (res === false) return;
     res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 

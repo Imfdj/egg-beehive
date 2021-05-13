@@ -66,7 +66,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.project_filePutBodyReq, ctx.request.body);
     const res = await service.projectFiles.update(ctx.request.body);
-    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**

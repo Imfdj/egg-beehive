@@ -129,7 +129,8 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await service.projects.update(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.UNAUTHORIZED({ ctx, msg: '只有项目拥有者才能修改项目信息' });
   }
 
   /**

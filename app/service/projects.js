@@ -90,8 +90,20 @@ class _objectName_Service extends Service {
 
   async update(payload) {
     const { ctx } = this;
+    const project = await ctx.model.Projects.findOne({
+      where: {
+        id: payload.id,
+      },
+    });
+    if (!project) {
+      ctx.helper.body.NOT_FOUND({ ctx });
+      return false;
+    }
     return await ctx.model.Projects.update(payload, {
-      where: { id: payload.id },
+      where: {
+        id: payload.id,
+        manager_id: ctx.currentRequestData.userInfo.id,
+      },
       individualHooks: true,
     });
   }

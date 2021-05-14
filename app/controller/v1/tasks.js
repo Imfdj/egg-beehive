@@ -113,7 +113,8 @@ class RoleController extends Controller {
   async create() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.taskBodyReq, ctx.request.body);
-    await ctx.service.tasks.create(ctx.request.body);
+    const res = await ctx.service.tasks.create(ctx.request.body);
+    if (res === false) return;
     ctx.helper.body.CREATED_UPDATE({ ctx });
   }
 
@@ -170,6 +171,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.taskDelBodyReq, ctx.request.body);
     const res = await service.tasks.destroy(ctx.request.body);
+    if (res === false) return;
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
@@ -202,7 +204,8 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await service.tasks.sort(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**
@@ -216,7 +219,8 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.taskRecycleAllTaskOfTaskListBodyReq, ctx.request.body);
     const res = await service.tasks.recycleAllTaskOfTaskList(ctx.request.body);
-    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 }
 

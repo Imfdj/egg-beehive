@@ -109,14 +109,97 @@ class _objectName_Service extends Service {
           as: 'participators',
           attributes: ['id', 'username', 'avatar'],
         },
+        {
+          model: ctx.model.Projects,
+          as: 'project',
+          required: true,
+          attributes: ['id', 'name'],
+          include: [
+            {
+              model: ctx.model.Users,
+              as: 'member',
+              attributes: ['id', 'username'],
+              where: {
+                [Op.or]: [
+                  { id: ctx.currentRequestData.userInfo.id },
+                  {
+                    '$project.is_private$': 0,
+                  },
+                ],
+              },
+              required: true,
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  /**
+   * 获取当前用户为项目成员的项目
+   * @param project_id
+   * @return {Promise<*>}
+   */
+  async getProjectForMember(project_id) {
+    const { ctx } = this;
+    return await ctx.model.Projects.findOne({
+      where: {
+        id: project_id,
+      },
+      include: [
+        {
+          model: ctx.model.Users,
+          as: 'member',
+          where: {
+            id: ctx.currentRequestData.userInfo.id,
+          },
+        },
+      ],
+    });
+  }
+
+  /**
+   * 获取当前用户为项目成员的任务
+   * @param payload
+   * @return {Promise<*>}
+   */
+  async getTaskForMember(payload) {
+    const { ctx } = this;
+    return await ctx.model.Tasks.findAll({
+      where: {
+        id: payload,
+      },
+      include: [
+        {
+          model: ctx.model.Projects,
+          as: 'project',
+          required: true,
+          include: [
+            {
+              model: ctx.model.Users,
+              as: 'member',
+              where: {
+                id: ctx.currentRequestData.userInfo.id,
+              },
+            },
+          ],
+        },
       ],
     });
   }
 
   async create(payload) {
     const { ctx } = this;
-    const { task_list_id } = payload;
+    const { task_list_id, project_id } = payload;
     const { id: userId } = ctx.currentRequestData.userInfo;
+
+    // 非项目成员则无权创建此项目的任务
+    const project = await this.getProjectForMember(project_id);
+    if (!project) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, msg: '非项目成员则无权创建此项目的任务' });
+      return false;
+    }
+
     const transaction = await ctx.model.transaction();
     try {
       const tasks = await ctx.model.Tasks.findAll({
@@ -168,6 +251,12 @@ class _objectName_Service extends Service {
     });
     if (!task) {
       ctx.helper.body.NOT_FOUND({ ctx });
+      return false;
+    }
+    // 非项目成员则无权修改此项目的任务
+    const tasks = await this.getTaskForMember(payload.id);
+    if (!(tasks && tasks.length)) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, msg: '非项目成员则无权修改此项目的任务' });
       return false;
     }
     const taskNameSpan = `<span class="task-name">${task.name}</span>`;
@@ -326,8 +415,21 @@ class _objectName_Service extends Service {
 
   async destroy(payload) {
     const { ctx } = this;
+    const tasksExist = await ctx.model.Tasks.findAll({
+      where: {
+        id: payload.ids,
+      },
+    });
+    // 如果存在任务数量和此用户为项目成员的任务数量不一致，则认为存在删除非项目成员任务，则 非项目成员则无权删除此项目的任务
+    const tasks = await this.getTaskForMember(payload.ids);
+    if (tasksExist.length !== tasks.length) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, msg: '非项目成员则无权删除此项目的任务' });
+      return false;
+    }
     return await ctx.model.Tasks.destroy({
-      where: { id: payload.ids },
+      where: {
+        id: payload.ids,
+      },
       individualHooks: true,
     });
   }
@@ -335,6 +437,12 @@ class _objectName_Service extends Service {
   async sort(payload) {
     const { ctx } = this;
     const { preId, nextId, task_list_id } = payload;
+    // 非项目成员则无权修改此项目的任务
+    const tasks = await this.getTaskForMember(payload.id);
+    if (!(tasks && tasks.length)) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, msg: '非项目成员则无权修改此项目的任务' });
+      return false;
+    }
     let sort = 0;
     if (nextId !== undefined && preId !== undefined) {
       const pre = await ctx.model.Tasks.findOne({ where: { id: preId } });
@@ -387,6 +495,32 @@ class _objectName_Service extends Service {
   async recycleAllTaskOfTaskList(payload) {
     const { ctx } = this;
     const { task_list_id } = payload;
+    // 非项目成员则无权修改此项目的任务
+    const taskList = await ctx.model.TaskLists.findOne({
+      where: {
+        id: task_list_id,
+      },
+      include: [
+        {
+          model: ctx.model.Projects,
+          as: 'project',
+          required: true,
+          include: [
+            {
+              model: ctx.model.Users,
+              as: 'member',
+              where: {
+                id: ctx.currentRequestData.userInfo.id,
+              },
+            },
+          ],
+        },
+      ],
+    });
+    if (!taskList) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, msg: '非项目成员则无权修改此项目的任务' });
+      return false;
+    }
     return await ctx.model.Tasks.update(
       { is_recycle: 1 },
       {

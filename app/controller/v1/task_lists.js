@@ -21,9 +21,16 @@ class RoleController extends Controller {
     const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
       rule: ctx.rule.task_listPutBodyReq,
       queryOrigin: ctx.query,
+      ruleOther: {
+        project_id: {
+          ...ctx.rule.task_listPutBodyReq.project_id,
+          required: true,
+        },
+      },
     });
     ctx.validate(allRule, query);
     const res = await service.taskLists.findAll(query);
+    if (res === false) return;
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 

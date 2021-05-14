@@ -26,9 +26,10 @@ describe('test/app/controller/task_lists.test.js', () => {
   describe('GET /api/v1/task_lists/list', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest()
+      const res = await app
+        .httpRequest()
         .get('/api/v1/task_lists/list')
-        .query({ limit: 2, name: createName })
+        .query({ limit: 2, project_id: 999999, name: createName })
         .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
@@ -73,7 +74,7 @@ describe('test/app/controller/task_lists.test.js', () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const next = await app.httpRequest()
         .get('/api/v1/task_lists/list')
-        .query({ limit: 1 })
+        .query({ limit: 1, project_id: 999999 })
         .set('authorization', app.__authorization);
       assert(next.status === 200);
       assert(next.body.data);

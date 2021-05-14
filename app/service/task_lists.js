@@ -1,11 +1,39 @@
 'use strict';
 
 const Service = require('egg').Service;
+const { Op } = require('sequelize');
 
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order } = payload;
+    const { limit, offset, prop_order, order, project_id } = payload;
+    // 不存在此项目，则返回空数组
+    const exist = await ctx.model.Projects.findOne({ where: { id: project_id } });
+    if (!exist) {
+      return [];
+    }
+    // 非公共项目，且不是项目成员，则无权获取该项目的任务列表数据
+    const project = await ctx.model.Projects.findOne({
+      where: {
+        id: project_id,
+        [Op.or]: [
+          { '$member.id$': ctx.currentRequestData.userInfo.id },
+          {
+            is_private: 0,
+          },
+        ],
+      },
+      include: [
+        {
+          model: ctx.model.Users,
+          as: 'member',
+        },
+      ],
+    });
+    if (!project) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, msg: '非公共项目，且不是项目成员，则无权获取该项目的任务列表数据' });
+      return false;
+    }
     const where = payload.where;
     const Order = [['sort', 'asc']];
     prop_order && order ? Order.push([prop_order, order]) : null;

@@ -45,12 +45,35 @@ module.exports = app => {
     );
     const nsp = app.io.of('/');
     const roomName = `${app.config.socketProjectRoomNamePrefix}${id}`;
-    const socket = nsp.sockets[manager_id];
-    // 将创建者加入新创建的项目room
-    socket &&
-      socket.join(roomName, () => {
-        ctx.helper.sendMessageToSocket(manager_id, newProject, 'create:project');
+    const rex = new RegExp(`^${manager_id}_.*`);
+    nsp.adapter.clients((err, clients) => {
+      if (err) {
+        app.logger.errorAndSentry(err);
+        return;
+      }
+      clients.forEach(clientId => {
+        // 正则userID_uuid，给同一个用户多个socket分别发送消息
+        if (rex.test(clientId)) {
+          try {
+            const socket = nsp.sockets[clientId];
+            // const socket = nsp.to(clientId);
+            // 将创建者加入新创建的项目room
+            socket &&
+              socket.join(roomName, () => {
+                ctx.helper.sendMessageToSocket(manager_id, newProject, 'create:project');
+              });
+          } catch (e) {
+            app.logger.errorAndSentry(e);
+          }
+        }
       });
+    });
+    // const socket = nsp.sockets[manager_id];
+    // // 将创建者加入新创建的项目room
+    // socket &&
+    //   socket.join(roomName, () => {
+    //     ctx.helper.sendMessageToSocket(manager_id, newProject, 'create:project');
+    //   });
   });
 
   project.addHook('afterUpdate', async (project, options) => {

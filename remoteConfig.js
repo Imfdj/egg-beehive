@@ -29,7 +29,12 @@ const fs = require('fs');
   // 主动拉取配置
   const content = await acm.getConfig('imfdj', 'imfdj');
   // console.log('getConfig = ', content);
-  fs.writeFileSync(path.resolve(__dirname, './config/config.prod.js'), `module.exports = ${content}`, 'utf-8');
+  fs.writeFileSync(
+    path.resolve(__dirname, './config/config.prod.js'),
+    `const { v4: uuidv4 } = require('uuid');
+  module.exports = ${content}`,
+    'utf-8'
+  );
   console.log('got remote config!!!');
   process.exit(0);
   // 监听数据更新

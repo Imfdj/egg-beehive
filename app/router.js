@@ -299,4 +299,9 @@ module.exports = app => {
   router.get('/api/v1/operation_logs/list', controller.v1.operationLogs.findAll);
   router.get('/api/v1/operation_logs', controller.v1.operationLogs.findOne);
   router.delete('/api/v1/operation_logs', controller.v1.operationLogs.destroy);
+
+  /**
+   * 用户-任务-点赞关系表
+   */
+  router.post('/api/v1/user_task_likes/change', controller.v1.userTaskLikes.change);
 };

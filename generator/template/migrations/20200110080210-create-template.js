@@ -20,7 +20,9 @@ module.exports = {
           type: Sequelize.DATE,
         },
       },
-      {}
+      {
+        $: '{{createTable_option}}',
+      }
     );
   },
   down: (queryInterface, Sequelize) => {

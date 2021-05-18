@@ -38,6 +38,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.UserProjects.destroy({
       where: { id: payload.ids },
+      individualHooks: true,
     });
   }
 
@@ -67,11 +68,13 @@ class _objectName_Service extends Service {
         const res = await ctx.model.UserProjects.destroy({
           where: payload,
           transaction,
+          individualHooks: true,
         });
         // 同时删除用户和此项目的任务关系, 即退出该项目的任务参与者
         await ctx.model.UserTasks.destroy({
           where: payload,
           transaction,
+          individualHooks: true,
         });
         await transaction.commit();
         return res;

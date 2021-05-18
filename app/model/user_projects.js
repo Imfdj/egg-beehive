@@ -11,8 +11,9 @@ module.exports = app => {
     },
     {}
   );
-  user_project.addHook('afterCreate', async (userProject, options) => {
-    const { user_id, project_id } = userProject;
+  user_project.addHook('afterCreate', async (user_project, options) => {
+    const ctx = await app.createAnonymousContext();
+    const { user_id, project_id } = user_project;
     const roomName = `${app.config.socketProjectRoomNamePrefix}${project_id}`;
     const nsp = app.io.of('/');
     const rex = new RegExp(`^${user_id}_.*`);
@@ -28,19 +29,23 @@ module.exports = app => {
             const socket = nsp.sockets[clientId];
             // const socket = nsp.to(clientId);
             // 当此用户在线，则将用户加入此项目room
-            socket && socket.join(roomName, () => {});
+            socket &&
+              socket.join(roomName, () => {
+                ctx.helper.sendSocketToClientOfRoom(user_project, 'create:user_project');
+              });
           } catch (e) {
             app.logger.errorAndSentry(e);
           }
         }
       });
     });
-    // const socket = nsp.sockets[user_id];
-    // 将用户加入此项目room
-    // socket && socket.join(roomName, () => {});
-    // 发送socket消息
-    // ctx.helper.sendMessageToSocket(receiver_id, userProject, 'create:userProject');
   });
+
+  user_project.addHook('afterDestroy', async (user_project, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(user_project, 'delete:user_project');
+  });
+
   user_project.associate = function(models) {
     // associations can be defined here
   };

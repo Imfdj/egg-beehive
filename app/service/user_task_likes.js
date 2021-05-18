@@ -10,6 +10,7 @@ class _objectName_Service extends Service {
     if (one) {
       return await ctx.model.UserTaskLikes.destroy({
         where: payload,
+        individualHooks: true,
       });
     }
     return await ctx.model.UserTaskLikes.create(payload);

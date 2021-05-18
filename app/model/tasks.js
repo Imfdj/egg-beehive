@@ -72,6 +72,12 @@ module.exports = app => {
       otherKey: 'user_id',
       as: 'participators',
     });
+    app.model.Tasks.belongsToMany(app.model.Users, {
+      through: app.model.UserTaskLikes,
+      foreignKey: 'task_id',
+      otherKey: 'user_id',
+      as: 'likers',
+    });
   };
   return task;
 };

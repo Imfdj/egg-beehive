@@ -12,6 +12,17 @@ module.exports = app => {
     },
     {}
   );
+
+  user_task_like.addHook('afterCreate', async (user_task_like, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(user_task_like, 'create:user_task_like');
+  });
+
+  user_task_like.addHook('afterDestroy', async (user_task_like, options) => {
+    const ctx = await app.createAnonymousContext();
+    ctx.helper.sendSocketToClientOfRoom(user_task_like, 'delete:user_task_like');
+  });
+
   user_task_like.associate = function(models) {
     // associations can be defined here
   };

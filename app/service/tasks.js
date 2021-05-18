@@ -62,6 +62,7 @@ class _objectName_Service extends Service {
       include: [
         {
           model: ctx.model.TaskTags,
+          through: { attributes: [] },
           // attributes: ['username', 'id', 'avatar'],
         },
         {
@@ -73,6 +74,7 @@ class _objectName_Service extends Service {
           model: ctx.model.Users,
           as: 'participators',
           attributes: ['id', 'username', 'avatar'],
+          through: { attributes: [] },
           where: participatorsWhere,
         },
         {
@@ -85,10 +87,17 @@ class _objectName_Service extends Service {
               model: ctx.model.Users,
               as: 'member',
               attributes: ['id', 'username'],
+              through: { attributes: [] },
               where: whereProject,
               required: true,
             },
           ],
+        },
+        {
+          model: ctx.model.Users,
+          as: 'likers',
+          attributes: ['id', 'username', 'avatar'],
+          through: { attributes: [] },
         },
       ],
     });
@@ -130,6 +139,12 @@ class _objectName_Service extends Service {
               required: true,
             },
           ],
+        },
+        {
+          model: ctx.model.Users,
+          as: 'likers',
+          attributes: ['id', 'username', 'avatar'],
+          through: { attributes: [] },
         },
       ],
     });

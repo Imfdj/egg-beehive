@@ -3,6 +3,7 @@
 module.exports = app => {
   return async (ctx, next) => {
     const { socket, logger } = ctx;
+    const { socketOnlineUserRoomName } = app.config;
     const nsp = app.io.of('/');
     console.log('start connection!');
     console.log('allSockets');
@@ -18,7 +19,27 @@ module.exports = app => {
         socket.disconnect();
       }
       await app.jwt.verify(token, app.config.jwt.secret);
-
+      // 加入在线用户room
+      socket.join(socketOnlineUserRoomName, () => {
+        setTimeout(() => {
+          // 给已在线用户发送join
+          // nsp.to(socketOnlineUserRoomName)
+          //   .emit('join', socket.id);
+          ctx.helper.sendSocketToOnlineOfRoom({ socketId: socket.id }, 'join', socketOnlineUserRoomName);
+          nsp.adapter.clients([socketOnlineUserRoomName], (err, clients) => {
+            if (err) logger.error(err);
+            const ids = new Set(clients);
+            ids.add(socket.id);
+            // 发送当前在线用户ids
+            const _message = ctx.helper.parseSocketMsg(Array.from(ids), socket.id, 'online');
+            const emitData = ['sync', _message];
+            socket.emit(...emitData);
+            // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+            app.redis.setex(ctx.helper.redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+            // socket.emit('online', Array.from(ids));
+          });
+        });
+      });
       // 获取用户参与的项目，根据项目ID创建room
       const userProjects = await ctx.model.UserProjects.findAll({
         where: { user_id: userId },
@@ -52,8 +73,12 @@ module.exports = app => {
     await next();
     console.log('disconnect!');
     console.log(socket.id);
-    // nsp.adapter.rooms.forEach(room => {
-    //   socket.leave(room);
-    // });
+    socket.join(socketOnlineUserRoomName, () => {
+      setTimeout(() => {
+        ctx.helper.sendSocketToOnlineOfRoom({ socketId: socket.id }, 'leave', socketOnlineUserRoomName);
+        // nsp.to(socketOnlineUserRoomName)
+        //   .emit('leave', socket.id);
+      });
+    });
   };
 };

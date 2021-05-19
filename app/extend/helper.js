@@ -41,6 +41,27 @@ module.exports = {
     }
   },
   /**
+   * 发送socket消息给在线room里的每个连接,并录入redis
+   */
+  sendSocketToOnlineOfRoom(params, action, roomName, messageType = 'sync', method = 'publish') {
+    const { ctx, app, redisKeys } = this;
+    const nsp = app.io.of('/');
+    try {
+      nsp.adapter.clients([roomName], (err, clients) => {
+        clients.forEach(clientId => {
+          const data = ctx.helper.parseSocketMsg(params, clientId, action, method);
+          const socket = nsp.to(clientId);
+          const emitData = [messageType, data];
+          socket.emit(...emitData);
+          // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+          app.redis.setex(redisKeys.socketBaseSocketId(data.id), app.config.socketRedisExp, JSON.stringify(emitData));
+        });
+      });
+    } catch (e) {
+      app.logger.errorAndSentry(e);
+    }
+  },
+  /**
    * 给单个socket发送消息,并录入redis
    */
   sendMessageToSocket(userId, params, action, messageType = 'sync', method = 'publish') {

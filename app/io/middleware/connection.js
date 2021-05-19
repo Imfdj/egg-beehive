@@ -23,9 +23,7 @@ module.exports = app => {
       socket.join(socketOnlineUserRoomName, () => {
         setTimeout(() => {
           // 给已在线用户发送join
-          // nsp.to(socketOnlineUserRoomName)
-          //   .emit('join', socket.id);
-          ctx.helper.sendSocketToOnlineOfRoom({ socketId: socket.id }, 'join', socketOnlineUserRoomName);
+          ctx.helper.sendSocketToClientOfRoom({ socketId: socket.id }, 'join');
           nsp.adapter.clients([socketOnlineUserRoomName], (err, clients) => {
             if (err) logger.error(err);
             const ids = new Set(clients);
@@ -75,9 +73,7 @@ module.exports = app => {
     console.log(socket.id);
     socket.join(socketOnlineUserRoomName, () => {
       setTimeout(() => {
-        ctx.helper.sendSocketToOnlineOfRoom({ socketId: socket.id }, 'leave', socketOnlineUserRoomName);
-        // nsp.to(socketOnlineUserRoomName)
-        //   .emit('leave', socket.id);
+        ctx.helper.sendSocketToClientOfRoom({ socketId: socket.id }, 'leave');
       });
     });
   };

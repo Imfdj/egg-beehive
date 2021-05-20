@@ -35,12 +35,17 @@ class _objectName_Service extends Service {
     // 如果类型为邮箱 则发送邮件
     if (type === 1) {
       await app.mailer.send({
-        from: '"Fred Foo 👻" <298242069@qq.com>', // sender address, [options] default to user
+        from: '"Beehive" <298242069@qq.com>', // sender address, [options] default to user
         // // Array => ['bar@example.com', 'baz@example.com']
         to: [target], // list of receivers
-        subject: '验证码-xxx', // Subject line
+        subject: 'Beehive验证码邮件', // Subject line
         text: code, // plain text body
-        html: `<span style="display: inline-block;color: red;padding: 30px;border: 1px solid #ccc;">${code}</span>`, // html body
+        html: `<div style="display: flex;flex-direction: column;justify-content: center;align-items: center;
+                    width: 300px;height: 300px;box-shadow: 0px 0px 10px #ccc;border-radius: 30px;margin: 66px auto;">
+                  <img width="100" src="https://qiniucdn.imfdj.top/vue-beehive/logo.png" alt="">
+                  <span style="line-height: 36px;">来自 Beehive 的邮箱验证码：</span>
+                  <div style="font-weight: 600;font-size: 22px;line-height: 46px;">${code}</div>
+                </div>`, // html body
       });
     }
     return await ctx.model.VerificationCodes.create({

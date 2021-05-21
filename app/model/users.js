@@ -24,6 +24,7 @@ module.exports = app => {
     }
   );
   user.associate = function(models) {
+    user.hasOne(app.model.Departments, { foreignKey: 'id', sourceKey: 'department_id', as: 'department' });
     app.model.Users.belongsToMany(app.model.Roles, {
       through: app.model.UserRoles,
       foreignKey: 'user_id',

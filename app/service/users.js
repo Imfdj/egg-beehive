@@ -20,7 +20,7 @@ class UserService extends Service {
     email ? (where.email = { [Op.like]: `%${email}%` }) : null;
     phone ? (where.phone = { [Op.like]: `%${phone}%` }) : null;
     !ctx.helper.tools.isParam(state) ? (where.state = state) : null;
-    !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id) : null;
+    !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id === 0 ? null : department_id) : null;
     !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Users.findAndCountAll({
@@ -39,6 +39,11 @@ class UserService extends Service {
           model: ctx.model.Roles,
           attributes: ['id', 'name'],
         },
+        {
+          model: ctx.model.Departments,
+          attributes: ['id', 'name'],
+          as: 'department',
+        },
       ],
       distinct: true,
     });
@@ -49,6 +54,13 @@ class UserService extends Service {
     return await ctx.model.Users.findOne({
       where: { id },
       attributes: { exclude: ['password', 'deleted_at'] },
+      include: [
+        {
+          model: ctx.model.Departments,
+          attributes: ['id', 'name'],
+          as: 'department',
+        },
+      ],
     });
   }
 
@@ -257,7 +269,8 @@ class UserService extends Service {
   async updateUserDepartment(payload) {
     const { ctx } = this;
     const { id, department_id } = payload;
-    return await ctx.model.Users.update({ department_id }, { where: { id } });
+    //  如果department_id为0则设为null
+    return await ctx.model.Users.update({ department_id: department_id === 0 ? null : department_id }, { where: { id } });
   }
 
   /**

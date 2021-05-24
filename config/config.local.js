@@ -7,7 +7,7 @@ exports.security = {
     enable: false,
     // 判断是否需要 ignore 的方法，请求上下文 context 作为第一个参数
     ignore: ctx => {
-      return ['/api/v1/users/login', '/api/v1/users/logout'].includes(ctx.request.url);
+      return ['/api/v1/users/login', '/api/v1/users/login', '/api/v1/users/github/login', '/api/v1/verification_codes'].includes(ctx.request.url);
     },
   },
   // domainWhiteList: ['http://localhost:8000'],

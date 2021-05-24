@@ -87,10 +87,10 @@ module.exports = {
   ],
   fields_option: {},
   createTable_option: {
-    uniqueKeys: {
-      user_task_like_unique: {
-        fields: ["'user_id'", "'task_id'"],
-      },
-    },
+    // uniqueKeys: { // 创建复合唯一约束
+    //   user_task_like_unique: {
+    //     fields: ["'user_id'", "'task_id'"],
+    //   },
+    // },
   },
 };

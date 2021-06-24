@@ -55,6 +55,7 @@ class _objectName_Service extends Service {
       ];
     }
     return await ctx.model.Tasks.findAndCountAll({
+      distinct: true,
       limit,
       offset,
       where,

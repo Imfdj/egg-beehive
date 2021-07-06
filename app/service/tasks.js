@@ -290,7 +290,7 @@ class _objectName_Service extends Service {
       receiver_id: '',
       content: '',
       type: 'inform',
-      url: `/pojectManagement/Project/${task.project_id}?taskId=${payload.id}`,
+      url: `/projectManagement/Project/${task.project_id}?taskId=${payload.id}`,
     };
     const transaction = await ctx.model.transaction();
     try {

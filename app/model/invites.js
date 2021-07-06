@@ -27,7 +27,7 @@ module.exports = app => {
           receiver_id: invite.actor_id,
           content: `已接受你的邀请，加入了项目 <span class="project-name">${project.name}</span>`,
           type: 'personal',
-          url: `/pojectManagement/Project/${invite.group_id}`,
+          url: `/projectManagement/Project/${invite.group_id}`,
         });
       }
     }

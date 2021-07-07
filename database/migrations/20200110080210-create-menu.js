@@ -66,6 +66,12 @@ module.exports = {
           type: Sequelize.STRING,
           comment: '路由重定向路径',
         },
+        sort: {
+          type: Sequelize.INTEGER(11),
+          allowNull: false,
+          defaultValue: '0',
+          comment: '排序，越大越靠前',
+        },
         created_at: {
           allowNull: false,
           type: Sequelize.DATE,

@@ -1,18 +1,5 @@
 'use strict';
-const Sentry = require('@sentry/node');
-// const Tracing = require("@sentry/tracing");
-Sentry.init({
-  // dsn: "https://dc4b47f2d1ec4073bf8e5ca0f174f4be@o489951.ingest.sentry.io/5553058",
-  dsn: 'http://94ff45beb65f47b69ccf81b76c380bf0@sentry.imfdj.top/4',
 
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  // tracesSampleRate: 1.0,
-});
-// const transaction = Sentry.startTransaction({
-//   op: "test",
-//   name: "My First Test Transaction",
-// });
 module.exports = (option, app) => {
   return async function(ctx, next) {
     try {
@@ -49,8 +36,7 @@ module.exports = (option, app) => {
         };
         ctx.helper.body.VALIDATION_FAILED({ ctx, res });
       } else {
-        app.config.env === 'prod' ? Sentry.captureException(err) : null;
-        // transaction.finish();
+        app.logger.errorAndSentry(err);
       }
     }
   };

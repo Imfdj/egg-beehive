@@ -32,64 +32,51 @@ module.exports = app => {
     // const newTask = await app.model.Tasks.findOne({
     //   where: { id: task.id },
     // });
-    const newTask = Object.assign({
-      parent_id: 0,
-      executor_id: 0,
-      start_date: '',
-      end_date: '',
-      remark: '',
-      is_done: 0,
-      is_privacy: 0,
-      is_recycle: 0,
-      likes: 0,
-      plan_work_hours: 0,
-    }, task.dataValues);
-    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/socketIo');
-    // app.io.of('/socketIo').to(roomName).emit(newTask); // broadcast to everyone in the room
-    nsp.adapter.clients([roomName], (err, clients) => {
-      clients.forEach(clientId => {
-        const data = ctx.helper.parseSocketMsg(newTask, clientId, 'create:task');
-        const socket = nsp.to(clientId);
-        socket.emit('message', data);
-      });
-    });
+    const newTask = Object.assign(
+      {
+        parent_id: 0,
+        executor_id: 0,
+        start_date: '',
+        end_date: '',
+        remark: '',
+        is_done: 0,
+        is_privacy: 0,
+        is_recycle: 0,
+        likes: 0,
+        plan_work_hours: 0,
+      },
+      task.dataValues
+    );
+    ctx.helper.sendSocketToClientOfRoom(newTask, 'create:task');
   });
   task.addHook('afterUpdate', async (task, options) => {
     const ctx = await app.createAnonymousContext();
-    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/socketIo');
-    nsp.adapter.clients([roomName], (err, clients) => {
-      clients.forEach(clientId => {
-        const data = ctx.helper.parseSocketMsg(task, clientId, 'update:task');
-        const socket = nsp.to(clientId);
-        socket.emit('message', data);
-      });
-    });
+    // 根据_changed，仅传输改动字段，及id，project_id
+    // const data = app.lodash.pick(task.dataValues, [...Object.keys(task._changed), 'id', 'project_id']);
+    ctx.helper.sendSocketToClientOfRoom(task, 'update:task');
   });
-
   task.addHook('afterDestroy', async (task, options) => {
     const ctx = await app.createAnonymousContext();
-    const roomName = `${ app.config.socketProjectRoomNamePrefix }${ task.project_id }`;
-    const nsp = app.io.of('/socketIo');
-    nsp.adapter.clients([roomName], (err, clients) => {
-      clients.forEach(clientId => {
-        const data = ctx.helper.parseSocketMsg(task, clientId, 'delete:task');
-        const socket = nsp.to(clientId);
-        socket.emit('message', data);
-      });
-    });
+    // 仅传输id
+    // const data = app.lodash.pick(task.dataValues, ['id']);
+    ctx.helper.sendSocketToClientOfRoom(task, 'delete:task');
   });
-
   task.associate = function(models) {
     // associations can be defined here
     task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'executor_id', as: 'executor' });
     task.hasOne(app.model.Users, { foreignKey: 'id', sourceKey: 'creator_id', as: 'creator' });
+    task.hasOne(app.model.Projects, { foreignKey: 'id', sourceKey: 'project_id', as: 'project' });
     app.model.Tasks.belongsToMany(app.model.Users, {
       through: app.model.UserTasks,
       foreignKey: 'task_id',
       otherKey: 'user_id',
       as: 'participators',
+    });
+    app.model.Tasks.belongsToMany(app.model.Users, {
+      through: app.model.UserTaskLikes,
+      foreignKey: 'task_id',
+      otherKey: 'user_id',
+      as: 'likers',
     });
   };
   return task;

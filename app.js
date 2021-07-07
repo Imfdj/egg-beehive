@@ -5,6 +5,7 @@ const dayjs = require('dayjs');
 const path = require('path');
 const fs = require('fs');
 const { permissionsToRedis } = require('./app-boot-hook-do');
+const Sentry = require('@sentry/node');
 
 class AppBootHook {
   constructor(app) {
@@ -45,6 +46,15 @@ class AppBootHook {
 
     // 例如：从数据库加载数据到内存缓存
     // this.app.cacheData = await this.app.model.query(QUERY_CACHE_SQL);
+
+    Sentry.init({
+      dsn: 'http://2fe93829b91f47218bde00925be7da48@sentry.imfdj.top/4',
+    });
+    // logger记录error并在prod环境下发送错误到Sentry
+    this.app.logger.errorAndSentry = (msg, ...arg) => {
+      this.app.config.env === 'prod' ? Sentry.captureException(msg) : null;
+      this.app.logger.error(msg, ...arg);
+    };
     this.app.lodash = lodash;
     this.app.uuidv4 = uuidv4;
     this.app.dayjs = dayjs;
@@ -54,16 +64,8 @@ class AppBootHook {
     // 资源数据缓存到redis
     await permissionsToRedis(this.app);
 
-    Sequelize.addHook('beforeValidate', (permission, options) => {
-      // 做些什么
-    });
     Sequelize.addHook('afterBulkUpdate', options => {
-      console.log(2222222);
-      console.log(options);
-    });
-    Sequelize.addHook('afterSave', (permission, options) => {
-      console.log(333333);
-      console.log(permission);
+      // 做些什么
     });
   }
 

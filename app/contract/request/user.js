@@ -21,6 +21,11 @@ const body = {
       example: 'Imfdj',
       description: '用户名',
     },
+    user_id_github: {
+      type: 'number',
+      required: false,
+      description: 'github用户ID',
+    },
     nickname: {
       type: 'string',
       required: false,
@@ -71,10 +76,29 @@ const body = {
       example: '',
       description: '头像url',
     },
+    company: {
+      type: 'number',
+      required: false,
+      description: '国家',
+    },
+    city: {
+      type: 'number',
+      required: false,
+      description: '城市',
+    },
     last_login: {
       type: 'string',
       required: false,
       description: '最后登录时间',
+    },
+  },
+  userGithubReq: {
+    code: {
+      type: 'string',
+      required: true,
+      trim: true,
+      example: 'xxx',
+      description: 'github授权code',
     },
   },
 };

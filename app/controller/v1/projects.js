@@ -19,28 +19,33 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.projectBodyReq, ctx.query, {
-      state: {
-        ...ctx.rule.projectBodyReq.state,
-        required: false,
-        type: 'enum',
-        values: [1, '1'],
-      },
-      is_recycle: {
-        ...ctx.rule.projectBodyReq.is_recycle,
-        type: 'enum',
-        values: [0, '0', 1, '1'],
-      },
-      is_archived: {
-        ...ctx.rule.projectBodyReq.is_recycle,
-        type: 'enum',
-        values: [0, '0', 1, '1'],
-      },
-      collection: {
-        type: 'enum',
-        values: [0, '0', 1, '1'],
-        required: false,
-        description: '是否只显示收藏.1为true,0为false',
+
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.projectPutBodyReq,
+      queryOrigin: ctx.query,
+      ruleOther: {
+        state: {
+          ...ctx.rule.projectBodyReq.state,
+          required: false,
+          type: 'enum',
+          values: [1, '1'],
+        },
+        is_recycle: {
+          ...ctx.rule.projectBodyReq.is_recycle,
+          type: 'enum',
+          values: [0, '0', 1, '1'],
+        },
+        is_archived: {
+          ...ctx.rule.projectBodyReq.is_recycle,
+          type: 'enum',
+          values: [0, '0', 1, '1'],
+        },
+        collection: {
+          type: 'enum',
+          values: [0, '0', 1, '1'],
+          required: false,
+          description: '是否只显示收藏.1为true,0为false',
+        },
       },
     });
     ctx.validate(allRule, query);
@@ -124,7 +129,8 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await service.projects.update(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.UNAUTHORIZED({ ctx, msg: '只有项目拥有者才能修改项目信息' });
   }
 
   /**
@@ -139,6 +145,20 @@ class RoleController extends Controller {
     ctx.validate(ctx.rule.projectDelBodyReq, ctx.request.body);
     const res = await service.projects.destroy(ctx.request.body);
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
+
+  /**
+   * @apikey
+   * @summary 获取某个 项目统计
+   * @description 获取某个 项目统计
+   * @router get /api/v1/projects/statistics
+   * @request query number *id eg:1 projectID
+   */
+  async projectStatistics() {
+    const { ctx, service } = this;
+    ctx.validate(ctx.rule.projectId, ctx.query);
+    const res = await service.projects.projectStatistics(ctx.query.id);
+    res ? ctx.helper.body.SUCCESS({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 }
 

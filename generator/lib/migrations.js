@@ -23,6 +23,7 @@ config_fields.forEach((v, i) => {
   const item = {
     [v.name]: {
       type: `Sequelize.${v.type.toUpperCase()}${length}${v.UNSIGNED ? '.UNSIGNED' : ''}`,
+      primaryKey: v.primaryKey,
       allowNull: v.allowNull,
       defaultValue: v.defaultValue !== undefined ? `'${v.defaultValue}'` : undefined,
       unique: v.unique,
@@ -52,6 +53,18 @@ config_fields.forEach((v, i) => {
 });
 
 template = template.replace(/\$:\s'\{\{fields\}\}',/gi, fields);
+
+// 添加option
+let createTable_option = '';
+createTable_option += JSON.stringify(config.createTable_option, '', 1)
+  .replace(/^\{\s+/, '')
+  .replace(/\s+\}$/, '')
+  .replace(/"/gi, '');
+if (Object.keys(config.createTable_option).length !== 0) {
+  template = template.replace(/\$:\s'\{\{createTable_option\}\}',/gi, createTable_option);
+} else {
+  template = template.replace(/\$:\s'\{\{createTable_option\}\}',/gi, '');
+}
 
 // 写文件
 fs.writeFileSync(path.join(__dirname, '../../', `/database/migrations/20200110080210-create-${config.name}.js`), template);

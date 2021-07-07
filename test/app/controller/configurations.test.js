@@ -4,7 +4,6 @@ const { assert, app } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/configurations.test.js', () => {
   const createName = 'configurationName' + Math.random();
-  let createMenuData = {};
   before(async () => {});
 
   describe('GET /api/v1/configurations/public_key', () => {
@@ -12,11 +11,10 @@ describe('test/app/controller/configurations.test.js', () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
       const res = await app.httpRequest()
         .get('/api/v1/configurations/public_key')
-        .query({ id: createMenuData.id })
+        .query({})
         .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
-      createMenuData = res.body.data;
       assert(res.body.code === 0);
     });
   });

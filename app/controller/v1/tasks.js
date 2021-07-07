@@ -17,8 +17,73 @@ class RoleController extends Controller {
    * @router get /api/v1/tasks/list
    */
   async findAll() {
-    const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.taskBodyReq, ctx.query);
+    const {
+      ctx,
+      service,
+      app: { lodash },
+    } = this;
+    const rules = {
+      executor_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '执行者IDs',
+        example: [1, 2],
+      },
+      creator_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '创建者IDs',
+        example: [1, 2],
+      },
+      task_priority_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '优先级IDs',
+        example: [1, 2],
+      },
+      task_state_ids: {
+        type: 'array',
+        required: false,
+        itemType: 'number',
+        description: '执行状态IDs',
+        example: [1, 2],
+      },
+    };
+    const roles2 = {
+      date_start_created: {
+        type: 'dateTime',
+        required: false,
+        description: '创建的开始时间',
+        example: 'YYYY-MM-DD HH:mm:ss',
+      },
+      date_end_created: {
+        type: 'dateTime',
+        required: false,
+        description: '创建的结束时间',
+        example: 'YYYY-MM-DD HH:mm:ss',
+      },
+      participator_id: {
+        type: 'number',
+        required: false,
+        description: '参与者ID',
+        example: 1,
+      },
+    };
+    const queries = Object.assign({}, ctx.query);
+    for (const key in rules) {
+      const data = ctx.queries[key];
+      if (data) {
+        queries[key] = lodash.isArray(data) ? lodash.map(data, lodash.parseInt) : data;
+      }
+    }
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.taskPutBodyReq,
+      queryOrigin: queries,
+      ruleOther: { ...rules, ...roles2 },
+    });
     ctx.validate(allRule, query);
     const res = await service.tasks.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
@@ -48,7 +113,8 @@ class RoleController extends Controller {
   async create() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.taskBodyReq, ctx.request.body);
-    await ctx.service.tasks.create(ctx.request.body);
+    const res = await ctx.service.tasks.create(ctx.request.body);
+    if (res === false) return;
     ctx.helper.body.CREATED_UPDATE({ ctx });
   }
 
@@ -90,6 +156,7 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await service.tasks.update(ctx.request.body);
+    if (res === false) return;
     res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
@@ -104,6 +171,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.taskDelBodyReq, ctx.request.body);
     const res = await service.tasks.destroy(ctx.request.body);
+    if (res === false) return;
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
@@ -136,7 +204,23 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await service.tasks.sort(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
+
+  /**
+   * @apikey
+   * @summary 将任务列表中的所有任务移到回收站
+   * @description 将任务列表中的所有任务移到回收站
+   * @router put /api/v1/tasks/recycle_all_task_of_taskList
+   * @request body taskRecycleAllTaskOfTaskListBodyReq
+   */
+  async recycleAllTaskOfTaskList() {
+    const { ctx, service } = this;
+    ctx.validate(ctx.rule.taskRecycleAllTaskOfTaskListBodyReq, ctx.request.body);
+    const res = await service.tasks.recycleAllTaskOfTaskList(ctx.request.body);
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 }
 

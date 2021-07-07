@@ -2,6 +2,7 @@
 const crypto = require('crypto');
 const lodash = require('lodash');
 const { v4: uuidv4 } = require('uuid');
+const { Op } = require('sequelize');
 
 module.exports = {
   /**
@@ -15,8 +16,73 @@ module.exports = {
       method,
       params,
     };
-    this.ctx.app.redis.set(this.redisKeys.socketBaseSocketId(data.id), JSON.stringify(data));
     return data;
+  },
+  /**
+   * 发送socket消息给room里的每个连接,并录入redis
+   */
+  async sendSocketToClientOfRoom(params, action, project_id = params.project_id, messageType = 'sync', method = 'publish') {
+    const { ctx, app, redisKeys } = this;
+    const nsp = app.io.of('/');
+    let roomName = '';
+    // 如果项目ID不存在，则向在线用户room广播
+    if (project_id) {
+      const project = await ctx.model.Projects.findOne({ where: { id: project_id, is_private: 1 } });
+      // 如果项目是私有的，则向项目room广播，否则向在线用户room广播
+      if (project) {
+        roomName = `${this.app.config.socketProjectRoomNamePrefix}${project_id}`;
+      } else {
+        roomName = app.config.socketOnlineUserRoomName;
+      }
+    } else {
+      roomName = app.config.socketOnlineUserRoomName;
+    }
+    try {
+      nsp.adapter.clients([roomName], (err, clients) => {
+        clients.forEach(clientId => {
+          const data = ctx.helper.parseSocketMsg(params, clientId, action, method);
+          const socket = nsp.to(clientId);
+          const emitData = [messageType, data];
+          socket.emit(...emitData);
+          // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+          app.redis.setex(redisKeys.socketBaseSocketId(data.id), app.config.socketRedisExp, JSON.stringify(emitData));
+        });
+      });
+    } catch (e) {
+      app.logger.errorAndSentry(e);
+    }
+  },
+  /**
+   * 给单个socket发送消息,并录入redis
+   */
+  sendMessageToSocket(userId, params, action, messageType = 'sync', method = 'publish') {
+    const { ctx, app, redisKeys } = this;
+    const nsp = app.io.of('/');
+    nsp.adapter.clients((err, clients) => {
+      if (err) {
+        app.logger.errorAndSentry(err);
+        return;
+      }
+      clients.forEach(clientId => {
+        // 正则userID_uuid，给同一个用户多个socket分别发送消息
+        const rex = new RegExp(`^${userId}_.*`);
+        if (rex.test(clientId)) {
+          try {
+            const socket = nsp.to(clientId);
+            // 当此用户在线，则发送消息
+            if (socket) {
+              const _message = ctx.helper.parseSocketMsg(params, clientId, action, method);
+              const emitData = [messageType, _message];
+              socket.emit(...emitData);
+              // 存入redis，接收到ACK则删除，否则在 this.app.config.socketRedisExp 时间内多次重发
+              app.redis.setex(redisKeys.socketBaseSocketId(_message.id), app.config.socketRedisExp, JSON.stringify(emitData));
+            }
+          } catch (e) {
+            app.logger.errorAndSentry(e);
+          }
+        }
+      });
+    });
   },
 };
 
@@ -60,13 +126,15 @@ module.exports.tools = {
 
   /**
    * findAll请求根据rule处理query值
-   * @param rule
-   * @param queryOrigin
-   * @param ruleOther
-   * @param findAllParamsOther
+   * @param rule 规则
+   * @param queryOrigin 原请求参数
+   * @param ruleOther 追加规则
+   * @param findAllParamsOther 追加搜索字段
+   * @param keywordLikeExcludeParams 关键字keyword模糊搜索排除字段
    * @return {{query: {where: {}}, allRule: {offset: {default: number, type: string, required: boolean}, prop_order: {values, type: string, required: boolean}, limit: {type: string, required: boolean}, order: {values: [string, string, string], type: string, required: boolean}}}}
    */
-  findAllParamsDeal(rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}) {
+  findAllParamsDeal(options) {
+    const { rule, queryOrigin, ruleOther = {}, findAllParamsOther = {}, keywordLikeExcludeParams = [] } = options;
     const _rule = lodash.cloneDeep(rule);
     const query = {
       where: {},
@@ -75,6 +143,12 @@ module.exports.tools = {
       _rule[ruleKey].required = false;
     }
     const findAllParams = {
+      keyword: {
+        type: 'string',
+        trim: true,
+        required: false,
+        max: 36,
+      },
       prop_order: {
         type: 'enum',
         required: false,
@@ -110,12 +184,22 @@ module.exports.tools = {
         query[queryKey] = queryOrigin[queryKey];
       }
     }
+    // 如果搜索参数queryOrigin中带有keyword，且不为空字符串，则视keyword为模糊搜索
+    if (queryOrigin.hasOwnProperty('keyword') && queryOrigin.keyword.trim() !== '') {
+      query.where[Op.or] = [];
+      for (const queryKey in _rule) {
+        // 非模糊搜索排除字段的所有rule中的字段, 且数据类型为string，做模糊查询
+        if (!keywordLikeExcludeParams.includes(queryKey) && _rule[queryKey].type === 'string') {
+          query.where[Op.or].push({ [queryKey]: { [Op.like]: `%${queryOrigin.keyword.trim()}%` } });
+        }
+      }
+    }
+
     return {
       allRule,
       query,
     };
   },
-
 };
 
 module.exports.body = {
@@ -205,18 +289,18 @@ module.exports.body = {
 module.exports.redisKeys = {
   // 资源基于action和url存储到redis中的key
   permissionsBaseActionUrl(action = '', url = '') {
-    return `permissions:action:${ action }:url:${ url }`;
+    return `permissions:action:${action}:url:${url}`;
   },
   // 角色资源基于roleId存储到redis中的key
   rolePermissionsBaseRoleId(id = '') {
-    return `rolePermissions:roleId:${ id }`;
+    return `rolePermissions:roleId:${id}`;
   },
   // 用户拥有的所有角色id，基于userId存储到redis中的key
   userRoleIdsBaseUserId(id = '') {
-    return `userRoleIds:userId:${ id }`;
+    return `userRoleIds:userId:${id}`;
   },
   // socket发送后基于ID存储到redis中的key
   socketBaseSocketId(id = '') {
-    return `socket:Id:${ id }`;
+    return `socket:Id:${id}`;
   },
 };

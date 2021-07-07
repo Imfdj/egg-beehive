@@ -18,37 +18,19 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const params = {
-      name: {
-        ...ctx.rule.task_listBodyReq.name,
-        required: false,
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.task_listPutBodyReq,
+      queryOrigin: ctx.query,
+      ruleOther: {
+        project_id: {
+          ...ctx.rule.task_listPutBodyReq.project_id,
+          required: true,
+        },
       },
-      project_id: {
-        ...ctx.rule.task_listBodyReq.project_id,
-        required: false,
-      },
-      prop_order: {
-        type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.task_listPutBodyReq), ''],
-      },
-      order: {
-        type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
-      },
-      limit: {
-        type: 'number',
-        required: false,
-      },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.taskLists.findAll(ctx.query);
+    });
+    ctx.validate(allRule, query);
+    const res = await service.taskLists.findAll(query);
+    if (res === false) return;
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 
@@ -76,7 +58,8 @@ class RoleController extends Controller {
   async create() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.task_listBodyReq, ctx.request.body);
-    await ctx.service.taskLists.create(ctx.request.body);
+    const res = await ctx.service.taskLists.create(ctx.request.body);
+    if (res === false) return;
     ctx.helper.body.CREATED_UPDATE({ ctx });
   }
 
@@ -91,7 +74,8 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.task_listPutBodyReq, ctx.request.body);
     const res = await service.taskLists.update(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**
@@ -105,7 +89,54 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.task_listDelBodyReq, ctx.request.body);
     const res = await service.taskLists.destroy(ctx.request.body);
+    if (res === false) return;
     res ? ctx.helper.body.NO_CONTENT({ ctx, res }) : ctx.helper.body.NOT_FOUND({ ctx });
+  }
+
+  /**
+   * @apikey
+   * @summary 更新任务列表排序
+   * @description 更新任务列表排序
+   * @router put /api/v1/task_lists/sort
+   * @request body taskPutBodyReq
+   */
+  async sort() {
+    const { ctx, service } = this;
+    const params = {
+      id: {
+        type: 'number',
+        required: true,
+      },
+      preId: {
+        type: 'number',
+        required: false,
+      },
+      nextId: {
+        type: 'number',
+        required: false,
+      },
+    };
+    ctx.validate(params, ctx.request.body);
+    const { preId, nextId } = ctx.request.body;
+    if (!(preId || nextId)) {
+      ctx.helper.body.VALIDATION_FAILED({
+        ctx,
+        res: {
+          error: 'Validation Failed',
+          detail: [
+            {
+              message: 'required',
+              field: 'preId or nextId',
+              code: 'missing_field, nextId.Preid or preId must have one',
+            },
+          ],
+        },
+      });
+      return;
+    }
+    const res = await service.taskLists.sort(ctx.request.body);
+    if (res === false) return;
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 }
 

@@ -31,9 +31,15 @@ module.exports = {
       required: false,
       description: '部门ID', // 供swagger使用
       example: 0, // 供swagger使用
-      allowNull: false, // 是否允许为空
-      defaultValue: 0, // 数据库表中字段的默认值
+      allowNull: true, // 是否允许为空
       comment: '部门ID', // 数据库表中字段的描述
+      // 外键设置
+      references: {
+        model: 'department', // 外键关联表
+        key: 'id', // 外键字段名
+      },
+      onUpdate: 'NO ACTION', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      onDelete: 'NO ACTION', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
     },
     {
       name: 'username',

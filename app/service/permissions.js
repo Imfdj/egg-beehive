@@ -6,26 +6,11 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, name, mark, mark_name, url, action, keyword } = payload;
-    const where = {};
+    const { limit, offset, prop_order, order } = payload;
+    const where = payload.where;
     const Order = [];
-    keyword
-      ? (where[Op.or] = [
-        { name: { [Op.like]: `%${keyword}%` } },
-        { mark: { [Op.like]: `%${keyword}%` } },
-        { mark_name: { [Op.like]: `%${keyword}%` } },
-        { url: { [Op.like]: `%${keyword}%` } },
-        { action: { [Op.like]: `%${keyword}%` } },
-      ])
-      : null;
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
-    mark ? (where.mark = { [Op.like]: `%${mark}%` }) : null;
-    mark_name ? (where.mark_name = { [Op.like]: `%${mark_name}%` }) : null;
-    url ? (where.url = url) : null;
-    action ? (where.action = action) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Permissions.findAndCountAll({
-      ctx,
       limit,
       offset,
       where,

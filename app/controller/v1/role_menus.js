@@ -19,39 +19,12 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const params = {
-      role_id: {
-        ...ctx.rule.role_menuBodyReq.role_id,
-        required: false,
-      },
-      menu_id: {
-        ...ctx.rule.role_menuBodyReq.menu_id,
-        required: false,
-      },
-      prop_order: {
-        type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.role_menuPutBodyReq), ''],
-      },
-      order: {
-        type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
-      },
-      limit: {
-        type: 'number',
-        required: false,
-        default: 10,
-        max: 1000,
-      },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.roleMenus.findAll(ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.role_menuPutBodyReq,
+      queryOrigin: ctx.query,
+    });
+    ctx.validate(allRule, query);
+    const res = await service.roleMenus.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 

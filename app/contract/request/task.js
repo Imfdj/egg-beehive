@@ -147,6 +147,9 @@ module.exports = {
     ...body.taskId,
     ...body.taskBodyReq,
   },
+  taskRecycleAllTaskOfTaskListBodyReq: {
+    task_list_id: body.taskBodyReq.task_list_id,
+  },
   taskDelBodyReq: {
     ids: {
       type: 'array',

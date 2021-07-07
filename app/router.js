@@ -9,9 +9,9 @@ module.exports = app => {
   /**
    * webSocket
    */
-  const socketIo = io.of('/socketIo');
-  socketIo.route('server', io.controller.index.ping);
-  socketIo.route('ack', io.controller.index.ack);
+  const nsp = io.of('/');
+  nsp.route('server', io.controller.index.ping);
+  nsp.route('ack', io.controller.index.ack);
 
   /**
    * 健康检查
@@ -32,7 +32,7 @@ module.exports = app => {
   router.put('/api/v1/users/password', controller.v1.users.updateUserPassword);
   router.put('/api/v1/users/department', controller.v1.users.updateUserDepartment);
   router.post('/api/v1/users/refreshToken', controller.v1.users.refreshToken);
-  router.put('/api/v1/users/department', controller.v1.users.minus);
+  router.post('/api/v1/users/github/login', controller.v1.users.githubLogin);
 
   /**
    * 角色
@@ -149,6 +149,7 @@ module.exports = app => {
   router.get('/api/v1/projects/list', controller.v1.projects.findAll);
   router.get('/api/v1/projects', controller.v1.projects.findOne);
   router.delete('/api/v1/projects', controller.v1.projects.destroy);
+  router.get('/api/v1/projects/statistics', controller.v1.projects.projectStatistics);
 
   /**
    * 用户-项目关系
@@ -158,6 +159,7 @@ module.exports = app => {
   router.get('/api/v1/user_projects/list', controller.v1.userProjects.findAll);
   router.get('/api/v1/user_projects', controller.v1.userProjects.findOne);
   router.delete('/api/v1/user_projects', controller.v1.userProjects.destroy);
+  router.delete('/api/v1/user_projects/quit', controller.v1.userProjects.quit);
 
   /**
    * 任务列表
@@ -167,6 +169,7 @@ module.exports = app => {
   router.get('/api/v1/task_lists/list', controller.v1.taskLists.findAll);
   router.get('/api/v1/task_lists', controller.v1.taskLists.findOne);
   router.delete('/api/v1/task_lists', controller.v1.taskLists.destroy);
+  router.put('/api/v1/task_lists/sort', controller.v1.taskLists.sort);
 
   /**
    * 任务优先级
@@ -204,6 +207,7 @@ module.exports = app => {
   router.get('/api/v1/tasks', controller.v1.tasks.findOne);
   router.delete('/api/v1/tasks', controller.v1.tasks.destroy);
   router.put('/api/v1/tasks/sort', controller.v1.tasks.sort);
+  router.put('/api/v1/tasks/recycle_all_task_of_taskList', controller.v1.tasks.recycleAllTaskOfTaskList);
 
   /**
    * 任务标签
@@ -265,4 +269,39 @@ module.exports = app => {
    * 用户-项目-收藏关系表
    */
   router.post('/api/v1/user_project_collects/change', controller.v1.userProjectCollects.change);
+
+  /**
+   * 站内信
+   */
+  router.post('/api/v1/messages', controller.v1.messages.create);
+  router.put('/api/v1/messages', controller.v1.messages.update);
+  router.get('/api/v1/messages/list', controller.v1.messages.findAll);
+  router.get('/api/v1/messages', controller.v1.messages.findOne);
+  router.delete('/api/v1/messages', controller.v1.messages.destroy);
+
+  /**
+   * 邀请
+   */
+  router.post('/api/v1/invites', controller.v1.invites.create);
+  router.put('/api/v1/invites', controller.v1.invites.update);
+  router.get('/api/v1/invites/list', controller.v1.invites.findAll);
+  router.get('/api/v1/invites', controller.v1.invites.findOne);
+  router.delete('/api/v1/invites', controller.v1.invites.destroy);
+  router.get('/api/v1/invites/valid', controller.v1.invites.findValidOne);
+  router.get('/api/v1/invites/uuid', controller.v1.invites.findOneByUUID);
+  router.put('/api/v1/invites/accept', controller.v1.invites.acceptInvite);
+
+  /**
+   * 操作日志
+   */
+  router.post('/api/v1/operation_logs', controller.v1.operationLogs.create);
+  router.put('/api/v1/operation_logs', controller.v1.operationLogs.update);
+  router.get('/api/v1/operation_logs/list', controller.v1.operationLogs.findAll);
+  router.get('/api/v1/operation_logs', controller.v1.operationLogs.findOne);
+  router.delete('/api/v1/operation_logs', controller.v1.operationLogs.destroy);
+
+  /**
+   * 用户-任务-点赞关系表
+   */
+  router.post('/api/v1/user_task_likes/change', controller.v1.userTaskLikes.change);
 };

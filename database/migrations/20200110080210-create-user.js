@@ -10,6 +10,12 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER(11).UNSIGNED,
         },
+        user_id_github: {
+          type: Sequelize.INTEGER(11).UNSIGNED,
+          allowNull: false,
+          defaultValue: 0,
+          comment: 'github用户ID',
+        },
         username: {
           type: Sequelize.STRING(60),
           allowNull: false,
@@ -19,6 +25,8 @@ module.exports = {
         nickname: {
           type: Sequelize.STRING(60),
           comment: '昵称',
+          allowNull: false,
+          defaultValue: '',
         },
         password: {
           type: Sequelize.STRING(64),
@@ -39,10 +47,26 @@ module.exports = {
         phone: {
           type: Sequelize.STRING(15),
           comment: '手机号',
+          allowNull: false,
+          defaultValue: '',
         },
         avatar: {
           type: Sequelize.STRING(255),
           comment: '头像url',
+          allowNull: false,
+          defaultValue: '',
+        },
+        company: {
+          type: Sequelize.STRING(80),
+          comment: '国家',
+          allowNull: false,
+          defaultValue: '',
+        },
+        city: {
+          type: Sequelize.STRING(80),
+          comment: '城市',
+          allowNull: false,
+          defaultValue: '',
         },
         last_login: {
           type: Sequelize.DATE,

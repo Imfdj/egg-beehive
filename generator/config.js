@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
-  name: 'user_project_collect',
-  cname: '用户-项目-收藏关系表',
+  name: 'user_task_like',
+  cname: '用户-任务-点赞关系表',
   fieldsItemExample: {
     name: 'xx_id',
     type: 'INTEGER',
@@ -31,14 +31,35 @@ module.exports = {
       UNSIGNED: true,
       length: 11,
       min: 1,
-      required: true,
+      required: false,
       description: '用户ID', // 供swagger使用
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '用户ID', // 数据库表中字段的描述
+      unique: "'user_task_like_unique'",
       // 外键设置
       references: {
         model: 'users', // 外键关联表
+        key: 'id', // 外键字段名
+      },
+      onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+      onDelete: 'CASCADE', // 外键删除约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
+    },
+    {
+      name: 'task_id',
+      type: 'INTEGER',
+      UNSIGNED: true,
+      length: 11,
+      min: 1,
+      required: true,
+      description: '任务ID', // 供swagger使用
+      example: 1, // 供swagger使用
+      allowNull: false, // 是否允许为空
+      comment: '任务ID', // 数据库表中字段的描述
+      unique: "'user_task_like_unique'",
+      references: {
+        // 外键设置
+        model: 'tasks', // 外键关联表
         key: 'id', // 外键字段名
       },
       onUpdate: 'CASCADE', // 外键更新约束 CASCADE RESTRICT SET NULL SET DEFAULT NO ACTION
@@ -55,8 +76,8 @@ module.exports = {
       example: 1, // 供swagger使用
       allowNull: false, // 是否允许为空
       comment: '项目ID', // 数据库表中字段的描述
+      // 外键设置
       references: {
-        // 外键设置
         model: 'projects', // 外键关联表
         key: 'id', // 外键字段名
       },
@@ -65,4 +86,11 @@ module.exports = {
     },
   ],
   fields_option: {},
+  createTable_option: {
+    // uniqueKeys: { // 创建复合唯一约束
+    //   user_task_like_unique: {
+    //     fields: ["'user_id'", "'task_id'"],
+    //   },
+    // },
+  },
 };

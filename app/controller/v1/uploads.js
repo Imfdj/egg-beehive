@@ -28,7 +28,7 @@ class RoleController extends Controller {
     if (size > fileSize) {
       ctx.helper.body.INVALID_REQUEST({
         ctx,
-        msg: `文件容量不可超过${ fileSize / 1024 / 1024 }Mb`,
+        msg: `文件容量不可超过${fileSize / 1024 / 1024}Mb`,
       });
       return;
     }
@@ -48,31 +48,61 @@ class RoleController extends Controller {
     }
     const nowDate = app.dayjs();
     const extension = path.extname(stream.filename);
-    const filename = `${ nowDate.format('YYYYMMDDHHmmss') }_${ Math.random()
+    const filename = stream.filename;
+    const randomName = `${nowDate.format('YYYYMMDDHHmmss')}_${Math.random()
       .toString()
-      .substr(2, 9) }${ extension }`;
-    const { public_uploads_path, prefix, upload_dir } = app.config.static;
-    const target = path.join(public_uploads_path, filename);
-    // 生成一个文件写入 文件流
-    const writeStream = fs.createWriteStream(target);
-    try {
-      // 异步把文件流 写入
-      await awaitWriteStream(stream.pipe(writeStream));
-      ctx.helper.body.SUCCESS({
-        ctx,
-        res: {
-          filename,
-          path: path.join(prefix, upload_dir, filename),
-          file_type: stream.mimeType,
-          size,
-          extension,
-        },
-      });
-    } catch (err) {
-      // 如果出现错误，关闭管道
-      await sendToWormhole(stream);
-      ctx.throw(500, err);
-      throw err;
+      .substr(2, 9)}${extension}`;
+
+    // 如果不是OSS存储
+    if (!app.config.staticUseOSS) {
+      const { public_uploads_path, prefix, upload_dir } = app.config.static;
+      const target = path.join(public_uploads_path, randomName);
+
+      // 生成一个文件写入 文件流
+      const writeStream = fs.createWriteStream(target);
+      try {
+        // 异步把文件流 写入
+        await awaitWriteStream(stream.pipe(writeStream));
+        ctx.helper.body.SUCCESS({
+          ctx,
+          res: {
+            filename,
+            path: path.join(prefix, upload_dir, randomName),
+            file_type: stream.mimeType,
+            size,
+            extension,
+          },
+        });
+      } catch (err) {
+        // 如果出现错误，关闭管道
+        await sendToWormhole(stream);
+        ctx.throw(500, err);
+        throw err;
+      }
+    } else {
+      try {
+        const {
+          url,
+          res: { status, statusMessage },
+        } = await ctx.oss.putStream(randomName, stream);
+        if (status === 200 && statusMessage === 'OK') {
+          ctx.helper.body.SUCCESS({
+            ctx,
+            res: {
+              filename,
+              path: url,
+              file_type: stream.mimeType,
+              size,
+              extension,
+            },
+          });
+        } else {
+          ctx.helper.body.INVALID_REQUEST({ ctx });
+        }
+      } catch (err) {
+        ctx.throw(500, err);
+        throw err;
+      }
     }
   }
 }

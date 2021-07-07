@@ -70,6 +70,19 @@ describe('test/app/controller/menus.test.js', () => {
     });
   });
 
+  describe('GET /api/v1/menus/user_menus', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const res = await app.httpRequest()
+        .get('/api/v1/menus/user_menus')
+        .query({})
+        .set('authorization', app.__authorization);
+      assert(res.status === 200);
+      assert(res.body.data);
+      assert(res.body.code === 0);
+    });
+  });
+
   describe('DELETE /api/v1/menus', () => {
     it('should work', async () => {
       app.mockCsrf();

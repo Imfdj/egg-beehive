@@ -18,7 +18,10 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const { allRule, query } = ctx.helper.tools.findAllParamsDeal(ctx.rule.project_filePutBodyReq, ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.project_filePutBodyReq,
+      queryOrigin: ctx.query,
+    });
     ctx.validate(allRule, query);
     const res = await service.projectFiles.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
@@ -63,7 +66,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.project_filePutBodyReq, ctx.request.body);
     const res = await service.projectFiles.update(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**

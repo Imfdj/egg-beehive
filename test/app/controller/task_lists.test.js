@@ -26,9 +26,10 @@ describe('test/app/controller/task_lists.test.js', () => {
   describe('GET /api/v1/task_lists/list', () => {
     it('should work', async () => {
       app.mockCookies({ EGG_SESS: app.__cookies });
-      const res = await app.httpRequest()
+      const res = await app
+        .httpRequest()
         .get('/api/v1/task_lists/list')
-        .query({ limit: 2, name: createName })
+        .query({ limit: 2, project_id: 999999, name: createName })
         .set('authorization', app.__authorization);
       assert(res.status === 200);
       assert(res.body.data);
@@ -62,6 +63,28 @@ describe('test/app/controller/task_lists.test.js', () => {
           id: createMenuData.id,
           name: createMenuData.name + 1,
           project_id: 999999,
+        });
+      assert(res.status === 201);
+      assert(res.body.code === 0);
+    });
+  });
+
+  describe('PUT /api/v1/task_lists/sort', () => {
+    it('should work', async () => {
+      app.mockCookies({ EGG_SESS: app.__cookies });
+      const next = await app.httpRequest()
+        .get('/api/v1/task_lists/list')
+        .query({ limit: 1, project_id: 999999 })
+        .set('authorization', app.__authorization);
+      assert(next.status === 200);
+      assert(next.body.data);
+      const nextData = next.body.data.rows[0];
+      const res = await app.httpRequest()
+        .put('/api/v1/task_lists/sort')
+        .set('authorization', app.__authorization)
+        .send({
+          id: createMenuData.id,
+          nextId: nextData.id,
         });
       assert(res.status === 201);
       assert(res.body.code === 0);

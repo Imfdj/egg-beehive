@@ -94,6 +94,9 @@ module.exports = {
           defaultValue: '0',
           comment: '是否进入回收站.1为true,0为false',
         },
+        deleted_at: {
+          type: Sequelize.DATE,
+        },
         created_at: {
           allowNull: false,
           type: Sequelize.DATE,

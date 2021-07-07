@@ -6,12 +6,10 @@ const { Op } = require('sequelize');
 class _objectName_Service extends Service {
   async findAll(payload) {
     const { ctx } = this;
-    const { limit, offset, prop_order, order, remark, task_id, is_comment } = payload;
-    const where = {};
+    const { limit, offset, prop_order, order, remark } = payload;
+    const where = payload.where;
     const Order = [];
-    remark ? (where.remark = { [Op.like]: `%${ remark }%` }) : null;
-    !ctx.helper.tools.isParam(task_id) ? where.task_id = task_id : null;
-    !ctx.helper.tools.isParam(is_comment) ? where.is_comment = is_comment : null;
+    remark ? (where.remark = { [Op.like]: `%${remark}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.TaskLogs.findAndCountAll({
       limit,
@@ -25,6 +23,11 @@ class _objectName_Service extends Service {
           attributes: {
             exclude: ['updated_at'],
           },
+        },
+        {
+          model: ctx.model.Tasks,
+          as: 'task',
+          attributes: ['id', 'name'],
         },
       ],
     });
@@ -44,6 +47,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.TaskLogs.update(payload, {
       where: { id: payload.id },
+      individualHooks: true,
     });
   }
 
@@ -51,6 +55,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     return await ctx.model.TaskLogs.destroy({
       where: { id: payload.ids },
+      individualHooks: true,
     });
   }
 }

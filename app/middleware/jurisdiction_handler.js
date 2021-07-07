@@ -18,12 +18,13 @@ module.exports = (option, app) => {
       if (!(Permissions.state === '1')) {
         ctx.helper.body.NOT_FOUND({ ctx, status: 404 });
       } else {
+        // 3. 资源存在，且需要认证
         if (Permissions.authentication === '1') {
-          // 3. 资源存在，需要认证
+          // 如果认证模式为jwt
           if (app.config.verification_mode === 'jwt') {
-            // 如果认证模式为jwt
             const token = ctx.request.headers.authorization && ctx.request.headers.authorization.split('Bearer ')[1];
             if (!token) return ctx.helper.body.UNAUTHORIZED({ ctx });
+            // 如果redis中存在此token，则认为此token已加入黑名单，则返回401
             if ((await app.redis.exists(token)) === 1) {
               return ctx.helper.body.UNAUTHORIZED({ ctx });
             }
@@ -41,8 +42,8 @@ module.exports = (option, app) => {
             ctx.helper.body.UNAUTHORIZED({ ctx });
             return;
           }
+          // 4. 资源存在，需要鉴权
           if (Permissions.authorization === '1') {
-            // 4. 资源存在，需要鉴权
             // redis获取当前用户的所有角色id
             let roleIds = await app.redis.smembers(ctx.helper.redisKeys.userRoleIdsBaseUserId(ctx.currentRequestData.userInfo.id));
             // 如果为空，则到数据库中获取, 并写入redis中

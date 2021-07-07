@@ -19,39 +19,12 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const params = {
-      role_id: {
-        ...ctx.rule.role_permissionBodyReq.role_id,
-        required: false,
-      },
-      permission_id: {
-        ...ctx.rule.role_permissionBodyReq.permission_id,
-        required: false,
-      },
-      prop_order: {
-        type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.role_permissionPutBodyReq), ''],
-      },
-      order: {
-        type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
-      },
-      limit: {
-        type: 'number',
-        required: false,
-        default: 10,
-        max: 1000,
-      },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.rolePermissions.findAll(ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.role_permissionPutBodyReq,
+      queryOrigin: ctx.query,
+    });
+    ctx.validate(allRule, query);
+    const res = await service.rolePermissions.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 

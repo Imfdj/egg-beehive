@@ -1,16 +1,13 @@
 'use strict';
 
 const Service = require('egg').Service;
-const { Op } = require('sequelize');
 
 class _objectName_Service extends Service {
   async findAll(payload) {
-    const { ctx, app } = this;
-    const { limit, offset, prop_order, order, name, title } = payload;
-    const where = {};
+    const { ctx } = this;
+    const { limit, offset, prop_order, order } = payload;
+    const where = payload.where;
     const Order = [];
-    name ? (where.name = { [Op.like]: `%${name}%` }) : null;
-    title ? (where.title = { [Op.like]: `%${title}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.Menus.findAndCountAll({
       limit,
@@ -55,7 +52,7 @@ class _objectName_Service extends Service {
    * @return {Promise<*[]|*>}
    */
   async userMenus() {
-    const { ctx, service, app } = this;
+    const { ctx, app } = this;
     let data = await ctx.model.Users.findAll({
       include: [
         {
@@ -63,17 +60,11 @@ class _objectName_Service extends Service {
           // attributes: {
           //   exclude: [ 'user_roles', 'updated_at' ],
           // },
-          where: {
-            // name: { [ Op.like ]: '%stri%' },
-          },
           include: [
             {
               model: ctx.model.Menus,
               attributes: {
                 exclude: ['created_at', 'updated_at'],
-              },
-              where: {
-                // name: { [ Op.like ]: '%stri%' },
               },
             },
           ],
@@ -101,6 +92,7 @@ class _objectName_Service extends Service {
       });
     });
     data = app.lodash.uniqWith(arr, (a, b) => a.id === b.id);
+    data = data.sort((a, b) => b.sort - a.sort);
     return data;
   }
 }

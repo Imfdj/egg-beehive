@@ -1,4 +1,5 @@
 'use strict';
+const { v4: uuidv4 } = require('uuid');
 
 exports.security = {
   csrf: {
@@ -6,7 +7,7 @@ exports.security = {
     enable: false,
     // 判断是否需要 ignore 的方法，请求上下文 context 作为第一个参数
     ignore: ctx => {
-      return ['/api/v1/users/login', '/api/v1/users/logout'].includes(ctx.request.url);
+      return ['/api/v1/users/login', '/api/v1/users/login', '/api/v1/users/github/login', '/api/v1/verification_codes'].includes(ctx.request.url);
     },
   },
   // domainWhiteList: ['http://localhost:8000'],
@@ -49,21 +50,47 @@ exports.redis = {
   },
 };
 
-exports.jwt_exp = 60 * 60 * 24 * 15; // 开发环境下，jwt过期时间(秒)
+exports.jwt_exp = 60 * 60 * 24 * 90; // 开发环境下，jwt过期时间(秒)
 
 exports.io = {
   init: {
+    // transports: ['websocket'],
     // pingInterval: 5000,
     // allowEIO3: true,
   }, // passed to engine.io
   namespace: {
-    '/socketIo': {
+    '/': {
       connectionMiddleware: ['connection'],
       packetMiddleware: ['packet'],
     },
   },
-  generateId: req => { // 自定义 socket.id 生成函数
+  redis: {
+    host: '127.0.0.1',
+    port: 6379,
+    password: '123123',
+    db: 3,
+  },
+  generateId: req => {
+    // 自定义 socket.id 生成函数
     // const data = qs.parse(req.url.split('?')[1]);
-    return req._query.userId; // custom id must be unique
+    return `${req._query.userId}_${uuidv4()}`; // custom id must be unique
+  },
+};
+
+// github授权登录请求参数
+exports.github = {
+  access_token_url: 'https://github.com/login/oauth/access_token',
+  user_info_url: 'https://api.github.com/user',
+  client_id: 'The client ID you received from GitHub for your app.',
+  client_secret: 'The client secret you received from GitHub for your OAuth App.',
+};
+
+exports.oss = {
+  client: {
+    accessKeyId: 'xxx',
+    accessKeySecret: 'xxx',
+    bucket: 'xxx',
+    endpoint: 'oss-cn-guangzhou.aliyuncs.com',
+    timeout: '60s',
   },
 };

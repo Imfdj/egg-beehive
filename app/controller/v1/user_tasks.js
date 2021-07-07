@@ -18,33 +18,12 @@ class RoleController extends Controller {
    */
   async findAll() {
     const { ctx, service } = this;
-    const params = {
-      name: {
-        ...ctx.rule.user_taskBodyReq.name,
-        required: false,
-      },
-      prop_order: {
-        type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.user_taskPutBodyReq), ''],
-      },
-      order: {
-        type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
-      },
-      limit: {
-        type: 'number',
-        required: false,
-      },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.userTasks.findAll(ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.user_taskPutBodyReq,
+      queryOrigin: ctx.query,
+    });
+    ctx.validate(allRule, query);
+    const res = await service.userTasks.findAll(query);
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 
@@ -72,8 +51,8 @@ class RoleController extends Controller {
   async create() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.user_taskBodyReq, ctx.request.body);
-    await ctx.service.userTasks.create(ctx.request.body);
-    ctx.helper.body.CREATED_UPDATE({ ctx });
+    const res = await ctx.service.userTasks.create(ctx.request.body);
+    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
 
   /**
@@ -87,7 +66,7 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.user_taskPutBodyReq, ctx.request.body);
     const res = await service.userTasks.update(ctx.request.body);
-    res && res[0] !== 0 ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
+    res && res[1] && res[1].length ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.NOT_FOUND({ ctx });
   }
 
   /**
@@ -114,8 +93,8 @@ class RoleController extends Controller {
   async change() {
     const ctx = this.ctx;
     ctx.validate(ctx.rule.user_taskBodyReq, ctx.request.body);
-    await ctx.service.userTasks.change(ctx.request.body);
-    ctx.helper.body.CREATED_UPDATE({ ctx });
+    const res = await ctx.service.userTasks.change(ctx.request.body);
+    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
 }
 

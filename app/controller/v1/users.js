@@ -205,7 +205,7 @@ class RoleController extends Controller {
     ctx.validate(beforeParams, ctx.request.body);
 
     // 如果不是开发环境 获取配置中的rsa私钥对密码解密
-    if (app.config.env !== 'local') {
+    if (app.config.env === 'prod') {
       try {
         const { rsa_private_key } = await ctx.model.Configurations.findOne({
           where: { id: 1 },
@@ -214,7 +214,7 @@ class RoleController extends Controller {
         ctx.request.body.password = key.decrypt(ctx.request.body.password, 'utf8');
       } catch (e) {
         ctx.helper.body.UNAUTHORIZED({ ctx });
-        return ctx.logger.error(e);
+        return app.logger.errorAndSentry(e);
       }
     }
 
@@ -257,7 +257,7 @@ class RoleController extends Controller {
     // 如果验证方式是jwt，否则为session
     if (app.config.verification_mode === 'jwt') {
       const res = await service.users.logout();
-      if (res !== 'OK') ctx.logger.error(res);
+      if (res !== 'OK') app.logger.error(res);
       ctx.helper.body.SUCCESS({ ctx });
     } else {
       ctx.session = null;
@@ -403,21 +403,75 @@ class RoleController extends Controller {
   }
 
   /**
-   * @summary 创建 用户
-   * @description 创建 用户
-   * @router put /api/v1/users/minus
-   * @request body userBodyReq
+   * @summary github授权登录
+   * @description github授权登录
+   * @router post /api/v1/users/github/login
    */
-  async minus() {
-    const ctx = this.ctx;
-    const state = await this.app.redis.decr('goodsCount');
-    if (state > 0) {
-      ctx.helper.body.SUCCESS({ ctx, res: { state } });
-    } else {
-      ctx.helper.body.INVALID_REQUEST({ ctx });
+  async githubLogin() {
+    const {
+      ctx,
+      service,
+      app,
+      app: {
+        config: { github },
+      },
+    } = this;
+    ctx.validate(ctx.rule.userGithubReq, ctx.request.body);
+    const { code } = ctx.request.body;
+    try {
+      const result = await ctx.curl(github.access_token_url, {
+        method: 'POST',
+        contentType: 'application/json',
+        data: {
+          ...github,
+          code,
+        },
+        dataType: 'json',
+        timeout: 10000,
+      });
+      if (result.data.error) {
+        ctx.helper.body.UNAUTHORIZED({ ctx, res: result.data });
+      } else {
+        const userInfo = await ctx.curl(github.user_info_url, {
+          method: 'GET',
+          headers: {
+            Authorization: `token ${result.data.access_token}`,
+          },
+          contentType: 'application/json',
+          dataType: 'json',
+          timeout: 10000,
+        });
+        if (userInfo.data.error) {
+          ctx.helper.body.UNAUTHORIZED({ ctx, res: result.data });
+        }
+        const res = await service.users.githubLogin(userInfo.data);
+        switch (res.__code_wrong) {
+          case undefined:
+            ctx.helper.body.SUCCESS({ ctx, res });
+            break;
+          case 40000:
+            ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: '用户创建失败' });
+            break;
+          case 40002:
+            ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: '用户已存在' });
+            break;
+          case 40005:
+            ctx.helper.body.INVALID_REQUEST({
+              ctx,
+              code: res.__code_wrong,
+              msg: '账号已停用',
+            });
+            break;
+          default:
+            ctx.helper.body.UNAUTHORIZED({ ctx });
+            break;
+        }
+      }
+    } catch (e) {
+      ctx.helper.body.UNAUTHORIZED({ ctx, res: e.res });
+      app.logger.errorAndSentry(e);
     }
   }
-
 }
 
 module.exports = RoleController;

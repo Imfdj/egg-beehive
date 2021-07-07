@@ -28,6 +28,13 @@ const body = {
       example: '1',
       description: '任务ID',
     },
+    project_id: {
+      type: 'number',
+      required: true,
+      min: 1,
+      example: '1',
+      description: '所属项目ID',
+    },
     executor_id: {
       type: 'number',
       required: true,

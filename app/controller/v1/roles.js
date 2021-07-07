@@ -18,35 +18,12 @@ class RoleController extends Controller {
    */
   async index() {
     const { ctx, service } = this;
-    const params = {
-      name: {
-        ...ctx.rule.roleBodyReq.name,
-        required: false,
-      },
-      prop_order: {
-        type: 'enum',
-        required: false,
-        values: [...Object.keys(ctx.rule.rolePutBodyReq), ''],
-      },
-      order: {
-        type: 'enum',
-        required: false,
-        values: ['desc', 'asc', ''],
-      },
-      limit: {
-        type: 'number',
-        required: false,
-        default: 10,
-        max: 1000,
-      },
-      offset: {
-        type: 'number',
-        required: false,
-        default: 0,
-      },
-    };
-    ctx.validate(params, ctx.query);
-    const res = await service.roles.index(ctx.query);
+    const { allRule, query } = ctx.helper.tools.findAllParamsDeal({
+      rule: ctx.rule.rolePutBodyReq,
+      queryOrigin: ctx.query,
+    });
+    ctx.validate(allRule, query);
+    const res = await service.roles.index(query);
     ctx.helper.body.SUCCESS({ ctx, res });
   }
 
@@ -132,8 +109,6 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.roleId, ctx.request.body);
     const res = await service.roles.updateIsDefault(ctx.request.body);
-    console.log(5);
-    console.log(res);
     res ? ctx.helper.body.SUCCESS({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx });
   }
 }

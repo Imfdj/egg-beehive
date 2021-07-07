@@ -17,6 +17,7 @@ module.exports = app => {
       target: Sequelize.STRING(20),
       component: Sequelize.STRING(100),
       redirect: Sequelize.STRING,
+      sort: Sequelize.INTEGER(11),
     },
     {}
   );

@@ -21,6 +21,7 @@ module.exports = {
   swaggerdoc: {
     enable: true,
     package: 'egg-swagger-doc',
+    env: ['local', 'unittest'],
   },
   cors: {
     enable: true,
@@ -39,7 +40,7 @@ module.exports = {
     package: 'egg-redis',
   },
   alinode: {
-    enable: true,
+    enable: false,
     package: 'egg-alinode',
     env: ['prod'],
   },

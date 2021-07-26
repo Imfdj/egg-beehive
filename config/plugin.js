@@ -21,7 +21,6 @@ module.exports = {
   swaggerdoc: {
     enable: true,
     package: 'egg-swagger-doc',
-    env: ['local', 'unittest'],
   },
   cors: {
     enable: true,

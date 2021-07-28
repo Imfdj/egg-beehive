@@ -82,3 +82,7 @@ exports.io = {
     return `${req._query.userId}_${uuidv4()}`;
   },
 };
+
+exports.sentry = {
+  dsn: process.env.SentyDsn || '',
+};

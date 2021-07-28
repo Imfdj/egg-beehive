@@ -48,7 +48,7 @@ class AppBootHook {
     // this.app.cacheData = await this.app.model.query(QUERY_CACHE_SQL);
 
     Sentry.init({
-      dsn: 'http://2fe93829b91f47218bde00925be7da48@sentry.imfdj.top/4',
+      dsn: this.app.config.sentry.dsn || '',
     });
     // logger记录error并在prod环境下发送错误到Sentry
     this.app.logger.errorAndSentry = (msg, ...arg) => {

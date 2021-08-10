@@ -132,7 +132,11 @@ class RoleController extends Controller {
     };
     ctx.validate(params, ctx.request.body);
     const res = await ctx.service.users.create(ctx.request.body);
-    res ? ctx.helper.body.CREATED_UPDATE({ ctx }) : ctx.helper.body.INVALID_REQUEST({ ctx, code: 10000 });
+    if (!res.__code_wrong) {
+      ctx.helper.body.CREATED_UPDATE({ ctx });
+    } else {
+      ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: res.message });
+    }
   }
 
   /**
@@ -317,19 +321,10 @@ class RoleController extends Controller {
     const { ctx, service } = this;
     ctx.validate(ctx.rule.userUpdatePasswordBodyReq, ctx.request.body);
     const res = await service.users.updateUserPassword(ctx.request.body);
-    switch (res.__code_wrong) {
-      case undefined:
-        ctx.helper.body.SUCCESS({ ctx });
-        break;
-      case 40000:
-        ctx.helper.body.INVALID_REQUEST({ ctx, code: 40000, msg: res.message });
-        break;
-      case 40004:
-        ctx.helper.body.INVALID_REQUEST({ ctx, code: 40004, msg: res.message });
-        break;
-      default:
-        ctx.helper.body.INVALID_REQUEST({ ctx });
-        break;
+    if (!res.__code_wrong) {
+      ctx.helper.body.SUCCESS({ ctx });
+    } else {
+      ctx.helper.body.INVALID_REQUEST({ ctx, code: res.__code_wrong, msg: res.message });
     }
   }
 

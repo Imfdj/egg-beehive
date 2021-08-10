@@ -3,14 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 
 exports.security = {
   csrf: {
-    headerName: 'x-csrf-token', // 通过 header 传递 CSRF token 的默认字段为 x-csrf-token
     enable: false,
-    // 判断是否需要 ignore 的方法，请求上下文 context 作为第一个参数
-    ignore: ctx => {
-      return ['/api/v1/users/login', '/api/v1/users/refreshToken', '/api/v1/users/github/login', '/api/v1/verification_codes'].includes(ctx.request.url);
-    },
   },
-  // domainWhiteList: ['http://localhost:8000'],
 };
 
 exports.sequelize = {

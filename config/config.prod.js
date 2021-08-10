@@ -86,3 +86,20 @@ exports.io = {
 exports.sentry = {
   dsn: process.env.SentyDsn || '',
 };
+
+exports.mailer = {
+  host: 'smtp.qq.com',
+  port: 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: process.env.MailerAuthUser, // generated ethereal user
+    pass: process.env.MailerAuthPass, // generated ethereal password
+  },
+};
+
+exports.jwt = {
+  secret: process.env.JwtSecret,
+  secret_refresh: process.env.JwtSecretRefresh,
+  enable: true, // default is false
+  match: '/jwt', // optional
+};

@@ -23,6 +23,11 @@ class UserService extends Service {
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id === 0 ? null : department_id) : null;
     !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
+    if (where[Op.and]) {
+      where[Op.and].push({ id: { [Op.ne]: 1 } });
+    } else {
+      where[Op.and] = [{ id: { [Op.ne]: 1 } }];
+    }
     return await ctx.model.Users.findAndCountAll({
       limit,
       offset,

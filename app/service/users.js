@@ -135,6 +135,9 @@ class UserService extends Service {
 
   async update(payload) {
     const { ctx } = this;
+    // 用户的email和username不可修改
+    delete payload.email;
+    delete payload.username;
     return await ctx.model.Users.update(payload, { where: { id: payload.id } });
   }
 

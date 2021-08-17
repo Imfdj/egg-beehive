@@ -99,6 +99,10 @@ class _objectName_Service extends Service {
       ctx.helper.body.NOT_FOUND({ ctx });
       return false;
     }
+    // 如果是自动进度, 设置项目进度值
+    if (project.is_auto_progress === 0 && payload.is_auto_progress === 1) {
+      payload.progress = await this.getProjectProgress(ctx, payload.id);
+    }
     return await ctx.model.Projects.update(payload, {
       where: {
         id: payload.id,
@@ -106,6 +110,13 @@ class _objectName_Service extends Service {
       },
       individualHooks: true,
     });
+  }
+
+  async getProjectProgress(ctx, project_id) {
+    const tasks = await ctx.model.Tasks.findAll({ where: { project_id, is_recycle: 0 } });
+    const doneCount = tasks.filter(task => task.is_done === 1);
+    const progress = Math.round((doneCount.length / tasks.length) * 100) || 0;
+    return progress;
   }
 
   async destroy(payload) {

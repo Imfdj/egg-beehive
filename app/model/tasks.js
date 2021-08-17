@@ -27,11 +27,33 @@ module.exports = app => {
     },
     {}
   );
+  let setProgressTimer = null;
+  /**
+   * 设置项目进度
+   * @param ctx
+   * @param task
+   */
+  const setProgress = function(ctx, task) {
+    if (setProgressTimer) {
+      clearTimeout(setProgressTimer);
+      setProgressTimer = null;
+    }
+    setProgressTimer = setTimeout(async () => {
+      const project = await ctx.model.Projects.findOne({ where: { id: task.project_id } });
+      if (project.is_auto_progress === 1) {
+        const progress = await ctx.service.projects.getProjectProgress(ctx, task.project_id);
+        ctx.model.Projects.update({ progress }, { where: { id: task.project_id }, individualHooks: true });
+      }
+    }, 500);
+  };
   task.addHook('afterCreate', async (task, options) => {
     const ctx = await app.createAnonymousContext();
     // const newTask = await app.model.Tasks.findOne({
     //   where: { id: task.id },
     // });
+
+    // 新建任务，根据情况设置项目进度值
+    setProgress(ctx, task);
     const newTask = Object.assign(
       {
         parent_id: 0,
@@ -53,6 +75,11 @@ module.exports = app => {
     const ctx = await app.createAnonymousContext();
     // 根据_changed，仅传输改动字段，及id，project_id
     // const data = app.lodash.pick(task.dataValues, [...Object.keys(task._changed), 'id', 'project_id']);
+
+    // 如有is_done或is_recycle有修改，则需重新计算自动计算进度的项目的进度值
+    if (!app.lodash.isUndefined(task._changed.is_done) || !app.lodash.isUndefined(task._changed.is_recycle)) {
+      setProgress(ctx, task);
+    }
     ctx.helper.sendSocketToClientOfRoom(task, 'update:task');
   });
   task.addHook('afterDestroy', async (task, options) => {

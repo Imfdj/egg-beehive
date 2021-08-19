@@ -77,12 +77,12 @@ const body = {
       description: '头像url',
     },
     company: {
-      type: 'number',
+      type: 'string',
       required: false,
       description: '国家',
     },
     city: {
-      type: 'number',
+      type: 'string',
       required: false,
       description: '城市',
     },

@@ -20,13 +20,10 @@ module.exports = (option, app) => {
        * 参数错误，mysql返回的错误处理
        */
       if (err.parent && err.parent.errno) {
-        const res =
-          app.config.env === 'prod'
-            ? null
-            : {
-              error,
-              detail: err.errors,
-            };
+        const res = {
+          error,
+          detail: err.errors,
+        };
         ctx.helper.body.INVALID_REQUEST({ ctx, res, code: err.parent.errno });
       }
       if (status === 422) {

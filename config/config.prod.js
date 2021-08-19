@@ -1,10 +1,11 @@
 'use strict';
+const { v4: uuidv4 } = require('uuid');
 
 exports.sequelize = {
   dialect: 'mysql',
-  host: '127.0.0.1',
-  port: 33066,
-  password: '123123',
+  host: process.env.MySqlHost || '127.0.0.1',
+  port: process.env.MySqlPort || 3306,
+  password: process.env.MySqlPassword,
   database: 'egg-beehive-prod',
   timezone: '+08:00',
   define: {
@@ -34,14 +35,71 @@ exports.cors = {
 
 exports.redis = {
   client: {
-    port: 6379,
-    host: '127.0.0.1',
-    password: '123123',
-    db: 1,
+    host: process.env.RedisHost || '127.0.0.1',
+    port: process.env.RedisPort || 6379,
+    password: process.env.RedisPassword,
+    db: process.env.RedisDb || 1,
   },
 };
 
 exports.alinode = {
-  appid: '',
-  secret: '',
+  appid: process.env.AlinodeAppid,
+  secret: process.env.AlinodeSecret,
+};
+
+exports.github = {
+  access_token_url: 'https://github.com/login/oauth/access_token',
+  user_info_url: 'https://api.github.com/user',
+  client_id: process.env.GithubClientId || '',
+  client_secret: process.env.GithubClientSecret || '',
+};
+
+exports.oss = {
+  client: {
+    accessKeyId: process.env.OssAccessKeyId || '',
+    accessKeySecret: process.env.OssAccessKeySecret || '',
+    bucket: process.env.OssBucket || '',
+    endpoint: 'oss-cn-guangzhou.aliyuncs.com',
+    timeout: '60s',
+  },
+};
+
+exports.io = {
+  init: {},
+  namespace: {
+    '/': {
+      connectionMiddleware: ['connection'],
+      packetMiddleware: ['packet'],
+    },
+  },
+  redis: {
+    host: process.env.RedisHost || '127.0.0.1',
+    port: process.env.RedisPort || 6379,
+    password: process.env.RedisPassword,
+    db: 3,
+  },
+  generateId: req => {
+    return `${req._query.userId}_${uuidv4()}`;
+  },
+};
+
+exports.sentry = {
+  dsn: process.env.SentyDsn || '',
+};
+
+exports.mailer = {
+  host: 'smtp.qq.com',
+  port: 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: process.env.MailerAuthUser, // generated ethereal user
+    pass: process.env.MailerAuthPass, // generated ethereal password
+  },
+};
+
+exports.jwt = {
+  secret: process.env.JwtSecret,
+  secret_refresh: process.env.JwtSecretRefresh,
+  enable: true, // default is false
+  match: '/jwt', // optional
 };

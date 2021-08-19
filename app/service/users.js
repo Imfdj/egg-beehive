@@ -23,6 +23,11 @@ class UserService extends Service {
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id === 0 ? null : department_id) : null;
     !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
+    if (where[Op.and]) {
+      where[Op.and].push({ id: { [Op.ne]: 1 } });
+    } else {
+      where[Op.and] = [{ id: { [Op.ne]: 1 } }];
+    }
     return await ctx.model.Users.findAndCountAll({
       limit,
       offset,
@@ -66,7 +71,7 @@ class UserService extends Service {
 
   async create(payload) {
     const { ctx, app } = this;
-    const { verification_type, phone, email, code } = payload;
+    const { verification_type, phone, email, code, username } = payload;
     const current_time = app.dayjs()
       .format('YYYY-MM-DD hh:mm:ss');
     // 验证码 验证
@@ -79,12 +84,26 @@ class UserService extends Service {
       },
     });
     if (res) {
+      const resExistsUsername = await this.existsUserUniqueFields({ username });
+      if (resExistsUsername) {
+        return {
+          __code_wrong: 40001,
+          message: '用户名已存在',
+        };
+      }
+      const resExistsEmail = await this.existsUserUniqueFields({ email });
+      if (resExistsEmail) {
+        return {
+          __code_wrong: 40002,
+          message: '邮箱已存在',
+        };
+      }
       payload = Object.assign(payload, await ctx.helper.tools.saltPassword(payload.password));
       payload.password += payload.salt;
       const transaction = await ctx.model.transaction();
       try {
         const res_user = await ctx.model.Users.create(payload, { transaction });
-        const defaultRole = await ctx.model.Roles.findOne({ is_default: 1 });
+        const defaultRole = await ctx.model.Roles.findOne({ where: { is_default: 1 } });
         // 分配 默认角色
         await ctx.model.UserRoles.create(
           {
@@ -108,11 +127,17 @@ class UserService extends Service {
         app.logger.errorAndSentry(e);
       }
     }
-    return false;
+    return {
+      __code_wrong: 40000,
+      message: '验证码错误或已使用过或已过期',
+    };
   }
 
   async update(payload) {
     const { ctx } = this;
+    // 用户的email和username不可修改
+    delete payload.email;
+    delete payload.username;
     return await ctx.model.Users.update(payload, { where: { id: payload.id } });
   }
 
@@ -353,7 +378,7 @@ class UserService extends Service {
           },
           { transaction }
         );
-        const defaultRole = await ctx.model.Roles.findOne({ is_default: 1 });
+        const defaultRole = await ctx.model.Roles.findOne({ where: { is_default: 1 } });
         // 分配 默认角色
         await ctx.model.UserRoles.create(
           {

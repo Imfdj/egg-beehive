@@ -39,7 +39,7 @@ module.exports = {
     package: 'egg-redis',
   },
   alinode: {
-    enable: true,
+    enable: false,
     package: 'egg-alinode',
     env: ['prod'],
   },

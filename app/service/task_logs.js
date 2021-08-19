@@ -8,7 +8,7 @@ class _objectName_Service extends Service {
     const { ctx } = this;
     const { limit, offset, prop_order, order, remark } = payload;
     const where = payload.where;
-    const Order = [];
+    const Order = [['id', 'asc']];
     remark ? (where.remark = { [Op.like]: `%${remark}%` }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
     return await ctx.model.TaskLogs.findAndCountAll({

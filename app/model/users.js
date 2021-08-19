@@ -21,6 +21,14 @@ module.exports = app => {
     },
     {
       paranoid: true,
+      defaultScope: {
+        attributes: { exclude: ['password'] },
+      },
+      scopes: {
+        withPassword: {
+          attributes: {},
+        },
+      },
     }
   );
   user.associate = function(models) {

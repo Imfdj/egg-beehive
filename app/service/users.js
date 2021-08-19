@@ -148,9 +148,10 @@ class UserService extends Service {
 
   async login(payload) {
     const { ctx, app } = this;
-    const user = await ctx.model.Users.findOne({
-      where: { username: payload.username },
-    });
+    const user = await ctx.model.Users.scope('withPassword')
+      .findOne({
+        where: { username: payload.username },
+      });
     if (!user) {
       return {
         __code_wrong: 40004,

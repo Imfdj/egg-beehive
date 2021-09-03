@@ -71,7 +71,7 @@ module.exports = {
           comment: '文件扩展名',
         },
         file_type: {
-          type: Sequelize.STRING(60),
+          type: Sequelize.STRING(120),
           allowNull: false,
           defaultValue: '',
           comment: '文件类型',

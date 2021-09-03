@@ -66,7 +66,7 @@ const body = {
       type: 'string',
       required: false,
       min: 1,
-      max: 60,
+      max: 120,
       trim: true,
       example: '',
       description: '文件类型',

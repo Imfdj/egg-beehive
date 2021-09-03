@@ -39,10 +39,10 @@ class RoleController extends Controller {
       });
       return;
     }
-    if (/^video\/.*$/i.test(stream.mimeType) && size > 50 * 1024 * 1024) {
+    if (/^video\/.*$/i.test(stream.mimeType) && size > 20 * 1024 * 1024) {
       ctx.helper.body.INVALID_REQUEST({
         ctx,
-        msg: '媒体文件容量不可超过50Mb',
+        msg: '媒体文件容量不可超过20Mb',
       });
       return;
     }

@@ -146,8 +146,8 @@ module.exports = {
     {
       name: 'file_type',
       type: 'string',
-      length: 60,
-      max: 60,
+      length: 120,
+      max: 120,
       min: 1,
       trim: true,
       required: false,

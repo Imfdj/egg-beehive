@@ -13,7 +13,7 @@ module.exports = app => {
       filename: Sequelize.STRING(50),
       path: Sequelize.STRING(225),
       extension: Sequelize.STRING(30),
-      file_type: Sequelize.STRING(60),
+      file_type: Sequelize.STRING(120),
       size: Sequelize.INTEGER(11),
       downloads: Sequelize.INTEGER(11),
       is_recycle: Sequelize.TINYINT(1),

@@ -36,17 +36,7 @@ class _objectName_Service extends Service {
 
   async destroy(payload) {
     const { ctx } = this;
-    // 开启事务
-    const transaction = await ctx.model.transaction();
-    // 删除部门前，要将部门下的所有成员department_id 置为0
-    await ctx.model.Users.update({ department_id: 0 }, { where: { department_id: payload.ids }, transaction });
-    const res = await ctx.model.Departments.destroy({ where: { id: payload.ids }, transaction });
-    if (res && res[0] !== 0) {
-      await transaction.commit();
-      return true;
-    }
-    await transaction.rollback();
-    return false;
+    return await ctx.model.Departments.destroy({ where: { id: payload.ids }, individualHooks: true });
   }
 }
 

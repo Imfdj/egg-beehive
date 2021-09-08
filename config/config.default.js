@@ -122,7 +122,14 @@ module.exports = appInfo => {
   };
 
   config.multipart = {
-    fileSize: '200mb',
+    fileSize: '20mb',
+    // fileExtensions: [
+    //   '.docx',
+    //   '.doc',
+    //   '.xls',
+    //   '.xlsx',
+    // ],
+    whitelist: filename => true, // 不做类型限制
   };
 
   config.sentry = {

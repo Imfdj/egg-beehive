@@ -1,6 +1,7 @@
 'use strict';
 
 const Service = require('egg').Service;
+const { Op } = require('sequelize');
 
 class RoleService extends Service {
   async index(payload) {
@@ -9,6 +10,14 @@ class RoleService extends Service {
     const where = payload.where;
     const Order = [];
     prop_order && order ? Order.push([prop_order, order]) : null;
+    // 如果请求者不是用户id为1的超级管理员，则不返回id为1的超级管理员角色
+    if (ctx.currentRequestData.userInfo.id !== 1) {
+      if (where[Op.and]) {
+        where[Op.and].push({ id: { [Op.ne]: 1 } });
+      } else {
+        where[Op.and] = [{ id: { [Op.ne]: 1 } }];
+      }
+    }
     return await ctx.model.Roles.findAndCountAll({
       limit,
       offset,

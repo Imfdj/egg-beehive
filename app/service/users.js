@@ -23,6 +23,7 @@ class UserService extends Service {
     !ctx.helper.tools.isParam(department_id) ? (where.department_id = department_id === 0 ? null : department_id) : null;
     !ctx.helper.tools.isParam(project_id) ? (project_where = { id: project_id }) : null;
     prop_order && order ? Order.push([prop_order, order]) : null;
+    // 不返回id为1的超级管理员用户
     if (where[Op.and]) {
       where[Op.and].push({ id: { [Op.ne]: 1 } });
     } else {
@@ -148,9 +149,10 @@ class UserService extends Service {
 
   async login(payload) {
     const { ctx, app } = this;
-    const user = await ctx.model.Users.findOne({
-      where: { username: payload.username },
-    });
+    const user = await ctx.model.Users.scope('withPassword')
+      .findOne({
+        where: { username: payload.username },
+      });
     if (!user) {
       return {
         __code_wrong: 40004,

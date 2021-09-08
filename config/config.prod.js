@@ -6,7 +6,7 @@ exports.sequelize = {
   host: process.env.MySqlHost || '127.0.0.1',
   port: process.env.MySqlPort || 3306,
   password: process.env.MySqlPassword,
-  database: 'egg-beehive-prod',
+  database: process.env.MySqlDatabase || 'egg-beehive-prod',
   timezone: '+08:00',
   define: {
     raw: true,

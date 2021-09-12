@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
-  name: 'user_task_like',
-  cname: '用户-任务-点赞关系表',
+  name: 'user_task_like', // 表名
+  cname: '用户-任务-点赞关系表', // 表的中文描述
   fieldsItemExample: {
     name: 'xx_id',
     type: 'INTEGER',

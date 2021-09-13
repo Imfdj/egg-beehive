@@ -56,7 +56,7 @@ class _objectName_Service extends Service {
       const tasks = await ctx.model.Tasks.findAll({
         where: {
           project_id: payload.project_id,
-          creator_id: ctx.currentRequestData.userInfo.id,
+          creator_id: payload.user_id,
         },
       });
       if (tasks.length) {

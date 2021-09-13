@@ -8,10 +8,11 @@
 
 Beehive 是一个项目管理系统。参考于Teambetion、PearProject，实现部分功能。
 
-这是一个Vue+Node.js的js全栈项目。基于RBAC模型做权限控制，动态配置菜单，前端实现页面元素级别的权限控制。通过Websocket实现站内信功能，任务看板中，实现更新同步推送。一旦其他项目成员有对我们当前查看的项目任务做任何的操作，页面都将立即同步更新，并向此任务的所有参与者（除了操作者）发送消息通知。注册和找回密码需要通过邮箱验证码验证，可以通过github授权登陆（不是很稳定）。
+这是一个Vue+Node.js的js全栈项目。基于RBAC模型做权限控制，动态配置菜单，前端实现页面元素级别的权限控制。通过WebSocket实现站内信功能，任务看板中，实现更新同步推送。一旦其他项目成员有对我们当前查看的项目任务做任何的操作，页面都将立即同步更新，并向此任务的所有参与者（除了操作者）发送消息通知。注册和找回密码需要通过邮箱验证码验证，可以通过github授权登陆（不是很稳定）。
 
-Node.js框架选用的是Egg.js，配合sequelize，自己写了一个小工具。可以通过填写表字段的配置，执行npm run generator-entity自动生成一整套文件，包括Swagger、数据校验validate、Sequelize需要的model、controller、service、router。并自动创建数据库表，包括每个字段的类型、长度、是否能为空、默认值、注释、索引、甚至是外键都能搞定。因为加了权限控制，所以还要到前端的资源管理中添加一下新增的资源，并在角色中点选分配一下，就完成了一张表的CRUD了，包括新增、修改、详情、批量删除、分页列表。当然这还是有很多可以优化的空间的，但也基本够用了。为了优化鉴权消耗，以及满足Websocket的可靠性设计需要，系统引入Redis做缓存。
+Node.js框架选用的是Egg.js，配合sequelize，自己写了一个小工具。可以通过填写表字段的配置，执行npm run generator-entity自动生成一整套文件，包括Swagger、数据校验validate、Sequelize需要的model、controller、service、router。并自动创建数据库表，包括每个字段的类型、长度、是否能为空、默认值、注释、索引、甚至是外键都能搞定。因为加了权限控制，所以还要到前端的资源管理中添加一下新增的资源，并在角色中点选分配一下，就完成了一张表的CRUD了，包括新增、修改、详情、批量删除、分页列表。当然这还是有很多可以优化的空间的，但也基本够用了。为了优化鉴权消耗，以及满足WebSocket的可靠性设计需要，系统引入Redis做缓存。
 
+密码是加盐存储的，且在传输过程中使用了RSA做了非对称加密。Jwt认证使用Access Token + Refresh Token，配合黑名单。
 
 
 ## 效果演示
@@ -94,8 +95,7 @@ Node.js框架选用的是Egg.js，配合sequelize，自己写了一个小工具�
 
 
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/home-page.gif" style="
-margin-bottom: 5px"/>
+<img src="https://qiniucdn.imfdj.top/beehive/production/home-page.gif" style="margin-bottom: 5px"/>
 
 <img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_115100.png" style="margin-bottom: 5px"/>
 
@@ -211,4 +211,6 @@ npm run serve
 ### License
 
 [MIT](https://github.com/Imfdj/egg-beehive/blob/master/LICENSE)
+
+Copyright (c) 2021 Imfdj
 

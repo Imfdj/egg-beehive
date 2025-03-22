@@ -95,29 +95,29 @@ Node.js框架选用的是Egg.js，配合sequelize，自己写了一个小工具�
 
 
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/home-page.gif" style="margin-bottom: 5px"/>
+<img src="example/home-page.gif" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_115100.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_115100.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_115127.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_115127.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_112646.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_112646.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_113236.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_113236.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_113312.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_113312.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_113341.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_113341.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-13_021734.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-13_021734.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_113612.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_113612.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_114307.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_114307.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_115228.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_115228.png" style="margin-bottom: 5px"/>
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/2021-09-12_113839.png" style="margin-bottom: 5px"/>
+<img src="example/2021-09-12_113839.png" style="margin-bottom: 5px"/>
 
 
 
@@ -197,15 +197,15 @@ npm run serve
 
 ## 功能设计
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/Beehive%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1.jpg"/>
+<img src="example/Beehive功能设计.jpg"/>
 
 ## 后端设计
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/Beehive%E5%90%8E%E7%AB%AF%E8%AE%BE%E8%AE%A1.jpg"/>
+<img src="example/Beehive后端设计.jpg"/>
 
 ## 数据库设计
 
-<img src="https://qiniucdn.imfdj.top/beehive/production/Beehive-data-model.jpg"/>
+<img src="example/Beehive-data-model.jpg"/>
 
 
 ### License
